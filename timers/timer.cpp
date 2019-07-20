@@ -12,19 +12,19 @@ ISR(TIMER1_COMPA_vect)
     if (milliseconds[i] == periods[i]) {
       timers[i]++;
       milliseconds[i] = 0;
-    };      
-  };
- };
+    }     
+  }
+ }
 }
 
-void startTimer(uint8_t timer_num, uint16_t Period){
+void startTimer(uint8_t timer_num, uint16_t Period,  uint32_t Unit){
   cli();
   TCCR1A = 0; TCCR1B = 0;
   TIMSK1 = 1<<OCIE1A;
   TCCR1B = (1<<WGM12)|(1<<CS10)|(1<<CS11); //CTC, 64 div
   OCR1A = 250;  //max period 0.26214 sec = (64)/(16 MHz) * 65535 / OCR1A = 250 -> 0.001 sec
   timers[timer_num] = 0;
-  periods[timer_num] = Period;
+  periods[timer_num] = Period*Unit;
   sei();
 
 /* //Timer/Counter 0 initialization
@@ -48,6 +48,6 @@ void stopTimer(uint8_t timer_num){
   periods[timer_num]=0;
   };
 
-uint16_t getTime(uint8_t timer_num) {
-  return timers[timer_num];
+uint64_t getTime(uint8_t timer_num, uint32_t Unit) {
+  return timers[timer_num]/Unit;
 };
