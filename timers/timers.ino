@@ -1,23 +1,20 @@
-#include "timer.h"
+#include <timer_class.h>
 
-Time past[5];
-
+Timer timer1(2, HOURS);
+uint32_t last = 0;
 void setup() {
 Serial.begin(9600);
-pinMode(13, OUTPUT);
-startTimer(0, 10, MILLIS);
-startTimer(1, 10, MILLIS);
-startTimer(2, 100, MILLIS);
-startTimer(3, 250, MILLIS);
+timer1.startTimer(TIMER_1);
+Serial.println("Start");
 }
 
 void loop() {
-  for (int i=0; i<5; i++) {
-    // if (past[i] < getTime(i, MILLIS)) {Serial.print(i); Serial.print("timer "); Serial.println(getTime(i, MILLIS)); past[i] = getTime(i, MILLIS);};
-     if (past[i] < getTime(i, MILLIS)) {
-       digitalWrite(8+i, !digitalRead(8+i));
-       past[i] = getTime(i, MILLIS);
-     }
-    }
-    if (getTime(3, MILLIS) == 50) {stopTimer(2);}
+if (last != timer1.getExp()){
+Serial.print("exp: ");
+Serial.println(timer1.getExp());
+Serial.print("mills: ");
+Serial.println(timer1.getMillis());
+last = timer1.getExp();
+}
+
 } 

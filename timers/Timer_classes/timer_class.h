@@ -15,12 +15,12 @@
 
 class Timer{
 private:
- 
+     uint64_t period, milliseconds, expirations;
 public:
-    uint64_t period, milliseconds, expirations;
     Timer(uint32_t,  uint32_t);
     void startTimer(uint8_t);
     void stopTimer();
+    void clearExp();
     uint32_t getExp();
     uint32_t getMillis();
     uint32_t getPeriods(uint32_t);

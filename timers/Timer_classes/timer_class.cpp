@@ -19,6 +19,8 @@ isr_milliseconds++;
    void Timer::startTimer(uint8_t Timer_name){
   cli();
   isr_milliseconds = 0;
+  milliseconds = 0;
+  expirations = 0;
   switch(Timer_name){
     case TIMER_0:
     TIMSK0 = (1<<OCIE0A);
@@ -61,6 +63,10 @@ void Timer::stopTimer(){
   TCCR2A = TCCR2B = 0;
   OCR2A = 0;
   }
+
+void Timer::clearExp() {
+  expirations = 0;
+}
 
 uint32_t Timer::getExp() {
   if (period != 0) {
