@@ -5,6 +5,7 @@ stopTimer	KEYWORD2
 getExp	KEYWORD2
 getMillis	KEYWORD2
 getPeriods	KEYWORD2
+clearExp	KEYWORD2
 
 TIMER_0	(LITERAL1)
 TIMER_1	(LITERAL1)
