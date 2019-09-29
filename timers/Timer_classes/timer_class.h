@@ -8,6 +8,19 @@
 #define TIMER_1 1
 #define TIMER_2 2
 
+/*Choose your timer here*/
+#define TIMER TIMER_0
+//#define TIMER TIMER_1
+//#define TIMER TIMER_2
+
+#if TIMER == TIMER_0
+    #define TIMER_INT TIMER0_COMPA_vect
+#elif TIMER == TIMER_1
+    #define TIMER_INT TIMER1_COMPA_vect
+#elif TIMER == TIMER_2
+    #define TIMER_INT TIMER2_COMPA_vect
+#endif
+
 #define MILLIS 1
 #define SECS 975    //must be 1000
 #define MINUTES 58500   //must be 60000, but my arduinos "minute" is 1 min + 1.5 sec
@@ -18,7 +31,7 @@ private:
      uint64_t period, milliseconds, expirations;
 public:
     Timer(uint32_t,  uint32_t);
-    void startTimer(uint8_t);
+    void startTimer();
     void stopTimer();
     void clearExp();
     uint32_t getExp();

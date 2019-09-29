@@ -1,10 +1,10 @@
-#include <timer_class.h>
+#include "timer_class.h"
 
-Timer timer1(2, HOURS);
-uint32_t last = 0;
+Timer timer1(1, SECS);
+uint64_t last = 0;
 void setup() {
 Serial.begin(9600);
-timer1.startTimer(TIMER_1);
+timer1.startTimer();
 Serial.println("Start");
 }
 

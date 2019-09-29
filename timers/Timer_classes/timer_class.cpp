@@ -2,7 +2,7 @@
 
 volatile uint64_t isr_milliseconds;
 
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER_INT)
 {
 isr_milliseconds++;
 }
@@ -16,12 +16,12 @@ isr_milliseconds++;
 
 
     //Start function
-   void Timer::startTimer(uint8_t Timer_name){
+   void Timer::startTimer(){
   cli();
   isr_milliseconds = 0;
   milliseconds = 0;
   expirations = 0;
-  switch(Timer_name){
+  switch(TIMER){
     case TIMER_0:
     TIMSK0 = (1<<OCIE0A);
     TCCR0A=(1<<WGM01);
@@ -29,7 +29,6 @@ isr_milliseconds++;
     OCR0A=0xF9;
     break;
     case TIMER_1:
- // TCCR1A = 0; TCCR1B = 0;
     TIMSK1 = (1<<OCIE1A);
     TCCR1B = (1<<WGM12)|(1<<CS10)|(1<<CS11); //CTC, 64 div
     OCR1A = 250;  //max period 0.26214 sec = (64)/(16 MHz) * 65535 / OCR1A = 250 -> 0.001 sec
@@ -51,18 +50,25 @@ void Timer::stopTimer(){
   period = 0;
   milliseconds = 0;
   expirations = 0;
-  TIMSK0 = 0;
-  TCCR0A = TCCR0B = 0;
-  OCR0A=0;
 
-  TIMSK1 = 0;
-  TCCR1A = TCCR1B = 0;
-  OCR1A = 0;
-
-  TIMSK2 = 0;
-  TCCR2A = TCCR2B = 0;
-  OCR2A = 0;
+  switch(TIMER){
+    case TIMER_0:
+      TIMSK0 = 0;
+      TCCR0A = TCCR0B = 0;
+      OCR0A=0;
+    break;
+    case TIMER_1:
+      TIMSK1 = 0;
+      TCCR1A = TCCR1B = 0;
+      OCR1A = 0;
+    break;
+    case TIMER_2:
+      TIMSK2 = 0;
+      TCCR2A = TCCR2B = 0;
+      OCR2A = 0;
+    break;
   }
+}
 
 void Timer::clearExp() {
   expirations = 0;
