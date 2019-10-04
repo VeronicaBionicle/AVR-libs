@@ -1,33 +1,26 @@
-#include <avr/io.h>
-#include <math.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 
-#define MAX_PERIODS 100
+/*	Zerocross (external interrupt) registers	*/
+#define INTERRUPT_INIT MCUCR
+#define GENERAL_INTERRUPT GIMSK
+#define INTERRUPT_FLAG GIFR
+#define EXTERNAL_INTERRUPT_PORT DDRB
+#define EXTERNAL_INTERRUPT_PIN_0 1
 
-//#define INT_PIN PORTD2
-#define INT_PIN PORTD3
-
-#define OUT_DDR DDRB
-//#define OUT_DDR DDRC
-//#define OUT_DDR DDRD
-
-#define OUT_PORT PORTB
-//#define OUT_PORT PORTC
-//#define OUT_PORT PORTD
-
-#define OUT_PIN 2
-
+/*	Zerocross pin selection	*/
+#define ZEROCROSS_PIN EXTERNAL_INTERRUPT_PIN_0
+#define EXT_INT INT0_vect
 ISR (EXT_INT);
 
-#if INT_PIN == PORTD2
-	#define EXT_INT INT0_vect
-#elif INT_PIN == PORTD3
-	#define EXT_INT INT1_vect
-#endif
+/*	Output pin selection	*/
+#define OUT_DDR DDRB
+#define OUT_PORT PORTB
+#define OUT_PIN 0
 
-void OutputInit (void);
-void ZerocrossInit (void);
-void On (void);
-void Off (void);
-void PhaseControl (uint8_t num_of_periods);
+/*	Functions definitions	*/
+void OutputInit (void);	//Initialize output pin
+void ZerocrossInit (void);	//Initialize zerocross pin
+void On (void);	//High level on output pin
+void Off (void);	//Low level on output pin
+void PhaseControl (uint8_t max_periods, uint8_t num_of_periods);	//What number of periods are passed from maximum periods
