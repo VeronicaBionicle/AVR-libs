@@ -1,12 +1,28 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 
+#if defined (__AVR_ATtiny13__)
+	#define INTERRUPT_INIT MCUCR
+	#define GENERAL_INTERRUPT GIMSK
+	#define INTERRUPT_FLAG GIFR
+	#define EXTERNAL_INTERRUPT_PORT DDRB
+	#define EXTERNAL_INTERRUPT_PIN_0 1
+#elif defined (__AVR_ATmega8__)
+	#define INTERRUPT_INIT MCUCR
+	#define GENERAL_INTERRUPT GIMSK
+	#define INTERRUPT_FLAG GIFR
+	#define EXTERNAL_INTERRUPT_PORT DDRD
+	#define EXTERNAL_INTERRUPT_PIN_0 2
+#elif defined (__AVR_ATmega328P__)
+	#define INTERRUPT_INIT EICRA
+	#define GENERAL_INTERRUPT EIMSK
+	#define INTERRUPT_FLAG EIFR
+	#define EXTERNAL_INTERRUPT_PORT DDRD
+	#define EXTERNAL_INTERRUPT_PIN_0 2
+#endif
+
 /*	Zerocross (external interrupt) registers	*/
-#define INTERRUPT_INIT MCUCR
-#define GENERAL_INTERRUPT GIMSK
-#define INTERRUPT_FLAG GIFR
-#define EXTERNAL_INTERRUPT_PORT DDRB
-#define EXTERNAL_INTERRUPT_PIN_0 1
+
 
 /*	Zerocross pin selection	*/
 #define ZEROCROSS_PIN EXTERNAL_INTERRUPT_PIN_0
