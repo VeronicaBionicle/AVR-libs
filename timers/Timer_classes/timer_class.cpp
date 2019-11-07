@@ -2,9 +2,14 @@
 
 volatile uint64_t isr_milliseconds;
 
+void Timer::isrDefaultUnused(){}
+void (*Timer::isrCallback)() = Timer::isrDefaultUnused;
+
+    
 ISR(TIMER_INT)
 {
 isr_milliseconds++;
+Timer1.isrCallback();
 }
 
  //Constructor
@@ -91,6 +96,3 @@ uint32_t Timer::getMillis() {
 uint32_t Timer::getPeriods(uint32_t Unit) {
   return getExp()*period/Unit;
 }
-
-
-

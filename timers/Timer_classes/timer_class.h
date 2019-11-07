@@ -37,5 +37,14 @@ public:
     uint32_t getExp();
     uint32_t getMillis();
     uint32_t getPeriods(uint32_t);
+    
+    void Timer::attachInterrupt(void (*isr)()) __attribute__((always_inline)) {
+  isrCallback = isr;
+    };
+    
+    static void (*isrCallback)();
+    static void isrDefaultUnused();
 };
+
+extern Timer Timer1;
 #endif /*timer_class_h_ */
