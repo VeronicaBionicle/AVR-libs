@@ -29,22 +29,21 @@
 #define TIMER_INT TIMER2_COMPA_vect
 #endif
 
+#define MICROS 0
 #define MILLIS 1
-#define SECS 975    //must be 1000
-#define MINUTES 58500   //must be 60000, but my arduinos "minute" is 1 min + 1.5 sec
+#define SECS 1000   
+#define MINUTES 60000   
 #define HOURS 3600000
 
 class Timer {
   private:
     uint64_t period, milliseconds, expirations;
   public:
-    Timer();
-    void startTimer(uint32_t);
+    void startTimer(uint32_t, uint32_t);
     void stopTimer();
     void clearExp();
     uint32_t getExp();
-    uint32_t getMillis();
-    uint32_t getPeriods(uint32_t);
+    uint32_t getPeriods();
 
     void attachInterrupt(void (*isr)()) __attribute__((always_inline)) {
       isrCallback = isr;

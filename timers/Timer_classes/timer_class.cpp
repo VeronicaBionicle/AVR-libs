@@ -12,13 +12,11 @@ ISR(TIMER_INT)
   Timer1.isrCallback();
 }
 
-//Constructor
-Timer::Timer() { }
-
 
 //Start function
-void Timer::startTimer(uint32_t Period) {
+void Timer::startTimer(uint32_t Period, uint32_t Unit) {
   cli();
+
   isr_milliseconds = 0;
   milliseconds = 0;
   expirations = 0;
@@ -26,7 +24,12 @@ void Timer::startTimer(uint32_t Period) {
     case TIMER_0:
       TIMSK0 = (1 << OCIE0A);
       TCCR0A = (1 << WGM01);
-
+      if (Unit != MICROS){  //1ms
+          period = Period*Unit;
+        TCCR0B = (1<<CS01) | (1<<CS00);
+        OCR0A=0xF9;
+} else{
+    period = Period;
       if (Period <= OCR_MAX / F_CPU_SH) {
         TCCR0B = (1 << CS00);
         OCR0A = (Period * F_CPU_SH) - 1;
@@ -54,6 +57,7 @@ void Timer::startTimer(uint32_t Period) {
           };
         };
       };
+};
       break;
     case TIMER_1:
       TIMSK1 = (1 << OCIE1A);
@@ -111,10 +115,6 @@ uint32_t Timer::getExp() {
   } else return 0;
 }
 
-uint32_t Timer::getMillis() {
+uint32_t Timer::getPeriods() {
   return isr_milliseconds;
-}
-
-uint32_t Timer::getPeriods(uint32_t Unit) {
-  return getExp() * period / Unit;
 }
