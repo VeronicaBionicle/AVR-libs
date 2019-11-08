@@ -1,12 +1,15 @@
 #include "timer_class.h"
 
-Timer timer1;
+Timer counter1, timer1;
 uint32_t last;
+
 void setup() {
-  timer1.startTimer(10, MINUTES);
-Serial.begin(9600);
+  Serial.begin(9600);
+  Serial.println("Start");
+  //counter1.startCounter(1, SECS);
+  timer1.startTimerForInterrupt(10000);
   DDRB = 0xFF;  //for testing via oscilloscope
- // timer1.attachInterrupt(Plus);
+  timer1.attachInterrupt(Plus);
 }
 
 void Plus() {
@@ -14,11 +17,17 @@ void Plus() {
 };
 
 void loop() {
- if (last != timer1.getExp()) {
-    last = timer1.getExp();
-    Serial.print("exp: ");
-    Serial.println(timer1.getExp());
-    Serial.print("periods: ");
-    Serial.println(timer1.getPeriods());
-  }
+
+  /*if (last != counter1.getCounterExp()) {
+     last = counter1.getCounterExp();
+     Serial.print("exp: ");
+     Serial.println(counter1.getCounterExp());
+     Serial.print("periods: ");
+     Serial.println(counter1.getPeriods());
+    }*/
+  /*if (counter1.getCounterExp() >= 5) {
+    counter1.stopTimerCounter();
+    Serial.println("Stop!");
+    };
+  */
 }

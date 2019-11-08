@@ -12,24 +12,41 @@ ISR(TIMER_INT)
   Timer1.isrCallback();
 }
 
-
-//Start function
-void Timer::startTimer(uint32_t Period, uint32_t Unit) {
+void Timer::startCounter(uint32_t Period, uint32_t Unit) {
   cli();
+  period = Period * Unit;
+  isr_milliseconds = 0;
+  milliseconds = 0;
+  expirations = 0;
+  TIMSK_ = (1 << OCIE_A);
+  OCR_A = OCR_FOR_COUNTER;
+  switch (TIMER) {
+    case TIMER_0:
+      //TCCR_A = (1 << WGM01);
+      TCCR_B = (1 << CS01) | (1 << CS00);
+      break;
+    case TIMER_1:
+      TCCR_B = (1 << WGM12) | (1 << CS11) | (1 << CS10); //CTC, 64 div
+      break;
+    case TIMER_2:
+      //TCCR_A = (1 << WGM21);
+      TCCR_B = (1 << CS22);
+      break;
+  }
+  sei();
+}
 
+
+void Timer::startTimerForInterrupt(uint32_t Period) {
+  cli();
+  period = Period;
   isr_milliseconds = 0;
   milliseconds = 0;
   expirations = 0;
   switch (TIMER) {
     case TIMER_0:
-      TIMSK0 = (1 << OCIE0A);
-      TCCR0A = (1 << WGM01);
-      if (Unit != MICROS){  //1ms
-          period = Period*Unit;
-        TCCR0B = (1<<CS01) | (1<<CS00);
-        OCR0A=0xF9;
-} else{
-    period = Period;
+      TIMSK_ = (1 << OCIE_A);
+      TCCR_A = (1 << WGM01);
       if (Period <= OCR_MAX / F_CPU_SH) {
         TCCR0B = (1 << CS00);
         OCR0A = (Period * F_CPU_SH) - 1;
@@ -56,8 +73,8 @@ void Timer::startTimer(uint32_t Period, uint32_t Unit) {
             };
           };
         };
+
       };
-};
       break;
     case TIMER_1:
       TIMSK1 = (1 << OCIE1A);
@@ -75,37 +92,21 @@ void Timer::startTimer(uint32_t Period, uint32_t Unit) {
   sei();
 }
 
-void Timer::stopTimer() {
+void Timer::stopTimerCounter() {
   cli();
-
   period = 0;
   milliseconds = 0;
   expirations = 0;
-
-  switch (TIMER) {
-    case TIMER_0:
-      TIMSK0 = 0;
-      TCCR0A = TCCR0B = 0;
-      OCR0A = 0;
-      break;
-    case TIMER_1:
-      TIMSK1 = 0;
-      TCCR1A = TCCR1B = 0;
-      OCR1A = 0;
-      break;
-    case TIMER_2:
-      TIMSK2 = 0;
-      TCCR2A = TCCR2B = 0;
-      OCR2A = 0;
-      break;
-  }
+  TIMSK_ = 0;
+  TCCR_A = TCCR_B = 0;
+  OCR_A = 0;
 }
 
-void Timer::clearExp() {
+void Timer::clearCounterExp() {
   expirations = 0;
 }
 
-uint32_t Timer::getExp() {
+uint32_t Timer::getCounterExp() {
   if (period != 0) {
     if ((isr_milliseconds - milliseconds) / period >= 1) {
       expirations = expirations + (isr_milliseconds - milliseconds) / period;
