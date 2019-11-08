@@ -33,6 +33,9 @@
   #define TCCR_A TCCR0A
   #define TCCR_B TCCR0B
   #define OCR_A OCR0A
+  #define CS_0 CS00
+  #define CS_1 CS01
+  #define CS_2 CS02
   #define OCIE_A OCIE0A
   #define OCR_MAX 256
 #elif TIMER == TIMER_1
@@ -41,6 +44,9 @@
   #define TCCR_A TCCR1A
   #define TCCR_B TCCR1B
   #define OCR_A OCR1A
+  #define CS_0 CS10
+  #define CS_1 CS11
+  #define CS_2 CS12
   #define OCIE_A OCIE1A
   #define OCR_MAX 65536
 #elif TIMER == TIMER_2
@@ -49,6 +55,9 @@
   #define TCCR_A TCCR2A
   #define TCCR_B TCCR2B
   #define OCR_A OCR2A
+  #define CS_0 CS20
+  #define CS_1 CS21
+  #define CS_2 CS22
   #define OCIE_A OCIE2A
   #define OCR_MAX 256
 #endif

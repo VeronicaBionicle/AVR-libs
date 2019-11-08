@@ -7,7 +7,7 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Start");
   //counter1.startCounter(1, SECS);
-  timer1.startTimerForInterrupt(10000);
+  timer1.startTimerForInterrupt(50);
   DDRB = 0xFF;  //for testing via oscilloscope
   timer1.attachInterrupt(Plus);
 }
