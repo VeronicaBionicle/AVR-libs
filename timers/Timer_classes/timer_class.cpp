@@ -1,129 +1,40 @@
 #include "timer_class.h"
 
-volatile uint64_t isr_milliseconds;
+volatile uint32_t isr_periods;
 
-void Timer::isrDefaultUnused() {}
-void (*Timer::isrCallback)() = Timer::isrDefaultUnused;
-
-
-ISR(TIMER_INT)
+ISR(TIMER_INT)  //ISR for couners and timer
 {
-  isr_milliseconds++;
+  isr_periods++;
   Timer1.isrCallback();
 }
 
-void Timer::startCounter(uint32_t Period, uint32_t Unit) {
-  cli();
-  period = Period * Unit;
-  isr_milliseconds = 0;
-  milliseconds = 0;
-  expirations = 0;
-  TIMSK_ = (1 << OCIE_A);
-  OCR_A = OCR_FOR_COUNTER;
-  switch (TIMER) {
-    case TIMER_0:
-      //TCCR_A = (1 << WGM01);
-      TCCR_B = (1 << CS_1) | (1 << CS_0);
-      break;
-    case TIMER_1:
-      TCCR_B = (1 << WGM12) | (1 << CS11) | (1 << CS10); //CTC, 64 div
-      break;
-    case TIMER_2:
-      //TCCR_A = (1 << WGM21);
-      TCCR_B = (1 << CS22);
-      break;
-  }
-  sei();
-}
-
+/*  Group of functions for interrupts*/
+void Timer::isrDefaultUnused() {} 
+void (*Timer::isrCallback)() = Timer::isrDefaultUnused;
 
 void Timer::startTimerForInterrupt(uint32_t Period) {
   cli();
   period = Period;
-  isr_milliseconds = 0;
+  isr_periods = 0;
   milliseconds = 0;
   expirations = 0;
   TIMSK_ = (1 << OCIE_A);
-  switch (TIMER) {
-    case TIMER_0:
-     TCCR_A = (1 << WGM01);
-      if (Period <= OCR_MAX / F_CPU_SH) {
-        TCCR_B = (1 << CS_0);
-        OCR_A = (Period * F_CPU_SH) - 1;
-      } else {
-        if (Period <= PRESCALER_1 * OCR_MAX / F_CPU_SH) {
-          TCCR_B = (1 << CS_1);
-          OCR_A = (Period * F_CPU_SH) / PRESCALER_1 - 1;
-        } else {
-          if (Period <= PRESCALER_2 * OCR_MAX / F_CPU_SH) {
-            TCCR_B = (1 << CS_1) | (1 << CS_0);
-            OCR_A = (Period * F_CPU_SH) / PRESCALER_2 - 1;
-          } else {
-            if (Period <= PRESCALER_3 / F_CPU_SH * OCR_MAX) {
-              TCCR_B = (1 << CS_2);
-              OCR_A = (Period * F_CPU_SH) / PRESCALER_3 - 1;
-            } else {
-              if (Period <= PRESCALER_4 / F_CPU_SH * OCR_MAX) {
-                TCCR_B = (1 << CS_2) | (1 << CS_0);
-                OCR_A = (Period * F_CPU_SH) / PRESCALER_4 - 1;
-              } else {
-                TCCR_B = (1 << CS_2) | (1 << CS_0);
-                OCR_A = OCR_MAX - 1;
-              };
-            };
-          };
-        };
-
-      };
-      break;
-    case TIMER_1:
-      TIMSK1 = (1 << OCIE1A);
-      TCCR1B = (1 << WGM12) | (1 << CS10) | (1 << CS11); //CTC, 64 div
-      OCR1A = 250;  //max period 0.26214 sec = (64)/(16 MHz) * 65535 / OCR1A = 250 -> 0.001 sec
-      break;
-    case TIMER_2:
-    TCCR_A = (1 << WGM21);
-      if (Period <= OCR_MAX / F_CPU_SH) {
-        TCCR_B = (1<<CS_0);
-        OCR_A = (Period * F_CPU_SH) - 1;
-      } else {
-        if (Period <= PRESCALER_1 * OCR_MAX / F_CPU_SH) {
-          TCCR_B = (1<<CS_1) | (0<<CS_0);
-          OCR_A = (Period * F_CPU_SH) / PRESCALER_1 - 1;
-        } else {
-          if (Period <= PRESCALER_2 * OCR_MAX / F_CPU_SH) {
-            TCCR_B = (1<<CS_2);
-            OCR_A = (Period * F_CPU_SH) / PRESCALER_2 - 1;
-          } else {
-            if (Period <= PRESCALER_3 / F_CPU_SH * OCR_MAX) {
-              TCCR_B = (1<<CS_2) | (1<<CS_1);
-              OCR_A = (Period * F_CPU_SH) / PRESCALER_3 - 1;
-            } else {
-              if (Period <= PRESCALER_4 / F_CPU_SH * OCR_MAX) {
-                TCCR_B = (1<<CS_2) | (1<<CS_1) | (1<<CS_0);
-                OCR_A = (Period * F_CPU_SH) / PRESCALER_4 - 1;
-              } else {
-                TCCR_B = (1<<CS_2) | (1<<CS_1) | (1<<CS_0);
-                OCR_A = OCR_MAX - 1;
-              };
-            };
-          };
-        };
-
-      };
-      break;
-  }
+  TCCR_A = TCCR_A_FOR_TIMER;
+  Timer::setupTimer(Period);
   sei();
 }
 
-void Timer::stopTimerCounter() {
+/*Group of functions for counters*/
+void Timer::startCounter(uint32_t Period, uint32_t Unit) {  //start counter with pediod from 1ms to 
   cli();
-  period = 0;
+  period = Period * Unit;
+  isr_periods = 0;
   milliseconds = 0;
   expirations = 0;
-  TIMSK_ = 0;
-  TCCR_A = TCCR_B = 0;
-  OCR_A = 0;
+  TIMSK_ = (1<<OCIE_A);
+  OCR_A = OCR_FOR_COUNTER;
+  TCCR_B = CS_FOR_COUNTER;
+  sei();
 }
 
 void Timer::clearCounterExp() {
@@ -132,14 +43,56 @@ void Timer::clearCounterExp() {
 
 uint32_t Timer::getCounterExp() {
   if (period != 0) {
-    if ((isr_milliseconds - milliseconds) / period >= 1) {
-      expirations = expirations + (isr_milliseconds - milliseconds) / period;
-      milliseconds = isr_milliseconds;
+    if ((isr_periods - milliseconds) / period >= 1) {
+      expirations = expirations + (isr_periods - milliseconds) / period;
+      milliseconds = isr_periods;
     }
     return expirations;
   } else return 0;
 }
 
-uint32_t Timer::getPeriods() {
-  return isr_milliseconds;
+void Timer::stopTimerCounter() {
+  Timer::clearCounterExp();
+  TCCR_B &= CS_STOP;
+  TIMSK_ = 0;
+  TCCR_A = 0;
+  OCR_A = 0;
+  period = 0;
+  milliseconds = 0;
+  expirations = 0;
 }
+
+uint32_t Timer::getPeriods() {
+  return isr_periods;
+}
+
+/*Service function for calculating timer registers*/
+void Timer::setupTimer(uint32_t Period){
+   if (Period <= OCR_MAX / F_CPU_SH) {
+    TCCR_B = CS_FOR_NO_PRESC;
+    OCR_A = (Period * F_CPU_SH) - 1;
+  } else {
+    if (Period <= PRESCALER_1 * OCR_MAX / F_CPU_SH) {
+      TCCR_B = CS_FOR_1_PRESC;
+      OCR_A = (Period * F_CPU_SH) / PRESCALER_1 - 1;
+    } else {
+      if (Period <= PRESCALER_2 * OCR_MAX / F_CPU_SH) {
+        TCCR_B = CS_FOR_2_PRESC;
+        OCR_A = (Period * F_CPU_SH) / PRESCALER_2 - 1;
+      } else {
+        if (Period <= PRESCALER_3 / F_CPU_SH * OCR_MAX) {
+          TCCR_B = CS_FOR_3_PRESC;
+          OCR_A = (Period * F_CPU_SH) / PRESCALER_3 - 1;
+        } else {
+          if (Period <= PRESCALER_4 / F_CPU_SH * OCR_MAX) {
+            TCCR_B = CS_FOR_4_PRESC;
+            OCR_A = (Period * F_CPU_SH) / PRESCALER_4 - 1;
+          } else {
+            TCCR_B = CS_FOR_4_PRESC;
+            OCR_A = OCR_MAX - 1;
+          };
+        };
+      };
+    };
+  };
+};
