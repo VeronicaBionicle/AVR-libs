@@ -1,0 +1,17 @@
+Timer	KEYWORD1
+
+setupTimer		KEYWORD2
+startTimerForInterrupt	KEYWORD2
+startCounter		KEYWORD2
+stopTimerCounter	KEYWORD2
+getCounterExp		KEYWORD2
+getPeriods		KEYWORD2
+attachTimerInterrupt	KEYWORD2
+detachTimerInterrupt	KEYWORD2
+clearCounterExp	KEYWORD2
+
+TIMER	(LITERAL2)
+MILLIS	(LITERAL2)
+SECONDS	(LITERAL2)
+MINUTES	(LITERAL2)
+HOURS	(LITERAL2)
