@@ -1,5 +1,5 @@
-#ifndef driller_h_
-#define driller_h_
+#ifndef step_motor_control_h_
+#define step_motor_control_h_
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -59,4 +59,4 @@ const uint8_t reverse_stage_halfstep[8] = {   //-A, -B, A, B
   0b00001000,  
   0b00001001
 };
-#endif /*driller_h_ */
+#endif /*dstep_motor_control_h_ */
