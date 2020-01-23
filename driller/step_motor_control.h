@@ -4,7 +4,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <inttypes.h>
-#include "timer_class.h"
+#include "timer_1_class.h"
 
 #define MAX_FULLSTEP_STAGES 3
 #define MAX_HALFSTEP_STAGES 7

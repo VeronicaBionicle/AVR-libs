@@ -1,6 +1,6 @@
 #include "step_motor_control.h"
 
-Timer stepper;
+Timer1 stepper;
 uint8_t current_stage;
 uint16_t steps;
 

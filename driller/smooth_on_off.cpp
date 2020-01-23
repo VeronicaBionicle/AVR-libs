@@ -23,6 +23,22 @@ ISR(TIMER2_COMPB_vect) {
   }
 }
 
+void On() {
+  TCCR2A = 0;
+  TCCR2B = 0;
+  TIMSK2 = 0;
+  DDRD = (1 << DDD3);
+  PORTD = (1 << PD3);
+}
+
+void Off() {
+  TCCR2A = 0;
+  TCCR2B = 0;
+  TIMSK2 = 0;
+  DDRD = (1 << DDD3);
+  PORTD = (0 << PD3);
+}
+
 void SmoothSwitch(uint8_t switching_direction) {
   if (switching_direction == ON) {
     duty = OFF;
@@ -34,7 +50,7 @@ void SmoothSwitch(uint8_t switching_direction) {
   //start pwm
   DDRD = (1 << DDD3);
   TCCR2A = (1 << COM2B1) | (1 << WGM20);
-  TCCR2B = (1 << CS21) | (1 << CS20);
+  TCCR2B = (0 << WGM22) | (0 << CS22) | (1 << CS21) | (1 << CS20);
   TIMSK2 = (1 << OCIE2B);
   OCR2B = 0x0; //255 - 100%
   sei();
