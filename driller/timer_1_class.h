@@ -11,23 +11,15 @@
 #define MINUTES 58500   //must be 60000, but my arduinos "minute" is 1 min + 1.5 sec
 #define HOURS 3510000
               
-/*Choose your timer here
-Timer0 and Timer2 have 8-bit resolution (period 1 us-16384 us)
-Timer1 is 16-bit (period 1 us-4.19 s) */
-//Timer0 is used for Delay and etc in Arduino, be careful with it
-
+/*Timer1 is 16-bit (period 1 us-4.19 s) */
 
 class Timer1 {
   private:
-    uint32_t period, milliseconds, expirations;
+    uint32_t period;
     void setupTimer(uint32_t Period);  //service function for calculating CS and OCR for timers
   public:
     void startTimerForInterrupt(uint32_t Period);  //start timer for attaching function to ISR, period`s unit measure is microseconds
-    void startCounter(uint32_t Period, uint32_t Unit);  //start counter, ISR period is 1ms, period of counting is 1 ms - 1223 hours
     void stopTimerCounter();  //stop counting and interrupts from Timer
-    void clearCounterExp(); //clear expirations of counter
-    uint32_t getCounterExp(); //get counter expired periods
-    uint32_t getPeriods();  //get epired periods of ISR
     static void (*isrCallback)();   //
     static void isrDefaultUnused(); //blank function, if function isn`t attached to ISR
     void attachTimerInterrupt(void (*isr)(), uint32_t Period) __attribute__((always_inline)) {  //attach function to ISR (function must be void without arguments!!!)

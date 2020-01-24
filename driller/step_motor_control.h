@@ -18,15 +18,16 @@
 #define STOP 0
 
 void StepperMode(uint8_t mode, uint16_t rotate_time);   //function to choose mode of work
-void ForwardFullStep();
-void ReverseFullStep();
+//void ForwardFullStep();
+//void ReverseFullStep();
 void ForwardHalfStep();
 void ReverseHalfStep();
-void Stop();
+void StepperStop();
 uint16_t MadeSteps();   //returns the number of steps 
 void MadeSteps(uint16_t new_number);    //defines new number of steps
 
 /*State tables for steps*/
+/*
 const uint8_t forward_stage_fullstep[4] = {   //-A, -B, A, B
   0b00000011,
   0b00001001,
@@ -39,6 +40,7 @@ const uint8_t reverse_stage_fullstep[4] = {   //-A, -B, A, B
   0b00001100,
   0b00001001
 };
+*/
 const uint8_t forward_stage_halfstep[8] = {   //-A, -B, A, B
   0b00000010,
   0b00000011,

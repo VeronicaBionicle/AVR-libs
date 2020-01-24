@@ -7,10 +7,9 @@
 
 #define PWM_INCREMENT 1
 #define ON 255
-#define OFF 0
 
-void SmoothSwitch(uint8_t switching_direction);
-void On();
-void Off();
+void DrillSmoothOn();
+void DrillOn();
+void DrillOff();
 
 #endif /*smooth_on_off_h_ */
