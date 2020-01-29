@@ -1,53 +1,76 @@
-#include <TimerOne.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <inttypes.h>
+#include "timer_class.h"
 
-int Button_state;
-bool Keyboard_state = false;
-int Mass[3][4] = {{9,6,3,100},{7,4,1,66},{8,5,2,0} };
-int portState[3] = {6,5,3};
-int pinState[4] = {7,11,13,14};
-byte outPortMask(byte num_of_bits){ //для настройки DDR на выход
-  byte mask = 0;
-  mask = (0xFF<<num_of_bits);
+#define COLUMNS 3 //"write" to matrix
+#define LINES 4 //"read" from matrix
+
+#define COLUMNS_PORT PORTB //"write" to matrix
+#define LINES_PORT_STATE PINC //"read" from matrix
+
+#define DEBOUNCE 15000
+
+uint8_t pressed_key;
+bool something_pressed = false;
+
+uint8_t key_matrix[LINES][COLUMNS] = {
+  {7, 8, 9},
+  {4, 5, 6},
+  {1, 2, 3},
+  {66, 0, 100}  //my keyboard does not have 66 button in matrix
+};
+
+uint8_t column_state[COLUMNS] = {
+  0b011,
+  0b101,
+  0b110
+};
+
+uint8_t line_state[LINES] = {
+  0b0111,
+  0b1011,
+  0b1101,
+  0b1110
+};
+
+Timer timer1;
+
+uint8_t PortMask(uint8_t num_of_bits) { //для настройки DDR
+  uint8_t mask = 0;
+  mask = (0xFF << num_of_bits);
   return  mask ^= 0xFF;
 };
-  
-void Timer_int(){
-  int PIN_st;
-for(auto i=0; i<3; i++)
-    { 
-       PORTB=portState[i];
-          PIN_st=PINC&0b00001111;
-       for(auto j=0; j<4; j++)
-       {
 
-          if(  PIN_st == pinState[j])
-          {
-                   // Serial.println(PIN_st);
-            Keyboard_state = true;
-             Button_state = Mass[i][j];                                 
-          }
-       }                          
-    }  
-
+void ReadMatrix() {
+  uint8_t cur_line_state;
+  for (auto cur_column = 0; cur_column < COLUMNS; cur_column++)
+  {
+    COLUMNS_PORT = column_state[cur_column];
+    cur_line_state = LINES_PORT_STATE & 0b00001111;
+    for (auto cur_line = 0; cur_line < LINES; cur_line++)
+    {
+      if (  cur_line_state == line_state[cur_line])
+      {
+        something_pressed = true;
+        pressed_key = key_matrix[cur_line][cur_column];
+      }
+    }
+  }
 };
 
 void setup() {
-  // put your setup code here, to run once:
-DDRB = 0b00001111;
-PORTB = 0b00000000;
-DDRC = 0b00000000;
-Serial.begin(9600);
-Timer1.initialize(10000);
-Timer1.attachInterrupt(Timer_int);
+  DDRB = 0b00001111;  //output port
+  COLUMNS_PORT = 0;
+  LINES_PORT_STATE = 0;   //input port
+  Serial.begin(9600);
+  timer1.attachTimerInterrupt(ReadMatrix, DEBOUNCE);  //start reading keyboard with period = Debounce
 }
 
 void loop() {
-  if (Keyboard_state){
-  Serial.println(Button_state);
+  if (something_pressed) {
+    Serial.println(pressed_key);
     delay(100);
-     Keyboard_state = false;
-     };
+    something_pressed = false;
+  };
 }
