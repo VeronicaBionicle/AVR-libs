@@ -1,14 +1,20 @@
 #include "timer_1_class.h"  //timer for step motor control
-#include "timer_0_class.h"  //timer for reading buttons 
+#include "timer_0_class.h"  //timer for reading buttons
 #include "step_motor_control.h"
 #include "smooth_on_off.h"
 
-#define DOWN 0b00001100  //PC1
-#define UP 0b00001010 //PC2
-#define DRILL 0b00000110  //PC3
-#define BUTTON_MASK 0b00001110
+#define LIMIT_SWITCH 0b1000000
+#define DOWN 0b00011111
+#define UP 0b00101111
+#define DRILL 0b00110111
+#define PCB_DRILL 0b00111011
+#define PCB_POINT 0b00111101
+#define GO_HOME 0b00111110
+#define BUTTON_MASK 0b00111111
 #define READ_BUTTONS_TIME 15000 //15 ms
 
+#define TURNS_TO_POINT 2
+#define SPEED_FACTOR 1
 uint8_t button_state;
 Timer0 button_timer;
 
@@ -18,6 +24,7 @@ void ReadButtons() {  //attach to Timer0 to read buttons state
 
 /*Drilling stages*/
 uint8_t drilling_stage;
+#define POINTING 3
 #define NO_DRILLING 0 //drilling motor is stopped
 #define DRILLING_DOWN 1 //motor is started and moves down
 #define DRILLING_UP 2  //motor is started and moves up
@@ -36,18 +43,20 @@ ISR (INT0_vect) 	//interrupt for limit switch
 
 void GoHome() { //Go up, turn off drill motor, stop, when limit switch is
   DrillOff();
-  EICRA = (0 << ISC11) | (0 << ISC10) | (1 << ISC01) | (1 << ISC00); // rising on PD2 (INT0) interrupt
-  EIMSK = (0 << INT1) | (1 << INT0);
-  EIFR = (0 << INTF1) | (1 << INTF0);
+  EICRA = (1 << ISC01) | (0 << ISC00); // falling edge on PD2 (INT0) interrupt
+  EIMSK = (1 << INT0);
+  EIFR = (1 << INTF0);
   StepperMode(REVERSE_HALFSTEP, ROTATE_TIME);
   while (EIMSK) {}; //wait until it goes to home position
   MadeSteps(0);
 };
 
 void setup() {
-  DDRD = (1 << DDD3); //PD3 (OC2B) - Driller motor
-  DDRB = (1 << PB0) | (1 << PB1) | (1 << PB2) | (1 << PB3); //PB0 (B), PB1 (A), PB2 (-B), PB3 (-A), PB4 - Reverse button
-  GoHome(); //goto home position 
+  DDRC = 0;
+  DDRD = (0<<PD2) | (1 << PD3); //PD3 (OC2B) - Driller motor
+  PORTD |= (1<<PD2);
+  DDRB = (1 << PB0) | (1 << PB1) | (1 << PB2) | (1 << PB3); //PB0 (B), PB1 (A), PB2 (-B), PB3 (-A)
+  //GoHome(); //goto home position 
   button_timer.attachTimerInterrupt(ReadButtons, READ_BUTTONS_TIME);     /*start reading buttons*/
 }
 
@@ -56,15 +65,27 @@ void loop() {
     //when DOWN or UP are pressed, drill moves
     case DOWN:   //move driller down
       DrillOff();
-      drilling_stage = 0;
-      StepperMode(FORWARD_HALFSTEP, 2 * ROTATE_TIME);
+      drilling_stage = NO_DRILLING;
+      StepperMode(FORWARD_HALFSTEP, SPEED_FACTOR * ROTATE_TIME);
       break;
     case UP:  //move driller up
       DrillOff();
-      drilling_stage = 0;
-      StepperMode(REVERSE_HALFSTEP, 2 * ROTATE_TIME);
+      drilling_stage = NO_DRILLING;
+      StepperMode(REVERSE_HALFSTEP, SPEED_FACTOR * ROTATE_TIME);
       break;
-    case DRILL: //turn on drill, make some turns up and down
+    case GO_HOME: //go home
+      GoHome();
+      break;
+    case DRILL: //go home
+      DrillSmoothOn();
+      break;
+   case PCB_POINT: //make some turns down
+      //GoHome();
+      drilling_stage = POINTING;
+      StepperMode(FORWARD_HALFSTEP, 2 * ROTATE_TIME);
+      do_steps = HALF_STEPS_PER_ROTATION * TURNS_TO_POINT; //make turns down
+      break;
+    case PCB_DRILL: //turn on drill, make some turns up and down
       DrillSmoothOn();
       drilling_stage = DRILLING_DOWN; //first stage
       StepperMode(FORWARD_HALFSTEP, 2 * ROTATE_TIME);
@@ -92,6 +113,10 @@ void loop() {
         MadeSteps(0);
         drilling_stage = NO_DRILLING; //driller stops
         break;
+      case POINTING: //( turns up are made)
+        MadeSteps(0);
+        drilling_stage = NO_DRILLING; //driller stops
+        break;      
       default: break;
     }
   }
