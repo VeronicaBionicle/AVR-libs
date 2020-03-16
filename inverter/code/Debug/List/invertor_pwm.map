@@ -1,0 +1,22 @@
+RAM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+
+EEPROM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                                          Register  Size
+------------------------------------------------------------------------------------------------
+polarity                                                                          R4           1
+B_polarity                                                                        R3           1
+step                                                                              R6           1
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+sinus_period                                                                      0x000C4     14
+timer1_compa_isr                                                                  0x000D2     40
+setup                                                                             0x000FA     49
+main                                                                              0x0012B      3

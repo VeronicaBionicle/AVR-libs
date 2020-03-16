@@ -1,0 +1,265 @@
+;#include <mega328p.h>
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x01
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0x0E
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_adc_noise_red=0x02
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powerdown=0x04
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_powersave=0x06
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_standby=0x0C
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_ext_standby=0x0E
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=smcr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;
+;#define low(x)   ((x) & 0xFF)
+;#define high(x)   (((x)>>8) & 0xFF)
+;
+;#define FGEN 7680000UL
+;#define TIMER0_A_PWM (1<<COM0A1) | (0<<COM0A0) | (0<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
+;#define TIMER0_B_PWM (0<<COM0A1) | (0<<COM0A0) | (1<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
+;#define N 180 //points
+;
+;unsigned char polarity = 1;
+;unsigned char B_polarity = 0;
+;unsigned char step = 0;
+;
+;
+;void sinus_period(unsigned int frequency, unsigned char points) {
+; 0000 0010 void sinus_period(unsigned int frequency, unsigned char points) {
+
+	.CSEG
+;PCODE: $0000000D VOL: 0
+;PCODE: $0000000E VOL: 0
+; 0000 0011     OCR1AH = high(FGEN/2/points/frequency);
+;PCODE: $0000000F VOL: 0
+;	frequency -> Y+1
+;	points -> Y+0
+;PCODE: $00000010 VOL: 0
+;PCODE: $00000011 VOL: 0
+;PCODE: $00000012 VOL: 0
+;PCODE: $00000013 VOL: 0
+;PCODE: $00000014 VOL: 0
+;PCODE: $00000015 VOL: 0
+;PCODE: $00000016 VOL: 0
+;PCODE: $00000017 VOL: 0
+;PCODE: $00000018 VOL: 0
+;PCODE: $00000019 VOL: 0
+;PCODE: $0000001A VOL: 0
+;PCODE: $0000001B VOL: 0
+;PCODE: $0000001C VOL: 0
+;PCODE: $0000001D VOL: 0
+; 0000 0012     OCR1AL = low(FGEN/2/points/frequency);
+;PCODE: $0000001E VOL: 0
+;PCODE: $0000001F VOL: 0
+;PCODE: $00000020 VOL: 0
+;PCODE: $00000021 VOL: 0
+;PCODE: $00000022 VOL: 0
+;PCODE: $00000023 VOL: 0
+;PCODE: $00000024 VOL: 0
+;PCODE: $00000025 VOL: 0
+;PCODE: $00000026 VOL: 0
+;PCODE: $00000027 VOL: 0
+;PCODE: $00000028 VOL: 0
+; 0000 0013 }
+;PCODE: $00000029 VOL: 0
+;PCODE: $0000002A VOL: 0
+;PCODE: $0000002B VOL: 0
+;
+;const unsigned char sinus[N+1] = {0, 4, 9, 13, 18, 22, 27, 31, 35, 40, 44, 49, 53, 57, 62, 66,
+;                                    70, 75, 79, 83, 87, 91, 96, 100, 104, 108, 112, 116, 120, 124, 127,
+;                                    131, 135, 139, 143, 146, 150, 153, 157, 160, 164, 167, 171, 174, 177,
+;                                    180, 183, 186, 190, 192, 195, 198, 201, 204, 206, 209, 211, 214, 216,
+;                                    219, 221, 223, 225, 227, 229, 231, 233, 235, 236, 238, 240, 241, 243,
+;                                    244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 253, 254, 254, 254,
+;                                    255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 253, 253, 252, 251,
+;                                    250, 249, 248, 247, 246, 245, 244, 243, 241, 240, 238, 236, 235, 233,
+;                                    231, 229, 227, 225, 223, 221, 219, 216, 214, 211, 209, 206, 204, 201,
+;                                    198, 195, 192, 190, 186, 183, 180, 177, 174, 171, 167, 164, 160, 157,
+;                                    153, 150, 146, 143, 139, 135, 131, 127, 124, 120, 116, 112, 108, 104,
+;                                    100, 96, 91, 87, 83, 79, 75, 70, 66, 62, 57, 53, 49, 44, 40, 35,
+;                                    31, 27, 22, 18, 13, 9, 4, 0};
+;
+;
+;interrupt [TIM1_COMPA] void timer1_compa_isr(void)
+; 0000 0025 {
+;PCODE: $0000002C VOL: 0
+;PCODE: $0000002D VOL: 0
+; 0000 0026    if (step > N) {polarity ^= 1; step = 0;};
+;PCODE: $0000002E VOL: 0
+;PCODE: $0000002F VOL: 0
+;PCODE: $00000030 VOL: 0
+;PCODE: $00000031 VOL: 0
+;PCODE: $00000032 VOL: 0
+;PCODE: $00000033 VOL: 0
+;PCODE: $00000034 VOL: 0
+;PCODE: $00000035 VOL: 0
+; 0000 0027    if (step == 2 || step == N-2) {B_polarity ^= 1;};
+;PCODE: $00000036 VOL: 0
+;PCODE: $00000037 VOL: 0
+;PCODE: $00000038 VOL: 0
+;PCODE: $00000039 VOL: 0
+;PCODE: $0000003A VOL: 0
+;PCODE: $0000003B VOL: 0
+;PCODE: $0000003C VOL: 0
+;PCODE: $0000003D VOL: 0
+;PCODE: $0000003E VOL: 0
+;PCODE: $0000003F VOL: 0
+;PCODE: $00000040 VOL: 0
+;PCODE: $00000041 VOL: 0
+; 0000 0028    step++;
+;PCODE: $00000042 VOL: 0
+; 0000 0029    if (polarity == 1) {
+;PCODE: $00000043 VOL: 0
+;PCODE: $00000044 VOL: 0
+;PCODE: $00000045 VOL: 0
+; 0000 002A     TCCR0A = TIMER0_A_PWM;
+;PCODE: $00000046 VOL: 0
+;PCODE: $00000047 VOL: 0
+; 0000 002B     OCR0A = sinus[step];
+;PCODE: $00000048 VOL: 0
+;PCODE: $00000049 VOL: 0
+;PCODE: $0000004A VOL: 0
+;PCODE: $0000004B VOL: 0
+;PCODE: $0000004C VOL: 0
+; 0000 002C     PORTC = (B_polarity << PORTC0);
+;PCODE: $0000004D VOL: 0
+;PCODE: $0000004E VOL: 0
+; 0000 002D    } else {
+;PCODE: $0000004F VOL: 0
+;PCODE: $00000050 VOL: 0
+; 0000 002E     TCCR0A=TIMER0_B_PWM;
+;PCODE: $00000051 VOL: 0
+;PCODE: $00000052 VOL: 0
+; 0000 002F     OCR0B = sinus[step];
+;PCODE: $00000053 VOL: 0
+;PCODE: $00000054 VOL: 0
+;PCODE: $00000055 VOL: 0
+;PCODE: $00000056 VOL: 0
+;PCODE: $00000057 VOL: 0
+; 0000 0030     PORTC = (B_polarity << PORTC1);
+;PCODE: $00000058 VOL: 0
+;PCODE: $00000059 VOL: 0
+;PCODE: $0000005A VOL: 0
+; 0000 0031    }
+;PCODE: $0000005B VOL: 0
+; 0000 0032 }
+;PCODE: $0000005C VOL: 0
+;PCODE: $0000005D VOL: 0
+;PCODE: $0000005E VOL: 0
+;
+;void setup() {
+; 0000 0034 void setup() {
+;PCODE: $0000005F VOL: 0
+;PCODE: $00000060 VOL: 0
+; 0000 0035 // Crystal Oscillator division factor: 1
+; 0000 0036 #pragma optsize-
+; 0000 0037 CLKPR=(1<<CLKPCE);
+;PCODE: $00000061 VOL: 0
+;PCODE: $00000062 VOL: 0
+; 0000 0038 CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
+;PCODE: $00000063 VOL: 0
+;PCODE: $00000064 VOL: 0
+; 0000 0039 #ifdef _OPTIMIZE_SIZE_
+; 0000 003A #pragma optsize+
+; 0000 003B #endif
+; 0000 003C 
+; 0000 003D // Ports init
+; 0000 003E DDRC=(1<<DDC1) | (1<<DDC0);
+;PCODE: $00000065 VOL: 0
+;PCODE: $00000066 VOL: 0
+; 0000 003F DDRD=(1<<DDD6) | (1<<DDD5);
+;PCODE: $00000067 VOL: 0
+;PCODE: $00000068 VOL: 0
+; 0000 0040 
+; 0000 0041 // Timer/Counter 0 initialization
+; 0000 0042 TCCR0A=TIMER0_A_PWM;
+;PCODE: $00000069 VOL: 0
+;PCODE: $0000006A VOL: 0
+; 0000 0043 TCCR0B=(0<<WGM02) | (0<<CS02) | (0<<CS01) | (1<<CS00);
+;PCODE: $0000006B VOL: 0
+;PCODE: $0000006C VOL: 0
+; 0000 0044 TCNT0=0;
+;PCODE: $0000006D VOL: 0
+;PCODE: $0000006E VOL: 0
+; 0000 0045 OCR0A=0;
+;PCODE: $0000006F VOL: 0
+;PCODE: $00000070 VOL: 0
+; 0000 0046 OCR0B=0;
+;PCODE: $00000071 VOL: 0
+;PCODE: $00000072 VOL: 0
+; 0000 0047 
+; 0000 0048 // Timer/Counter 1 initialization
+; 0000 0049 TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+;PCODE: $00000073 VOL: 0
+;PCODE: $00000074 VOL: 0
+; 0000 004A TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (1<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10);
+;PCODE: $00000075 VOL: 0
+;PCODE: $00000076 VOL: 0
+; 0000 004B TCNT1H=0;
+;PCODE: $00000077 VOL: 0
+;PCODE: $00000078 VOL: 0
+; 0000 004C TCNT1L=0;
+;PCODE: $00000079 VOL: 0
+;PCODE: $0000007A VOL: 0
+; 0000 004D ICR1H=0;
+;PCODE: $0000007B VOL: 0
+;PCODE: $0000007C VOL: 0
+; 0000 004E ICR1L=0;
+;PCODE: $0000007D VOL: 0
+;PCODE: $0000007E VOL: 0
+; 0000 004F OCR1BH=0;
+;PCODE: $0000007F VOL: 0
+;PCODE: $00000080 VOL: 0
+; 0000 0050 OCR1BL=0;
+;PCODE: $00000081 VOL: 0
+;PCODE: $00000082 VOL: 0
+; 0000 0051 // Timer/Counter 1 Interrupt(s) initialization
+; 0000 0052 TIMSK1=(0<<ICIE1) | (0<<OCIE1B) | (1<<OCIE1A) | (0<<TOIE1);
+;PCODE: $00000083 VOL: 0
+;PCODE: $00000084 VOL: 0
+; 0000 0053 ACSR=(1<<ACD);
+;PCODE: $00000085 VOL: 0
+;PCODE: $00000086 VOL: 0
+; 0000 0054 
+; 0000 0055 sinus_period(50, N);
+;PCODE: $00000087 VOL: 0
+;PCODE: $00000088 VOL: 0
+;PCODE: $00000089 VOL: 0
+;PCODE: $0000008A VOL: 0
+; 0000 0056 
+; 0000 0057 #asm("sei")
+;PCODE: $0000008B VOL: 0
+	sei
+;PCODE: $0000008C VOL: 0
+; 0000 0058 }
+;PCODE: $0000008D VOL: 0
+;PCODE: $0000008E VOL: 0
+;
+;void main(void)
+; 0000 005B {
+;PCODE: $0000008F VOL: 0
+; 0000 005C  setup();
+;PCODE: $00000090 VOL: 0
+; 0000 005D while (1)
+;PCODE: $00000091 VOL: 0
+; 0000 005E       {
+; 0000 005F       }
+;PCODE: $00000092 VOL: 0
+;PCODE: $00000093 VOL: 0
+; 0000 0060 }
+;PCODE: $00000094 VOL: 0
+;PCODE: $00000095 VOL: 0
+;PCODE: $00000096 VOL: 0

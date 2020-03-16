@@ -1,0 +1,4 @@
+main DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"invertor_pwm.c" LINE:90
+setup DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"invertor_pwm.c" LINE:52
+sinus_period DSTACK_USAGE:3 DSTACK_LEVEL:3 FILE:"invertor_pwm.c" LINE:16
+timer1_compa_isr DSTACK_USAGE:4 DSTACK_LEVEL:7 FILE:"invertor_pwm.c" LINE:36
