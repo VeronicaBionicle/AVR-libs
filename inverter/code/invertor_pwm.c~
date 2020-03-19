@@ -1,11 +1,12 @@
 #include <mega328p.h>
+#include <delay.h>
 typedef unsigned char uint8_t;
 typedef unsigned int uint16_t;
 #define low(x)   ((x) & 0xFF)
 #define high(x)   (((x)>>8) & 0xFF)
 
-//#define FGEN 7680000UL
-#define FGEN 7946000UL
+//#define FGEN 7946000UL
+#define FGEN 11900000UL
 #define TIMER0_PWM (1<<COM0A1) | (0<<COM0A0) | (1<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
 #define TIMER2_PWM (1<<COM2A1) | (0<<COM2A0) | (0<<COM2B1) | (0<<COM2B0) | (0<<WGM21) | (1<<WGM20)
 #define PWM_DIV (0<<WGM02) | (0<<CS02) | (0<<CS01) | (1<<CS00)
@@ -20,23 +21,25 @@ typedef unsigned int uint16_t;
 #define PHASE_A_PIN PORTD6
 #define PHASE_B_PIN PORTD5
 #define PHASE_C_PIN PORTB3
-#define PHASE_NOT_A_PIN PORTC0
-#define PHASE_NOT_B_PIN PORTC1
-#define PHASE_NOT_C_PIN PORTC2
+#define PHASE_NOT_A_PIN PORTB5
+#define PHASE_NOT_B_PIN PORTB6
+#define PHASE_NOT_C_PIN PORTB7
+
+unsigned char adc_data[2];
+unsigned char ADC_input=0;
+#define ADC_VREF_TYPE (0<<REFS1) | (1<<REFS0) | (1<<ADLAR)     // Voltage Reference: AVCC pin
 
 uint8_t polarity[3];
 uint8_t polarity_not[3];
 uint8_t step[3];
-
-//uint8_t polarity_not = 0;
 
 uint8_t sinus[N+1];
 
 uint8_t phase_b_step = 0;
 uint8_t phase_c_step = 0;
 
-uint8_t amplitude = 100;
-uint16_t frequency = 50;
+uint8_t amplitude = 255;
+uint16_t frequency = 100;
 
 const float sinus_table[N+1] ={
     0.0, 0.0175, 0.035, 0.052, 0.0698, 0.087, 0.105, 0.122, 0.139, 0.156, 0.174, 0.191, 0.208,
@@ -68,14 +71,14 @@ void stop_timers() {
 
 void DC_mode() {
     stop_timers();
-    PORTC=(1<<PORTC1);
-    PORTD=(1<<PORTD5);
+   // OPEN SOMETHING FOR DC ON LOAD
 }
 
 void sinus_period(uint16_t frequency) {
     if (frequency != 0) {
-        OCR1AH = high(FGEN/2/N/frequency);
-        OCR1AL = low(FGEN/2/N/frequency);
+        uint16_t period = FGEN/2/N/frequency;
+        OCR1AH = high(period);
+        OCR1AL = low(period);
     } else {
         DC_mode();
     }
@@ -84,7 +87,7 @@ void sinus_period(uint16_t frequency) {
 void sinus_amplitude(uint8_t amplitude) {
     uint8_t i = 0;
     for (i = 0; i < N; i++) {
-     sinus[i] = 2.55*amplitude*sinus_table[i];
+     sinus[i] = amplitude*sinus_table[i];
     }
 }
 
@@ -97,7 +100,7 @@ void start_PWM(uint16_t frequency, uint8_t amplitude) {
     polarity_not[C] = 0;
     step[A] = 0;
     step[B] = 0;
-    step[B] = 0;
+    step[C] = 0;
     // Timer/Counter 0 initialization
     TCCR0A=TIMER0_PWM;
     TCCR0B=PWM_DIV;
@@ -111,7 +114,7 @@ void start_PWM(uint16_t frequency, uint8_t amplitude) {
     TCCR1B= TIMER1_DIV;
     TCNT1H=0; TCNT1L=0; ICR1H=0; ICR1L=0;
     // Timer/Counter 1 Interrupt(s) initialization
-    TIMSK1=(1<<OCIE1A);
+    TIMSK1=(1<<OCIE1A)|(1 << OCIE1B);
     #asm("sei")
     sinus_period(frequency);
     sinus_amplitude(amplitude);
@@ -139,30 +142,46 @@ interrupt [TIM1_COMPA] void timer1_compa_isr(void)
        OCR0B = polarity[C]*sinus[step[C]];
    }
    /* Inverted phases */
-   PORTC =((polarity[A]*polarity_not[A]) << PHASE_NOT_A_PIN) | ((polarity[B]*polarity_not[B]) << PHASE_NOT_B_PIN) | ((polarity[C]*polarity_not[C]) << PHASE_NOT_C_PIN);
+   PORTB =((!polarity[A]*polarity_not[A]) << PHASE_NOT_A_PIN) | ((!polarity[B]*polarity_not[B]) << PHASE_NOT_B_PIN) | ((!polarity[C]*polarity_not[C]) << PHASE_NOT_C_PIN);
 }
 
+interrupt [ADC_INT] void adc_isr(void)
+{
+adc_data[ADC_input]=ADCH;
+if (ADC_input == 1) {ADC_input=0;} else {ADC_input=1;}
+ADMUX= ADC_input + ADC_VREF_TYPE;
+ADCSRA|=(1<<ADSC);
+}
 
-void setup() {
-// Crystal Oscillator division factor: 1
-#pragma optsize-
-CLKPR=(1<<CLKPCE);
-CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
-#ifdef _OPTIMIZE_SIZE_
-#pragma optsize+
-#endif
-ACSR=(1<<ACD);
-// Ports init
-DDRC=(1<<PHASE_NOT_A_PIN) |(1<<PHASE_NOT_B_PIN) | (1<<PHASE_NOT_C_PIN);
-DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
-DDRB=(1<<PHASE_C_PIN);
-start_PWM(frequency, amplitude);
+void invertor_setup() {
+    // Crystal Oscillator division factor: 1
+    #pragma optsize-
+    CLKPR=(1<<CLKPCE);
+    CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
+    #ifdef _OPTIMIZE_SIZE_
+    #pragma optsize+
+    #endif
+    //ADC init
+    ACSR=(1<<ACD);
+    DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);
+    ADMUX= (0<<REFS1) | (1<<REFS0) | (1<<ADLAR);
+    ADCSRA=(1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (0<<ADIF) | (1<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
+    ADCSRB=(1<<ADTS2) | (0<<ADTS1) | (1<<ADTS0);
+    OCR1BH=0xFF;
+    OCR1BL=0xFF;
+    // Ports init
+    DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
+    DDRB=(1<<PHASE_C_PIN) | (1<<PHASE_NOT_A_PIN) |(1<<PHASE_NOT_B_PIN) | (1<<PHASE_NOT_C_PIN);
+
+    start_PWM(frequency, amplitude);
 }
 
 void main(void)
 {
- setup();
+invertor_setup();
 while (1)
       {
+      if (amplitude != adc_data[0]) {amplitude = adc_data[0]; sinus_amplitude(amplitude);}
+      if (frequency != 100*adc_data[1]/255) {frequency = 100*adc_data[1]/255; sinus_period(frequency);}
       }
 }

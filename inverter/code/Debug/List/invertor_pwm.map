@@ -1,10 +1,11 @@
 RAM Allocation [bytes]
 Variable                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-polarity                                                                          0x0300       3
-polarity_not                                                                      0x0303       3
-step                                                                              0x0306       3
-sinus                                                                             0x0309     182
+adc_data                                                                          0x0300       2
+polarity                                                                          0x0302       3
+polarity_not                                                                      0x0305       3
+step                                                                              0x0308       3
+sinus                                                                             0x030B     182
 
 EEPROM Allocation [bytes]
 Variable                                                                          Address   Size
@@ -13,19 +14,21 @@ Variable                                                                        
 Register Allocation
 Variable                                                                          Register  Size
 ------------------------------------------------------------------------------------------------
-phase_b_step                                                                      R4           1
-phase_c_step                                                                      R3           1
-amplitude                                                                         R6           1
+ADC_input                                                                         R4           1
+phase_b_step                                                                      R3           1
+phase_c_step                                                                      R6           1
+amplitude                                                                         R5           1
 frequency                                                                         R7,R8        2
 
 FLASH Allocation [words]
 Function                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
 stop_timers                                                                       0x001D6     25
-DC_mode                                                                           0x001EF      6
-sinus_period                                                                      0x001F5     17
-sinus_amplitude                                                                   0x00206     54
-start_PWM                                                                         0x0023C     63
-timer1_compa_isr                                                                  0x0027B    158
-invertor_setup                                                                    0x00319     19
-main                                                                              0x0032C      3
+DC_mode                                                                           0x001EF      2
+sinus_period                                                                      0x001F1     25
+sinus_amplitude                                                                   0x0020A     41
+start_PWM                                                                         0x00233     63
+timer1_compa_isr                                                                  0x00272    176
+adc_isr                                                                           0x00322     34
+invertor_setup                                                                    0x00344     34
+main                                                                              0x00366     21
