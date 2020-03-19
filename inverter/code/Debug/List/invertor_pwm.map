@@ -1,7 +1,10 @@
 RAM Allocation [bytes]
 Variable                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-sinus                                                                             0x0300     182
+polarity                                                                          0x0300       3
+polarity_not                                                                      0x0303       3
+step                                                                              0x0306       3
+sinus                                                                             0x0309     182
 
 EEPROM Allocation [bytes]
 Variable                                                                          Address   Size
@@ -10,18 +13,19 @@ Variable                                                                        
 Register Allocation
 Variable                                                                          Register  Size
 ------------------------------------------------------------------------------------------------
-polarity                                                                          R4           1
-B_polarity                                                                        R3           1
-step                                                                              R6           1
+phase_b_step                                                                      R4           1
+phase_c_step                                                                      R3           1
+amplitude                                                                         R6           1
+frequency                                                                         R7,R8        2
 
 FLASH Allocation [words]
 Function                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-stop_timers                                                                       0x001D5      9
-DC_mode                                                                           0x001DE      6
-sinus_period                                                                      0x001E4     17
-sinus_amplitude                                                                   0x001F5     54
-start_PWM                                                                         0x0022B     32
-timer1_compa_isr                                                                  0x0024B     38
-setup                                                                             0x00271     21
-main                                                                              0x00286      3
+stop_timers                                                                       0x001D6     25
+DC_mode                                                                           0x001EF      6
+sinus_period                                                                      0x001F5     17
+sinus_amplitude                                                                   0x00206     54
+start_PWM                                                                         0x0023C     63
+timer1_compa_isr                                                                  0x0027B    158
+invertor_setup                                                                    0x00319     19
+main                                                                              0x0032C      3

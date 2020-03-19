@@ -1087,9 +1087,11 @@ __DELAY_USW_LOOP:
 	.ENDM
 
 ;NAME DEFINITIONS FOR GLOBAL VARIABLES ALLOCATED TO REGISTERS
-	.DEF _polarity=R4
-	.DEF _B_polarity=R3
-	.DEF _step=R6
+	.DEF _phase_b_step=R4
+	.DEF _phase_c_step=R3
+	.DEF _amplitude=R6
+	.DEF _frequency=R7
+	.DEF _frequency_msb=R8
 
 ;GPIOR0 INITIALIZATION VALUE
 	.EQU __GPIOR0_INIT=0x00
@@ -1223,11 +1225,12 @@ _sinus_table:
 
 ;GLOBAL REGISTER VARIABLES INITIALIZATION
 __REG_VARS:
-	.DB  0x0,0x1,0x0,0x0
+	.DB  0x0,0x0,0x0,0x64
+	.DB  0x32,0x0
 
 
 __GLOBAL_INI_TBL:
-	.DW  0x04
+	.DW  0x06
 	.DW  0x03
 	.DW  __REG_VARS*2
 
@@ -1324,99 +1327,116 @@ __GLOBAL_INI_END:
 	.EQU __sm_ext_standby=0x0E
 	.SET power_ctrl_reg=smcr
 	#endif
-;
+;typedef unsigned char uint8_t;
+;typedef unsigned int uint16_t;
 ;#define low(x)   ((x) & 0xFF)
 ;#define high(x)   (((x)>>8) & 0xFF)
 ;
 ;//#define FGEN 7680000UL
 ;#define FGEN 7946000UL
-;#define TIMER0_A_PWM (1<<COM0A1) | (0<<COM0A0) | (0<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
-;#define TIMER0_B_PWM (0<<COM0A1) | (0<<COM0A0) | (1<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
+;#define TIMER0_PWM (1<<COM0A1) | (0<<COM0A0) | (1<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
+;#define TIMER2_PWM (1<<COM2A1) | (0<<COM2A0) | (0<<COM2B1) | (0<<COM2B0) | (0<<WGM21) | (1<<WGM20)
+;#define PWM_DIV (0<<WGM02) | (0<<CS02) | (0<<CS01) | (1<<CS00)
+;#define TIMER1_DIV (0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (1<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10)
 ;#define N 181 //points
-;#define DEAD_TIME 2
+;#define DEAD_TIME 0
+;#define PHASE_B_DELAY N/3
+;#define PHASE_C_DELAY 2*N/3
+;#define A 0
+;#define B 1
+;#define C 2
+;#define PHASE_A_PIN PORTD6
+;#define PHASE_B_PIN PORTD5
+;#define PHASE_C_PIN PORTB3
+;#define PHASE_NOT_A_PIN PORTC0
+;#define PHASE_NOT_B_PIN PORTC1
+;#define PHASE_NOT_C_PIN PORTC2
 ;
-;unsigned char polarity = 1;
-;unsigned char B_polarity = 0;
-;unsigned char step = 0;
+;uint8_t polarity[3];
+;uint8_t polarity_not[3];
+;uint8_t step[3];
 ;
-;unsigned char sinus[N+1];
+;//uint8_t polarity_not = 0;
+;
+;uint8_t sinus[N+1];
+;
+;uint8_t phase_b_step = 0;
+;uint8_t phase_c_step = 0;
+;
+;uint8_t amplitude = 100;
+;uint16_t frequency = 50;
 ;
 ;const float sinus_table[N+1] ={
-;0.0, 0.0175, 0.035, 0.052, 0.0698, 0.087, 0.105,
-;0.122, 0.139, 0.156, 0.174, 0.191, 0.208,
-;0.225, 0.242, 0.259, 0.276, 0.292, 0.309,
-;0.326, 0.342, 0.358, 0.375, 0.391, 0.407,
-;0.423, 0.438, 0.454, 0.469, 0.485, 0.5,
-;0.515, 0.53, 0.545, 0.559, 0.574, 0.588,
-;0.602, 0.616, 0.629, 0.643, 0.656, 0.669,
-;0.682, 0.695, 0.707, 0.719, 0.731, 0.743,
-;0.755, 0.766, 0.777, 0.788, 0.799, 0.809,
-;0.819, 0.829, 0.839, 0.848, 0.857, 0.866,
-;0.875, 0.883, 0.891, 0.899, 0.906, 0.914,
-;0.921, 0.927, 0.934, 0.94, 0.946, 0.951,
-;0.956, 0.961, 0.966, 0.97, 0.974, 0.978,
-;0.982, 0.985, 0.988, 0.99, 0.993, 0.995,
-;0.996, 0.998, 0.999, 0.999, 1.0,  1.0,
-;1.0, 0.999, 0.999, 0.998, 0.996,
-;0.995, 0.993, 0.99, 0.988, 0.985, 0.982,
-;0.978, 0.974, 0.97, 0.966, 0.961, 0.956,
-;0.951, 0.946, 0.94, 0.934, 0.927, 0.921,
-;0.914, 0.906, 0.899, 0.891, 0.883, 0.875,
-;0.866, 0.857, 0.848, 0.839, 0.829, 0.819,
-;0.809, 0.799, 0.788, 0.777, 0.766, 0.755,
-;0.743, 0.731, 0.719, 0.707, 0.695, 0.682,
-;0.669, 0.656, 0.643, 0.629, 0.616, 0.602,
-;0.588, 0.574, 0.559, 0.545, 0.53, 0.515,
-;0.5, 0.485, 0.469, 0.454, 0.438, 0.423,
-;0.407, 0.391, 0.375, 0.358, 0.342, 0.326,
-;0.309, 0.292, 0.276, 0.259, 0.242, 0.225,
-;0.208, 0.191, 0.174, 0.156, 0.139, 0.122,
-;0.105, 0.087, 0.0698, 0.052, 0.035, 0.0175, 0.0};
+;    0.0, 0.0175, 0.035, 0.052, 0.0698, 0.087, 0.105, 0.122, 0.139, 0.156, 0.174, 0.191, 0.208,
+;    0.225, 0.242, 0.259, 0.276, 0.292, 0.309, 0.326, 0.342, 0.358, 0.375, 0.391, 0.407,
+;    0.423, 0.438, 0.454, 0.469, 0.485, 0.5, 0.515, 0.53, 0.545, 0.559, 0.574, 0.588,
+;    0.602, 0.616, 0.629, 0.643, 0.656, 0.669, 0.682, 0.695, 0.707, 0.719, 0.731, 0.743,
+;    0.755, 0.766, 0.777, 0.788, 0.799, 0.809, 0.819, 0.829, 0.839, 0.848, 0.857, 0.866,
+;    0.875, 0.883, 0.891, 0.899, 0.906, 0.914, 0.921, 0.927, 0.934, 0.94, 0.946, 0.951,
+;    0.956, 0.961, 0.966, 0.97, 0.974, 0.978, 0.982, 0.985, 0.988, 0.99, 0.993, 0.995,
+;    0.996, 0.998, 0.999, 0.999, 1.0, 1.0, 1.0, 0.999, 0.999, 0.998, 0.996,
+;    0.995, 0.993, 0.99, 0.988, 0.985, 0.982, 0.978, 0.974, 0.97, 0.966, 0.961, 0.956,
+;    0.951, 0.946, 0.94, 0.934, 0.927, 0.921, 0.914, 0.906, 0.899, 0.891, 0.883, 0.875,
+;    0.866, 0.857, 0.848, 0.839, 0.829, 0.819, 0.809, 0.799, 0.788, 0.777, 0.766, 0.755,
+;    0.743, 0.731, 0.719, 0.707, 0.695, 0.682, 0.669, 0.656, 0.643, 0.629, 0.616, 0.602,
+;    0.588, 0.574, 0.559, 0.545, 0.53, 0.515, 0.5, 0.485, 0.469, 0.454, 0.438, 0.423,
+;    0.407, 0.391, 0.375, 0.358, 0.342, 0.326, 0.309, 0.292, 0.276, 0.259, 0.242, 0.225,
+;    0.208, 0.191, 0.174, 0.156, 0.139, 0.122, 0.105, 0.087, 0.0698, 0.052, 0.035, 0.0175, 0.0};
 ;
 ;void stop_timers() {
-; 0000 0033 void stop_timers() {
+; 0000 003A void stop_timers() {
 
 	.CSEG
 _stop_timers:
 ; .FSTART _stop_timers
-; 0000 0034 TCCR0A=0;
+; 0000 003B     TCCR0A=0; TCCR0B=0;
 	LDI  R30,LOW(0)
 	OUT  0x24,R30
-; 0000 0035 TCCR0B=0;
 	OUT  0x25,R30
-; 0000 0036 TCNT0=0;
-	OUT  0x26,R30
-; 0000 0037 OCR0A=0;
+; 0000 003C     OCR0A=0; OCR0B=0;
 	OUT  0x27,R30
-; 0000 0038 OCR0B=0;
 	OUT  0x28,R30
-; 0000 0039 TIMSK1=0;
+; 0000 003D     TCCR1A=0; TCCR1B=0;
+	STS  128,R30
+	STS  129,R30
+; 0000 003E     OCR1AH=0; OCR1AL=0;
+	STS  137,R30
+	STS  136,R30
+; 0000 003F     TIMSK1=0;
 	STS  111,R30
-; 0000 003A }
+; 0000 0040     TCCR2A=0; TCCR2B=0;
+	STS  176,R30
+	STS  177,R30
+; 0000 0041     OCR2A=0; OCR2B=0;
+	STS  179,R30
+	STS  180,R30
+; 0000 0042     #asm("cli")
+	cli
+; 0000 0043 }
 	RET
 ; .FEND
 ;
 ;void DC_mode() {
-; 0000 003C void DC_mode() {
+; 0000 0045 void DC_mode() {
 _DC_mode:
 ; .FSTART _DC_mode
-; 0000 003D stop_timers();
+; 0000 0046     stop_timers();
 	RCALL _stop_timers
-; 0000 003E PORTC=(1<<PORTC1);
+; 0000 0047     PORTC=(1<<PORTC1);
 	LDI  R30,LOW(2)
 	OUT  0x8,R30
-; 0000 003F PORTD=(1<<PORTD5);
+; 0000 0048     PORTD=(1<<PORTD5);
 	LDI  R30,LOW(32)
 	OUT  0xB,R30
-; 0000 0040 }
+; 0000 0049 }
 	RET
 ; .FEND
 ;
-;void sinus_period(unsigned int frequency) {
-; 0000 0042 void sinus_period(unsigned int frequency) {
+;void sinus_period(uint16_t frequency) {
+; 0000 004B void sinus_period(uint16_t frequency) {
 _sinus_period:
 ; .FSTART _sinus_period
-; 0000 0043     if (frequency != 0) {
+; 0000 004C     if (frequency != 0) {
 	ST   -Y,R27
 	ST   -Y,R26
 ;	frequency -> Y+0
@@ -1424,31 +1444,31 @@ _sinus_period:
 	LDD  R31,Y+1
 	SBIW R30,0
 	BREQ _0x3
-; 0000 0044     OCR1AH = high(FGEN/2/N/frequency);
+; 0000 004D         OCR1AH = high(FGEN/2/N/frequency);
 	RCALL SUBOPT_0x0
 	MOV  R30,R31
 	LDI  R31,0
 	STS  137,R30
-; 0000 0045     OCR1AL = low(FGEN/2/N/frequency);
+; 0000 004E         OCR1AL = low(FGEN/2/N/frequency);
 	RCALL SUBOPT_0x0
 	STS  136,R30
-; 0000 0046     } else {
+; 0000 004F     } else {
 	RJMP _0x4
 _0x3:
-; 0000 0047         DC_mode();
+; 0000 0050         DC_mode();
 	RCALL _DC_mode
-; 0000 0048     }
+; 0000 0051     }
 _0x4:
-; 0000 0049 }
+; 0000 0052 }
 	RJMP _0x2000001
 ; .FEND
 ;
-;void sinus_amplitude(unsigned char amplitude) {
-; 0000 004B void sinus_amplitude(unsigned char amplitude) {
+;void sinus_amplitude(uint8_t amplitude) {
+; 0000 0054 void sinus_amplitude(uint8_t amplitude) {
 _sinus_amplitude:
 ; .FSTART _sinus_amplitude
-; 0000 004C unsigned char i = 0;
-; 0000 004D     for (i = 0; i < N; i++) {
+; 0000 0055     uint8_t i = 0;
+; 0000 0056     for (i = 0; i < N; i++) {
 	ST   -Y,R26
 	ST   -Y,R17
 ;	amplitude -> Y+1
@@ -1458,7 +1478,7 @@ _sinus_amplitude:
 _0x6:
 	CPI  R17,181
 	BRSH _0x7
-; 0000 004E      sinus[i] = 2.55*amplitude*sinus_table[i];
+; 0000 0057      sinus[i] = 2.55*amplitude*sinus_table[i];
 	MOV  R30,R17
 	LDI  R31,0
 	SUBI R30,LOW(-_sinus)
@@ -1492,186 +1512,319 @@ _0x6:
 	POP  R27
 	CALL __CFD1U
 	ST   X,R30
-; 0000 004F     }
+; 0000 0058     }
 	SUBI R17,-1
 	RJMP _0x6
 _0x7:
-; 0000 0050 }
+; 0000 0059 }
 	LDD  R17,Y+0
 _0x2000001:
 	ADIW R28,2
 	RET
 ; .FEND
 ;
-;void start_PWM(unsigned int frequency, unsigned int amplitude) {
-; 0000 0052 void start_PWM(unsigned int frequency, unsigned int amplitude) {
+;void start_PWM(uint16_t frequency, uint8_t amplitude) {
+; 0000 005B void start_PWM(uint16_t frequency, uint8_t amplitude) {
 _start_PWM:
 ; .FSTART _start_PWM
-; 0000 0053 // Timer/Counter 0 initialization
-; 0000 0054 TCCR0A=TIMER0_A_PWM;
-	ST   -Y,R27
+; 0000 005C     polarity[A] = 1;
 	ST   -Y,R26
-;	frequency -> Y+2
+;	frequency -> Y+1
 ;	amplitude -> Y+0
-	LDI  R30,LOW(129)
+	LDI  R30,LOW(1)
+	STS  _polarity,R30
+; 0000 005D     polarity[B] = 0;
+	LDI  R30,LOW(0)
+	__PUTB1MN _polarity,1
+; 0000 005E     polarity[C] = 1;
+	LDI  R30,LOW(1)
+	__PUTB1MN _polarity,2
+; 0000 005F     polarity_not[A] = 0;
+	LDI  R30,LOW(0)
+	STS  _polarity_not,R30
+; 0000 0060     polarity_not[B] = 0;
+	__PUTB1MN _polarity_not,1
+; 0000 0061     polarity_not[C] = 0;
+	__PUTB1MN _polarity_not,2
+; 0000 0062     step[A] = 0;
+	STS  _step,R30
+; 0000 0063     step[B] = 0;
+	__PUTB1MN _step,1
+; 0000 0064     step[B] = 0;
+	__PUTB1MN _step,1
+; 0000 0065     // Timer/Counter 0 initialization
+; 0000 0066     TCCR0A=TIMER0_PWM;
+	LDI  R30,LOW(161)
 	OUT  0x24,R30
-; 0000 0055 TCCR0B=(0<<WGM02) | (0<<CS02) | (0<<CS01) | (1<<CS00);
+; 0000 0067     TCCR0B=PWM_DIV;
 	LDI  R30,LOW(1)
 	OUT  0x25,R30
-; 0000 0056 TCNT0=0;
+; 0000 0068     TCNT0=0;
 	LDI  R30,LOW(0)
 	OUT  0x26,R30
-; 0000 0057 // Timer/Counter 1 initialization
-; 0000 0058 TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+; 0000 0069     // Timer/Counter 2 initialization
+; 0000 006A     TCCR2A=TIMER2_PWM;
+	LDI  R30,LOW(129)
+	STS  176,R30
+; 0000 006B     TCCR2B=PWM_DIV;
+	LDI  R30,LOW(1)
+	STS  177,R30
+; 0000 006C     TCNT2=0;
+	LDI  R30,LOW(0)
+	STS  178,R30
+; 0000 006D     // Timer/Counter 1 initialization
+; 0000 006E     TCCR1A=0;
 	STS  128,R30
-; 0000 0059 TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (1<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10);
+; 0000 006F     TCCR1B= TIMER1_DIV;
 	LDI  R30,LOW(9)
 	STS  129,R30
-; 0000 005A TCNT1H=0;
+; 0000 0070     TCNT1H=0; TCNT1L=0; ICR1H=0; ICR1L=0;
 	LDI  R30,LOW(0)
 	STS  133,R30
-; 0000 005B TCNT1L=0;
 	STS  132,R30
-; 0000 005C ICR1H=0;
 	STS  135,R30
-; 0000 005D ICR1L=0;
 	STS  134,R30
-; 0000 005E // Timer/Counter 1 Interrupt(s) initialization
-; 0000 005F TIMSK1=(0<<ICIE1) | (0<<OCIE1B) | (1<<OCIE1A) | (0<<TOIE1);
+; 0000 0071     // Timer/Counter 1 Interrupt(s) initialization
+; 0000 0072     TIMSK1=(1<<OCIE1A);
 	LDI  R30,LOW(2)
 	STS  111,R30
-; 0000 0060 sinus_period(frequency);
-	LDD  R26,Y+2
-	LDD  R27,Y+2+1
+; 0000 0073     #asm("sei")
+	sei
+; 0000 0074     sinus_period(frequency);
+	LDD  R26,Y+1
+	LDD  R27,Y+1+1
 	RCALL _sinus_period
-; 0000 0061 sinus_amplitude(amplitude);
+; 0000 0075     sinus_amplitude(amplitude);
 	LD   R26,Y
 	RCALL _sinus_amplitude
-; 0000 0062 }
-	ADIW R28,4
+; 0000 0076 }
+	ADIW R28,3
 	RET
 ; .FEND
 ;
 ;interrupt [TIM1_COMPA] void timer1_compa_isr(void)
-; 0000 0065 {
+; 0000 0079 {
 _timer1_compa_isr:
 ; .FSTART _timer1_compa_isr
+	ST   -Y,R0
+	ST   -Y,R1
+	ST   -Y,R22
+	ST   -Y,R26
+	ST   -Y,R27
 	ST   -Y,R30
 	ST   -Y,R31
 	IN   R30,SREG
 	ST   -Y,R30
-; 0000 0066    if (step > N) {polarity ^= 1; step = 0;};
-	LDI  R30,LOW(181)
-	CP   R30,R6
-	BRSH _0x8
+; 0000 007A     /* For phase A */
+; 0000 007B    if (step[A] > N) {polarity[A] ^= 1; step[A] = 0;};
+	LDS  R26,_step
+	CPI  R26,LOW(0xB6)
+	BRLO _0x8
+	LDS  R26,_polarity
 	LDI  R30,LOW(1)
-	EOR  R4,R30
-	CLR  R6
+	EOR  R30,R26
+	STS  _polarity,R30
+	LDI  R30,LOW(0)
+	STS  _step,R30
 _0x8:
-; 0000 0067    if (step == DEAD_TIME || step == N-DEAD_TIME) {B_polarity ^= 1;};
-	LDI  R30,LOW(2)
-	CP   R30,R6
+; 0000 007C    if (step[A] == DEAD_TIME || step[A] == N-DEAD_TIME) {polarity_not[A] ^= 1;};
+	LDS  R26,_step
+	CPI  R26,LOW(0x0)
 	BREQ _0xA
-	LDI  R30,LOW(179)
-	CP   R30,R6
+	CPI  R26,LOW(0xB5)
 	BRNE _0x9
 _0xA:
+	LDS  R26,_polarity_not
 	LDI  R30,LOW(1)
-	EOR  R3,R30
+	EOR  R30,R26
+	STS  _polarity_not,R30
 _0x9:
-; 0000 0068    step++;
-	INC  R6
-; 0000 0069    if (polarity == 1) {
-	LDI  R30,LOW(1)
-	CP   R30,R4
-	BRNE _0xC
-; 0000 006A     TCCR0A = TIMER0_A_PWM;
-	LDI  R30,LOW(129)
+; 0000 007D    step[A]++;
+	LDS  R30,_step
+	SUBI R30,-LOW(1)
+	STS  _step,R30
+; 0000 007E    OCR0A = polarity[A]*sinus[step[A]];
 	RCALL SUBOPT_0x1
-; 0000 006B     OCR0A = sinus[step];
+	LDS  R26,_polarity
+	MULS R30,R26
+	MOVW R30,R0
 	OUT  0x27,R30
-; 0000 006C     PORTC = (B_polarity << PORTC0);
-	OUT  0x8,R3
-; 0000 006D    } else {
+; 0000 007F    /* For phase B */
+; 0000 0080    if (phase_b_step < PHASE_B_DELAY) {phase_b_step++;} else {
+	LDI  R30,LOW(60)
+	CP   R4,R30
+	BRSH _0xC
+	INC  R4
 	RJMP _0xD
 _0xC:
-; 0000 006E     TCCR0A=TIMER0_B_PWM;
-	LDI  R30,LOW(33)
+; 0000 0081        if (step[B] > N) {polarity[B] ^= 1; step[B] = 0;};
+	__GETB2MN _step,1
+	CPI  R26,LOW(0xB6)
+	BRLO _0xE
+	__POINTW1MN _polarity,1
+	RCALL SUBOPT_0x2
+	LDI  R30,LOW(0)
+	__PUTB1MN _step,1
+_0xE:
+; 0000 0082        if (step[B] == DEAD_TIME || step[B] == N-DEAD_TIME) {polarity_not[B] ^= 1;};
+	__GETB2MN _step,1
+	CPI  R26,LOW(0x0)
+	BREQ _0x10
+	__GETB2MN _step,1
+	CPI  R26,LOW(0xB5)
+	BRNE _0xF
+_0x10:
+	__POINTW1MN _polarity_not,1
+	RCALL SUBOPT_0x2
+_0xF:
+; 0000 0083        step[B]++;
+	__GETB1MN _step,1
+	SUBI R30,-LOW(1)
+	__PUTB1MN _step,1
+; 0000 0084        OCR2A = polarity[B]*sinus[step[B]];
+	__GETB2MN _polarity,1
+	__GETB1MN _step,1
 	RCALL SUBOPT_0x1
-; 0000 006F     OCR0B = sinus[step];
-	OUT  0x28,R30
-; 0000 0070     PORTC = (B_polarity << PORTC1);
-	MOV  R30,R3
-	LSL  R30
-	OUT  0x8,R30
-; 0000 0071    }
+	MULS R30,R26
+	MOVW R30,R0
+	STS  179,R30
+; 0000 0085    }
 _0xD:
-; 0000 0072 }
+; 0000 0086    /* For phase C */
+; 0000 0087    if (phase_c_step < PHASE_C_DELAY) {phase_c_step++;} else {
+	LDI  R30,LOW(120)
+	CP   R3,R30
+	BRSH _0x12
+	INC  R3
+	RJMP _0x13
+_0x12:
+; 0000 0088        if (step[C] > N) {polarity[C] ^= 1; step[C] = 0;};
+	__GETB2MN _step,2
+	CPI  R26,LOW(0xB6)
+	BRLO _0x14
+	__POINTW1MN _polarity,2
+	RCALL SUBOPT_0x2
+	LDI  R30,LOW(0)
+	__PUTB1MN _step,2
+_0x14:
+; 0000 0089        if (step[C] == DEAD_TIME || step[C] == N-DEAD_TIME) {polarity_not[C] ^= 1;};
+	__GETB2MN _step,2
+	CPI  R26,LOW(0x0)
+	BREQ _0x16
+	__GETB2MN _step,2
+	CPI  R26,LOW(0xB5)
+	BRNE _0x15
+_0x16:
+	__POINTW1MN _polarity_not,2
+	RCALL SUBOPT_0x2
+_0x15:
+; 0000 008A        step[C]++;
+	__GETB1MN _step,2
+	SUBI R30,-LOW(1)
+	__PUTB1MN _step,2
+; 0000 008B        OCR0B = polarity[C]*sinus[step[C]];
+	__GETB2MN _polarity,2
+	__GETB1MN _step,2
+	RCALL SUBOPT_0x1
+	MULS R30,R26
+	MOVW R30,R0
+	OUT  0x28,R30
+; 0000 008C    }
+_0x13:
+; 0000 008D    /* Inverted phases */
+; 0000 008E    PORTC =((polarity[A]*polarity_not[A]) << PHASE_NOT_A_PIN) | ((polarity[B]*polarity_not[B]) << PHASE_NOT_B_PIN) | ((po ...
+	LDS  R30,_polarity_not
+	LDS  R26,_polarity
+	MULS R30,R26
+	MOV  R22,R0
+	__GETB2MN _polarity,1
+	__GETB1MN _polarity_not,1
+	MULS R30,R26
+	MOVW R30,R0
+	LSL  R30
+	OR   R22,R30
+	__GETB2MN _polarity,2
+	__GETB1MN _polarity_not,2
+	MULS R30,R26
+	MOVW R30,R0
+	LSL  R30
+	LSL  R30
+	OR   R30,R22
+	OUT  0x8,R30
+; 0000 008F }
 	LD   R30,Y+
 	OUT  SREG,R30
 	LD   R31,Y+
 	LD   R30,Y+
+	LD   R27,Y+
+	LD   R26,Y+
+	LD   R22,Y+
+	LD   R1,Y+
+	LD   R0,Y+
 	RETI
 ; .FEND
 ;
-;void setup() {
-; 0000 0074 void setup() {
-_setup:
-; .FSTART _setup
-; 0000 0075 // Crystal Oscillator division factor: 1
-; 0000 0076 #pragma optsize-
-; 0000 0077 CLKPR=(1<<CLKPCE);
+;
+;void invertor_setup() {
+; 0000 0092 void invertor_setup() {
+_invertor_setup:
+; .FSTART _invertor_setup
+; 0000 0093     // Crystal Oscillator division factor: 1
+; 0000 0094     #pragma optsize-
+; 0000 0095     CLKPR=(1<<CLKPCE);
 	LDI  R30,LOW(128)
 	STS  97,R30
-; 0000 0078 CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
+; 0000 0096     CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
 	LDI  R30,LOW(0)
 	STS  97,R30
-; 0000 0079 #ifdef _OPTIMIZE_SIZE_
-; 0000 007A #pragma optsize+
-; 0000 007B #endif
-; 0000 007C ACSR=(1<<ACD);
+; 0000 0097     #ifdef _OPTIMIZE_SIZE_
+; 0000 0098     #pragma optsize+
+; 0000 0099     #endif
+; 0000 009A     ACSR=(1<<ACD);
 	LDI  R30,LOW(128)
 	OUT  0x30,R30
-; 0000 007D // Ports init
-; 0000 007E DDRC=(1<<DDC1) | (1<<DDC0);
-	LDI  R30,LOW(3)
+; 0000 009B     // Ports init
+; 0000 009C     DDRC=(1<<PHASE_NOT_A_PIN) |(1<<PHASE_NOT_B_PIN) | (1<<PHASE_NOT_C_PIN);
+	LDI  R30,LOW(7)
 	OUT  0x7,R30
-; 0000 007F DDRD=(1<<DDD6) | (1<<DDD5);
+; 0000 009D     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
 	LDI  R30,LOW(96)
 	OUT  0xA,R30
-; 0000 0080 
-; 0000 0081 start_PWM(100, 100);
-	LDI  R30,LOW(100)
-	LDI  R31,HIGH(100)
-	ST   -Y,R31
-	ST   -Y,R30
-	LDI  R26,LOW(100)
-	LDI  R27,0
+; 0000 009E     DDRB=(1<<PHASE_C_PIN);
+	LDI  R30,LOW(8)
+	OUT  0x4,R30
+; 0000 009F     start_PWM(frequency, amplitude);
+	ST   -Y,R8
+	ST   -Y,R7
+	MOV  R26,R6
 	RCALL _start_PWM
-; 0000 0082 
-; 0000 0083 #asm("sei")
-	sei
-; 0000 0084 }
+; 0000 00A0 }
 	RET
 ; .FEND
 ;
 ;void main(void)
-; 0000 0087 {
+; 0000 00A3 {
 _main:
 ; .FSTART _main
-; 0000 0088  setup();
-	RCALL _setup
-; 0000 0089 while (1)
-_0xE:
-; 0000 008A       {
-; 0000 008B       }
-	RJMP _0xE
-; 0000 008C }
-_0x11:
-	RJMP _0x11
+; 0000 00A4  invertor_setup();
+	RCALL _invertor_setup
+; 0000 00A5 while (1)
+_0x18:
+; 0000 00A6       {
+; 0000 00A7       }
+	RJMP _0x18
+; 0000 00A8 }
+_0x1B:
+	RJMP _0x1B
 ; .FEND
 
 	.DSEG
+_polarity:
+	.BYTE 0x3
+_polarity_not:
+	.BYTE 0x3
+_step:
+	.BYTE 0x3
 _sinus:
 	.BYTE 0xB6
 
@@ -1685,14 +1838,22 @@ SUBOPT_0x0:
 	CALL __DIVW21U
 	RET
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
+;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:1 WORDS
 SUBOPT_0x1:
-	OUT  0x24,R30
-	MOV  R30,R6
 	LDI  R31,0
 	SUBI R30,LOW(-_sinus)
 	SBCI R31,HIGH(-_sinus)
 	LD   R30,Z
+	RET
+
+;OPTIMIZER ADDED SUBROUTINE, CALLED 4 TIMES, CODE SIZE REDUCTION:9 WORDS
+SUBOPT_0x2:
+	MOVW R0,R30
+	LD   R26,Z
+	LDI  R30,LOW(1)
+	EOR  R30,R26
+	MOVW R26,R0
+	ST   X,R30
 	RET
 
 

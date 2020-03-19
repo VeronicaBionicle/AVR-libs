@@ -23,161 +23,170 @@
 	#endif
 ;PCODE: $0000000B VOL: 0
 ;PCODE: $0000000C VOL: 0
-;
+;typedef unsigned char uint8_t;
+;typedef unsigned int uint16_t;
 ;#define low(x)   ((x) & 0xFF)
 ;#define high(x)   (((x)>>8) & 0xFF)
 ;
 ;//#define FGEN 7680000UL
 ;#define FGEN 7946000UL
-;#define TIMER0_A_PWM (1<<COM0A1) | (0<<COM0A0) | (0<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
-;#define TIMER0_B_PWM (0<<COM0A1) | (0<<COM0A0) | (1<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
+;#define TIMER0_PWM (1<<COM0A1) | (0<<COM0A0) | (1<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
+;#define TIMER2_PWM (1<<COM2A1) | (0<<COM2A0) | (0<<COM2B1) | (0<<COM2B0) | (0<<WGM21) | (1<<WGM20)
+;#define PWM_DIV (0<<WGM02) | (0<<CS02) | (0<<CS01) | (1<<CS00)
+;#define TIMER1_DIV (0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (1<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10)
 ;#define N 181 //points
-;#define DEAD_TIME 2
+;#define DEAD_TIME 0
+;#define PHASE_B_DELAY N/3
+;#define PHASE_C_DELAY 2*N/3
+;#define A 0
+;#define B 1
+;#define C 2
+;#define PHASE_A_PIN PORTD6
+;#define PHASE_B_PIN PORTD5
+;#define PHASE_C_PIN PORTB3
+;#define PHASE_NOT_A_PIN PORTC0
+;#define PHASE_NOT_B_PIN PORTC1
+;#define PHASE_NOT_C_PIN PORTC2
 ;
-;unsigned char polarity = 1;
-;unsigned char B_polarity = 0;
-;unsigned char step = 0;
+;uint8_t polarity[3];
+;uint8_t polarity_not[3];
+;uint8_t step[3];
 ;
-;unsigned char sinus[N+1];
+;//uint8_t polarity_not = 0;
+;
+;uint8_t sinus[N+1];
+;
+;uint8_t phase_b_step = 0;
+;uint8_t phase_c_step = 0;
+;
+;uint8_t amplitude = 100;
+;uint16_t frequency = 50;
 ;
 ;const float sinus_table[N+1] ={
-;0.0, 0.0175, 0.035, 0.052, 0.0698, 0.087, 0.105,
-;0.122, 0.139, 0.156, 0.174, 0.191, 0.208,
-;0.225, 0.242, 0.259, 0.276, 0.292, 0.309,
-;0.326, 0.342, 0.358, 0.375, 0.391, 0.407,
-;0.423, 0.438, 0.454, 0.469, 0.485, 0.5,
-;0.515, 0.53, 0.545, 0.559, 0.574, 0.588,
-;0.602, 0.616, 0.629, 0.643, 0.656, 0.669,
-;0.682, 0.695, 0.707, 0.719, 0.731, 0.743,
-;0.755, 0.766, 0.777, 0.788, 0.799, 0.809,
-;0.819, 0.829, 0.839, 0.848, 0.857, 0.866,
-;0.875, 0.883, 0.891, 0.899, 0.906, 0.914,
-;0.921, 0.927, 0.934, 0.94, 0.946, 0.951,
-;0.956, 0.961, 0.966, 0.97, 0.974, 0.978,
-;0.982, 0.985, 0.988, 0.99, 0.993, 0.995,
-;0.996, 0.998, 0.999, 0.999, 1.0,  1.0,
-;1.0, 0.999, 0.999, 0.998, 0.996,
-;0.995, 0.993, 0.99, 0.988, 0.985, 0.982,
-;0.978, 0.974, 0.97, 0.966, 0.961, 0.956,
-;0.951, 0.946, 0.94, 0.934, 0.927, 0.921,
-;0.914, 0.906, 0.899, 0.891, 0.883, 0.875,
-;0.866, 0.857, 0.848, 0.839, 0.829, 0.819,
-;0.809, 0.799, 0.788, 0.777, 0.766, 0.755,
-;0.743, 0.731, 0.719, 0.707, 0.695, 0.682,
-;0.669, 0.656, 0.643, 0.629, 0.616, 0.602,
-;0.588, 0.574, 0.559, 0.545, 0.53, 0.515,
-;0.5, 0.485, 0.469, 0.454, 0.438, 0.423,
-;0.407, 0.391, 0.375, 0.358, 0.342, 0.326,
-;0.309, 0.292, 0.276, 0.259, 0.242, 0.225,
-;0.208, 0.191, 0.174, 0.156, 0.139, 0.122,
-;0.105, 0.087, 0.0698, 0.052, 0.035, 0.0175, 0.0};
+;    0.0, 0.0175, 0.035, 0.052, 0.0698, 0.087, 0.105, 0.122, 0.139, 0.156, 0.174, 0.191, 0.208,
+;    0.225, 0.242, 0.259, 0.276, 0.292, 0.309, 0.326, 0.342, 0.358, 0.375, 0.391, 0.407,
+;    0.423, 0.438, 0.454, 0.469, 0.485, 0.5, 0.515, 0.53, 0.545, 0.559, 0.574, 0.588,
+;    0.602, 0.616, 0.629, 0.643, 0.656, 0.669, 0.682, 0.695, 0.707, 0.719, 0.731, 0.743,
+;    0.755, 0.766, 0.777, 0.788, 0.799, 0.809, 0.819, 0.829, 0.839, 0.848, 0.857, 0.866,
+;    0.875, 0.883, 0.891, 0.899, 0.906, 0.914, 0.921, 0.927, 0.934, 0.94, 0.946, 0.951,
+;    0.956, 0.961, 0.966, 0.97, 0.974, 0.978, 0.982, 0.985, 0.988, 0.99, 0.993, 0.995,
+;    0.996, 0.998, 0.999, 0.999, 1.0, 1.0, 1.0, 0.999, 0.999, 0.998, 0.996,
+;    0.995, 0.993, 0.99, 0.988, 0.985, 0.982, 0.978, 0.974, 0.97, 0.966, 0.961, 0.956,
+;    0.951, 0.946, 0.94, 0.934, 0.927, 0.921, 0.914, 0.906, 0.899, 0.891, 0.883, 0.875,
+;    0.866, 0.857, 0.848, 0.839, 0.829, 0.819, 0.809, 0.799, 0.788, 0.777, 0.766, 0.755,
+;    0.743, 0.731, 0.719, 0.707, 0.695, 0.682, 0.669, 0.656, 0.643, 0.629, 0.616, 0.602,
+;    0.588, 0.574, 0.559, 0.545, 0.53, 0.515, 0.5, 0.485, 0.469, 0.454, 0.438, 0.423,
+;    0.407, 0.391, 0.375, 0.358, 0.342, 0.326, 0.309, 0.292, 0.276, 0.259, 0.242, 0.225,
+;    0.208, 0.191, 0.174, 0.156, 0.139, 0.122, 0.105, 0.087, 0.0698, 0.052, 0.035, 0.0175, 0.0};
 ;
 ;void stop_timers() {
-; 0000 0033 void stop_timers() {
+; 0000 003A void stop_timers() {
 
 	.CSEG
 ;PCODE: $0000000D VOL: 0
 ;PCODE: $0000000E VOL: 0
-; 0000 0034 TCCR0A=0;
+; 0000 003B     TCCR0A=0; TCCR0B=0;
 ;PCODE: $0000000F VOL: 0
 ;PCODE: $00000010 VOL: 0
-; 0000 0035 TCCR0B=0;
 ;PCODE: $00000011 VOL: 0
 ;PCODE: $00000012 VOL: 0
-; 0000 0036 TCNT0=0;
+; 0000 003C     OCR0A=0; OCR0B=0;
 ;PCODE: $00000013 VOL: 0
 ;PCODE: $00000014 VOL: 0
-; 0000 0037 OCR0A=0;
 ;PCODE: $00000015 VOL: 0
 ;PCODE: $00000016 VOL: 0
-; 0000 0038 OCR0B=0;
+; 0000 003D     TCCR1A=0; TCCR1B=0;
 ;PCODE: $00000017 VOL: 0
 ;PCODE: $00000018 VOL: 0
-; 0000 0039 TIMSK1=0;
 ;PCODE: $00000019 VOL: 0
 ;PCODE: $0000001A VOL: 0
-; 0000 003A }
+; 0000 003E     OCR1AH=0; OCR1AL=0;
 ;PCODE: $0000001B VOL: 0
 ;PCODE: $0000001C VOL: 0
-;
-;void DC_mode() {
-; 0000 003C void DC_mode() {
 ;PCODE: $0000001D VOL: 0
 ;PCODE: $0000001E VOL: 0
-; 0000 003D stop_timers();
+; 0000 003F     TIMSK1=0;
 ;PCODE: $0000001F VOL: 0
-; 0000 003E PORTC=(1<<PORTC1);
 ;PCODE: $00000020 VOL: 0
+; 0000 0040     TCCR2A=0; TCCR2B=0;
 ;PCODE: $00000021 VOL: 0
-; 0000 003F PORTD=(1<<PORTD5);
 ;PCODE: $00000022 VOL: 0
 ;PCODE: $00000023 VOL: 0
-; 0000 0040 }
 ;PCODE: $00000024 VOL: 0
+; 0000 0041     OCR2A=0; OCR2B=0;
 ;PCODE: $00000025 VOL: 0
-;
-;void sinus_period(unsigned int frequency) {
-; 0000 0042 void sinus_period(unsigned int frequency) {
 ;PCODE: $00000026 VOL: 0
 ;PCODE: $00000027 VOL: 0
-; 0000 0043     if (frequency != 0) {
 ;PCODE: $00000028 VOL: 0
-;	frequency -> Y+0
+; 0000 0042     #asm("cli")
 ;PCODE: $00000029 VOL: 0
+	cli
 ;PCODE: $0000002A VOL: 0
+; 0000 0043 }
 ;PCODE: $0000002B VOL: 0
-; 0000 0044     OCR1AH = high(FGEN/2/N/frequency);
 ;PCODE: $0000002C VOL: 0
+;
+;void DC_mode() {
+; 0000 0045 void DC_mode() {
 ;PCODE: $0000002D VOL: 0
 ;PCODE: $0000002E VOL: 0
+; 0000 0046     stop_timers();
 ;PCODE: $0000002F VOL: 0
+; 0000 0047     PORTC=(1<<PORTC1);
 ;PCODE: $00000030 VOL: 0
 ;PCODE: $00000031 VOL: 0
-; 0000 0045     OCR1AL = low(FGEN/2/N/frequency);
+; 0000 0048     PORTD=(1<<PORTD5);
 ;PCODE: $00000032 VOL: 0
 ;PCODE: $00000033 VOL: 0
+; 0000 0049 }
 ;PCODE: $00000034 VOL: 0
 ;PCODE: $00000035 VOL: 0
+;
+;void sinus_period(uint16_t frequency) {
+; 0000 004B void sinus_period(uint16_t frequency) {
 ;PCODE: $00000036 VOL: 0
-; 0000 0046     } else {
 ;PCODE: $00000037 VOL: 0
+; 0000 004C     if (frequency != 0) {
 ;PCODE: $00000038 VOL: 0
-; 0000 0047         DC_mode();
+;	frequency -> Y+0
 ;PCODE: $00000039 VOL: 0
-; 0000 0048     }
 ;PCODE: $0000003A VOL: 0
-; 0000 0049 }
 ;PCODE: $0000003B VOL: 0
+; 0000 004D         OCR1AH = high(FGEN/2/N/frequency);
 ;PCODE: $0000003C VOL: 0
 ;PCODE: $0000003D VOL: 0
-;
-;void sinus_amplitude(unsigned char amplitude) {
-; 0000 004B void sinus_amplitude(unsigned char amplitude) {
 ;PCODE: $0000003E VOL: 0
 ;PCODE: $0000003F VOL: 0
-; 0000 004C unsigned char i = 0;
-; 0000 004D     for (i = 0; i < N; i++) {
 ;PCODE: $00000040 VOL: 0
 ;PCODE: $00000041 VOL: 0
-;	amplitude -> Y+1
-;	i -> R17
+; 0000 004E         OCR1AL = low(FGEN/2/N/frequency);
 ;PCODE: $00000042 VOL: 0
 ;PCODE: $00000043 VOL: 0
 ;PCODE: $00000044 VOL: 0
 ;PCODE: $00000045 VOL: 0
 ;PCODE: $00000046 VOL: 0
+; 0000 004F     } else {
 ;PCODE: $00000047 VOL: 0
 ;PCODE: $00000048 VOL: 0
+; 0000 0050         DC_mode();
 ;PCODE: $00000049 VOL: 0
+; 0000 0051     }
 ;PCODE: $0000004A VOL: 0
+; 0000 0052 }
 ;PCODE: $0000004B VOL: 0
 ;PCODE: $0000004C VOL: 0
-; 0000 004E      sinus[i] = 2.55*amplitude*sinus_table[i];
 ;PCODE: $0000004D VOL: 0
+;
+;void sinus_amplitude(uint8_t amplitude) {
+; 0000 0054 void sinus_amplitude(uint8_t amplitude) {
 ;PCODE: $0000004E VOL: 0
 ;PCODE: $0000004F VOL: 0
+; 0000 0055     uint8_t i = 0;
+; 0000 0056     for (i = 0; i < N; i++) {
 ;PCODE: $00000050 VOL: 0
 ;PCODE: $00000051 VOL: 0
+;	amplitude -> Y+1
+;	i -> R17
 ;PCODE: $00000052 VOL: 0
 ;PCODE: $00000053 VOL: 0
 ;PCODE: $00000054 VOL: 0
@@ -189,195 +198,380 @@
 ;PCODE: $0000005A VOL: 0
 ;PCODE: $0000005B VOL: 0
 ;PCODE: $0000005C VOL: 0
+; 0000 0057      sinus[i] = 2.55*amplitude*sinus_table[i];
 ;PCODE: $0000005D VOL: 0
 ;PCODE: $0000005E VOL: 0
 ;PCODE: $0000005F VOL: 0
 ;PCODE: $00000060 VOL: 0
 ;PCODE: $00000061 VOL: 0
-; 0000 004F     }
 ;PCODE: $00000062 VOL: 0
 ;PCODE: $00000063 VOL: 0
 ;PCODE: $00000064 VOL: 0
 ;PCODE: $00000065 VOL: 0
 ;PCODE: $00000066 VOL: 0
-; 0000 0050 }
 ;PCODE: $00000067 VOL: 0
 ;PCODE: $00000068 VOL: 0
 ;PCODE: $00000069 VOL: 0
 ;PCODE: $0000006A VOL: 0
 ;PCODE: $0000006B VOL: 0
-;
-;void start_PWM(unsigned int frequency, unsigned int amplitude) {
-; 0000 0052 void start_PWM(unsigned int frequency, unsigned int amplitude) {
 ;PCODE: $0000006C VOL: 0
 ;PCODE: $0000006D VOL: 0
-; 0000 0053 // Timer/Counter 0 initialization
-; 0000 0054 TCCR0A=TIMER0_A_PWM;
 ;PCODE: $0000006E VOL: 0
-;	frequency -> Y+2
-;	amplitude -> Y+0
 ;PCODE: $0000006F VOL: 0
 ;PCODE: $00000070 VOL: 0
-; 0000 0055 TCCR0B=(0<<WGM02) | (0<<CS02) | (0<<CS01) | (1<<CS00);
 ;PCODE: $00000071 VOL: 0
+; 0000 0058     }
 ;PCODE: $00000072 VOL: 0
-; 0000 0056 TCNT0=0;
 ;PCODE: $00000073 VOL: 0
 ;PCODE: $00000074 VOL: 0
-; 0000 0057 // Timer/Counter 1 initialization
-; 0000 0058 TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
 ;PCODE: $00000075 VOL: 0
 ;PCODE: $00000076 VOL: 0
-; 0000 0059 TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (1<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10);
+; 0000 0059 }
 ;PCODE: $00000077 VOL: 0
 ;PCODE: $00000078 VOL: 0
-; 0000 005A TCNT1H=0;
 ;PCODE: $00000079 VOL: 0
 ;PCODE: $0000007A VOL: 0
-; 0000 005B TCNT1L=0;
 ;PCODE: $0000007B VOL: 0
+;
+;void start_PWM(uint16_t frequency, uint8_t amplitude) {
+; 0000 005B void start_PWM(uint16_t frequency, uint8_t amplitude) {
 ;PCODE: $0000007C VOL: 0
-; 0000 005C ICR1H=0;
 ;PCODE: $0000007D VOL: 0
+; 0000 005C     polarity[A] = 1;
 ;PCODE: $0000007E VOL: 0
-; 0000 005D ICR1L=0;
+;	frequency -> Y+1
+;	amplitude -> Y+0
 ;PCODE: $0000007F VOL: 0
 ;PCODE: $00000080 VOL: 0
-; 0000 005E // Timer/Counter 1 Interrupt(s) initialization
-; 0000 005F TIMSK1=(0<<ICIE1) | (0<<OCIE1B) | (1<<OCIE1A) | (0<<TOIE1);
+; 0000 005D     polarity[B] = 0;
 ;PCODE: $00000081 VOL: 0
 ;PCODE: $00000082 VOL: 0
-; 0000 0060 sinus_period(frequency);
 ;PCODE: $00000083 VOL: 0
+; 0000 005E     polarity[C] = 1;
 ;PCODE: $00000084 VOL: 0
-; 0000 0061 sinus_amplitude(amplitude);
 ;PCODE: $00000085 VOL: 0
 ;PCODE: $00000086 VOL: 0
-; 0000 0062 }
+; 0000 005F     polarity_not[A] = 0;
 ;PCODE: $00000087 VOL: 0
 ;PCODE: $00000088 VOL: 0
+; 0000 0060     polarity_not[B] = 0;
 ;PCODE: $00000089 VOL: 0
-;
-;interrupt [TIM1_COMPA] void timer1_compa_isr(void)
-; 0000 0065 {
 ;PCODE: $0000008A VOL: 0
 ;PCODE: $0000008B VOL: 0
-; 0000 0066    if (step > N) {polarity ^= 1; step = 0;};
+; 0000 0061     polarity_not[C] = 0;
 ;PCODE: $0000008C VOL: 0
 ;PCODE: $0000008D VOL: 0
 ;PCODE: $0000008E VOL: 0
+; 0000 0062     step[A] = 0;
 ;PCODE: $0000008F VOL: 0
 ;PCODE: $00000090 VOL: 0
+; 0000 0063     step[B] = 0;
 ;PCODE: $00000091 VOL: 0
 ;PCODE: $00000092 VOL: 0
 ;PCODE: $00000093 VOL: 0
-; 0000 0067    if (step == DEAD_TIME || step == N-DEAD_TIME) {B_polarity ^= 1;};
+; 0000 0064     step[B] = 0;
 ;PCODE: $00000094 VOL: 0
 ;PCODE: $00000095 VOL: 0
 ;PCODE: $00000096 VOL: 0
+; 0000 0065     // Timer/Counter 0 initialization
+; 0000 0066     TCCR0A=TIMER0_PWM;
 ;PCODE: $00000097 VOL: 0
 ;PCODE: $00000098 VOL: 0
+; 0000 0067     TCCR0B=PWM_DIV;
 ;PCODE: $00000099 VOL: 0
 ;PCODE: $0000009A VOL: 0
+; 0000 0068     TCNT0=0;
 ;PCODE: $0000009B VOL: 0
 ;PCODE: $0000009C VOL: 0
+; 0000 0069     // Timer/Counter 2 initialization
+; 0000 006A     TCCR2A=TIMER2_PWM;
 ;PCODE: $0000009D VOL: 0
 ;PCODE: $0000009E VOL: 0
+; 0000 006B     TCCR2B=PWM_DIV;
 ;PCODE: $0000009F VOL: 0
-; 0000 0068    step++;
 ;PCODE: $000000A0 VOL: 0
-; 0000 0069    if (polarity == 1) {
+; 0000 006C     TCNT2=0;
 ;PCODE: $000000A1 VOL: 0
 ;PCODE: $000000A2 VOL: 0
+; 0000 006D     // Timer/Counter 1 initialization
+; 0000 006E     TCCR1A=0;
 ;PCODE: $000000A3 VOL: 0
-; 0000 006A     TCCR0A = TIMER0_A_PWM;
 ;PCODE: $000000A4 VOL: 0
+; 0000 006F     TCCR1B= TIMER1_DIV;
 ;PCODE: $000000A5 VOL: 0
-; 0000 006B     OCR0A = sinus[step];
 ;PCODE: $000000A6 VOL: 0
+; 0000 0070     TCNT1H=0; TCNT1L=0; ICR1H=0; ICR1L=0;
 ;PCODE: $000000A7 VOL: 0
 ;PCODE: $000000A8 VOL: 0
 ;PCODE: $000000A9 VOL: 0
 ;PCODE: $000000AA VOL: 0
-; 0000 006C     PORTC = (B_polarity << PORTC0);
 ;PCODE: $000000AB VOL: 0
 ;PCODE: $000000AC VOL: 0
-; 0000 006D    } else {
 ;PCODE: $000000AD VOL: 0
 ;PCODE: $000000AE VOL: 0
-; 0000 006E     TCCR0A=TIMER0_B_PWM;
+; 0000 0071     // Timer/Counter 1 Interrupt(s) initialization
+; 0000 0072     TIMSK1=(1<<OCIE1A);
 ;PCODE: $000000AF VOL: 0
 ;PCODE: $000000B0 VOL: 0
-; 0000 006F     OCR0B = sinus[step];
+; 0000 0073     #asm("sei")
 ;PCODE: $000000B1 VOL: 0
+	sei
 ;PCODE: $000000B2 VOL: 0
+; 0000 0074     sinus_period(frequency);
 ;PCODE: $000000B3 VOL: 0
 ;PCODE: $000000B4 VOL: 0
+; 0000 0075     sinus_amplitude(amplitude);
 ;PCODE: $000000B5 VOL: 0
-; 0000 0070     PORTC = (B_polarity << PORTC1);
 ;PCODE: $000000B6 VOL: 0
+; 0000 0076 }
 ;PCODE: $000000B7 VOL: 0
 ;PCODE: $000000B8 VOL: 0
-; 0000 0071    }
 ;PCODE: $000000B9 VOL: 0
-; 0000 0072 }
+;
+;interrupt [TIM1_COMPA] void timer1_compa_isr(void)
+; 0000 0079 {
 ;PCODE: $000000BA VOL: 0
 ;PCODE: $000000BB VOL: 0
+; 0000 007A     /* For phase A */
+; 0000 007B    if (step[A] > N) {polarity[A] ^= 1; step[A] = 0;};
 ;PCODE: $000000BC VOL: 0
-;
-;void setup() {
-; 0000 0074 void setup() {
 ;PCODE: $000000BD VOL: 0
 ;PCODE: $000000BE VOL: 0
-; 0000 0075 // Crystal Oscillator division factor: 1
-; 0000 0076 #pragma optsize-
-; 0000 0077 CLKPR=(1<<CLKPCE);
 ;PCODE: $000000BF VOL: 0
 ;PCODE: $000000C0 VOL: 0
-; 0000 0078 CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
 ;PCODE: $000000C1 VOL: 0
 ;PCODE: $000000C2 VOL: 0
-; 0000 0079 #ifdef _OPTIMIZE_SIZE_
-; 0000 007A #pragma optsize+
-; 0000 007B #endif
-; 0000 007C ACSR=(1<<ACD);
 ;PCODE: $000000C3 VOL: 0
 ;PCODE: $000000C4 VOL: 0
-; 0000 007D // Ports init
-; 0000 007E DDRC=(1<<DDC1) | (1<<DDC0);
 ;PCODE: $000000C5 VOL: 0
+; 0000 007C    if (step[A] == DEAD_TIME || step[A] == N-DEAD_TIME) {polarity_not[A] ^= 1;};
 ;PCODE: $000000C6 VOL: 0
-; 0000 007F DDRD=(1<<DDD6) | (1<<DDD5);
 ;PCODE: $000000C7 VOL: 0
 ;PCODE: $000000C8 VOL: 0
-; 0000 0080 
-; 0000 0081 start_PWM(100, 100);
 ;PCODE: $000000C9 VOL: 0
 ;PCODE: $000000CA VOL: 0
 ;PCODE: $000000CB VOL: 0
 ;PCODE: $000000CC VOL: 0
 ;PCODE: $000000CD VOL: 0
-; 0000 0082 
-; 0000 0083 #asm("sei")
 ;PCODE: $000000CE VOL: 0
-	sei
 ;PCODE: $000000CF VOL: 0
-; 0000 0084 }
 ;PCODE: $000000D0 VOL: 0
 ;PCODE: $000000D1 VOL: 0
-;
-;void main(void)
-; 0000 0087 {
 ;PCODE: $000000D2 VOL: 0
-; 0000 0088  setup();
+; 0000 007D    step[A]++;
 ;PCODE: $000000D3 VOL: 0
-; 0000 0089 while (1)
 ;PCODE: $000000D4 VOL: 0
-; 0000 008A       {
-; 0000 008B       }
 ;PCODE: $000000D5 VOL: 0
+; 0000 007E    OCR0A = polarity[A]*sinus[step[A]];
 ;PCODE: $000000D6 VOL: 0
-; 0000 008C }
 ;PCODE: $000000D7 VOL: 0
 ;PCODE: $000000D8 VOL: 0
 ;PCODE: $000000D9 VOL: 0
+;PCODE: $000000DA VOL: 0
+;PCODE: $000000DB VOL: 0
+;PCODE: $000000DC VOL: 0
+; 0000 007F    /* For phase B */
+; 0000 0080    if (phase_b_step < PHASE_B_DELAY) {phase_b_step++;} else {
+;PCODE: $000000DD VOL: 0
+;PCODE: $000000DE VOL: 0
+;PCODE: $000000DF VOL: 0
+;PCODE: $000000E0 VOL: 0
+;PCODE: $000000E1 VOL: 0
+;PCODE: $000000E2 VOL: 0
+; 0000 0081        if (step[B] > N) {polarity[B] ^= 1; step[B] = 0;};
+;PCODE: $000000E3 VOL: 0
+;PCODE: $000000E4 VOL: 0
+;PCODE: $000000E5 VOL: 0
+;PCODE: $000000E6 VOL: 0
+;PCODE: $000000E7 VOL: 0
+;PCODE: $000000E8 VOL: 0
+;PCODE: $000000E9 VOL: 0
+;PCODE: $000000EA VOL: 0
+;PCODE: $000000EB VOL: 0
+;PCODE: $000000EC VOL: 0
+;PCODE: $000000ED VOL: 0
+;PCODE: $000000EE VOL: 0
+;PCODE: $000000EF VOL: 0
+;PCODE: $000000F0 VOL: 0
+;PCODE: $000000F1 VOL: 0
+;PCODE: $000000F2 VOL: 0
+; 0000 0082        if (step[B] == DEAD_TIME || step[B] == N-DEAD_TIME) {polarity_not[B] ^= 1;};
+;PCODE: $000000F3 VOL: 0
+;PCODE: $000000F4 VOL: 0
+;PCODE: $000000F5 VOL: 0
+;PCODE: $000000F6 VOL: 0
+;PCODE: $000000F7 VOL: 0
+;PCODE: $000000F8 VOL: 0
+;PCODE: $000000F9 VOL: 0
+;PCODE: $000000FA VOL: 0
+;PCODE: $000000FB VOL: 0
+;PCODE: $000000FC VOL: 0
+;PCODE: $000000FD VOL: 0
+;PCODE: $000000FE VOL: 0
+;PCODE: $000000FF VOL: 0
+;PCODE: $00000100 VOL: 0
+;PCODE: $00000101 VOL: 0
+;PCODE: $00000102 VOL: 0
+;PCODE: $00000103 VOL: 0
+;PCODE: $00000104 VOL: 0
+;PCODE: $00000105 VOL: 0
+; 0000 0083        step[B]++;
+;PCODE: $00000106 VOL: 0
+;PCODE: $00000107 VOL: 0
+;PCODE: $00000108 VOL: 0
+;PCODE: $00000109 VOL: 0
+;PCODE: $0000010A VOL: 0
+; 0000 0084        OCR2A = polarity[B]*sinus[step[B]];
+;PCODE: $0000010B VOL: 0
+;PCODE: $0000010C VOL: 0
+;PCODE: $0000010D VOL: 0
+;PCODE: $0000010E VOL: 0
+;PCODE: $0000010F VOL: 0
+;PCODE: $00000110 VOL: 0
+;PCODE: $00000111 VOL: 0
+;PCODE: $00000112 VOL: 0
+;PCODE: $00000113 VOL: 0
+; 0000 0085    }
+;PCODE: $00000114 VOL: 0
+; 0000 0086    /* For phase C */
+; 0000 0087    if (phase_c_step < PHASE_C_DELAY) {phase_c_step++;} else {
+;PCODE: $00000115 VOL: 0
+;PCODE: $00000116 VOL: 0
+;PCODE: $00000117 VOL: 0
+;PCODE: $00000118 VOL: 0
+;PCODE: $00000119 VOL: 0
+;PCODE: $0000011A VOL: 0
+; 0000 0088        if (step[C] > N) {polarity[C] ^= 1; step[C] = 0;};
+;PCODE: $0000011B VOL: 0
+;PCODE: $0000011C VOL: 0
+;PCODE: $0000011D VOL: 0
+;PCODE: $0000011E VOL: 0
+;PCODE: $0000011F VOL: 0
+;PCODE: $00000120 VOL: 0
+;PCODE: $00000121 VOL: 0
+;PCODE: $00000122 VOL: 0
+;PCODE: $00000123 VOL: 0
+;PCODE: $00000124 VOL: 0
+;PCODE: $00000125 VOL: 0
+;PCODE: $00000126 VOL: 0
+;PCODE: $00000127 VOL: 0
+;PCODE: $00000128 VOL: 0
+;PCODE: $00000129 VOL: 0
+;PCODE: $0000012A VOL: 0
+; 0000 0089        if (step[C] == DEAD_TIME || step[C] == N-DEAD_TIME) {polarity_not[C] ^= 1;};
+;PCODE: $0000012B VOL: 0
+;PCODE: $0000012C VOL: 0
+;PCODE: $0000012D VOL: 0
+;PCODE: $0000012E VOL: 0
+;PCODE: $0000012F VOL: 0
+;PCODE: $00000130 VOL: 0
+;PCODE: $00000131 VOL: 0
+;PCODE: $00000132 VOL: 0
+;PCODE: $00000133 VOL: 0
+;PCODE: $00000134 VOL: 0
+;PCODE: $00000135 VOL: 0
+;PCODE: $00000136 VOL: 0
+;PCODE: $00000137 VOL: 0
+;PCODE: $00000138 VOL: 0
+;PCODE: $00000139 VOL: 0
+;PCODE: $0000013A VOL: 0
+;PCODE: $0000013B VOL: 0
+;PCODE: $0000013C VOL: 0
+;PCODE: $0000013D VOL: 0
+; 0000 008A        step[C]++;
+;PCODE: $0000013E VOL: 0
+;PCODE: $0000013F VOL: 0
+;PCODE: $00000140 VOL: 0
+;PCODE: $00000141 VOL: 0
+;PCODE: $00000142 VOL: 0
+; 0000 008B        OCR0B = polarity[C]*sinus[step[C]];
+;PCODE: $00000143 VOL: 0
+;PCODE: $00000144 VOL: 0
+;PCODE: $00000145 VOL: 0
+;PCODE: $00000146 VOL: 0
+;PCODE: $00000147 VOL: 0
+;PCODE: $00000148 VOL: 0
+;PCODE: $00000149 VOL: 0
+;PCODE: $0000014A VOL: 0
+;PCODE: $0000014B VOL: 0
+; 0000 008C    }
+;PCODE: $0000014C VOL: 0
+; 0000 008D    /* Inverted phases */
+; 0000 008E    PORTC =((polarity[A]*polarity_not[A]) << PHASE_NOT_A_PIN) | ((polarity[B]*polarity_not[B]) << PHASE_NOT_B_PIN) | ((po ...
+;PCODE: $0000014D VOL: 0
+;PCODE: $0000014E VOL: 0
+;PCODE: $0000014F VOL: 0
+;PCODE: $00000150 VOL: 0
+;PCODE: $00000151 VOL: 0
+;PCODE: $00000152 VOL: 0
+;PCODE: $00000153 VOL: 0
+;PCODE: $00000154 VOL: 0
+;PCODE: $00000155 VOL: 0
+;PCODE: $00000156 VOL: 0
+;PCODE: $00000157 VOL: 0
+;PCODE: $00000158 VOL: 0
+;PCODE: $00000159 VOL: 0
+;PCODE: $0000015A VOL: 0
+;PCODE: $0000015B VOL: 0
+;PCODE: $0000015C VOL: 0
+;PCODE: $0000015D VOL: 0
+;PCODE: $0000015E VOL: 0
+;PCODE: $0000015F VOL: 0
+;PCODE: $00000160 VOL: 0
+; 0000 008F }
+;PCODE: $00000161 VOL: 0
+;PCODE: $00000162 VOL: 0
+;PCODE: $00000163 VOL: 0
+;
+;
+;void invertor_setup() {
+; 0000 0092 void invertor_setup() {
+;PCODE: $00000164 VOL: 0
+;PCODE: $00000165 VOL: 0
+; 0000 0093     // Crystal Oscillator division factor: 1
+; 0000 0094     #pragma optsize-
+; 0000 0095     CLKPR=(1<<CLKPCE);
+;PCODE: $00000166 VOL: 0
+;PCODE: $00000167 VOL: 0
+; 0000 0096     CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
+;PCODE: $00000168 VOL: 0
+;PCODE: $00000169 VOL: 0
+; 0000 0097     #ifdef _OPTIMIZE_SIZE_
+; 0000 0098     #pragma optsize+
+; 0000 0099     #endif
+; 0000 009A     ACSR=(1<<ACD);
+;PCODE: $0000016A VOL: 0
+;PCODE: $0000016B VOL: 0
+; 0000 009B     // Ports init
+; 0000 009C     DDRC=(1<<PHASE_NOT_A_PIN) |(1<<PHASE_NOT_B_PIN) | (1<<PHASE_NOT_C_PIN);
+;PCODE: $0000016C VOL: 0
+;PCODE: $0000016D VOL: 0
+; 0000 009D     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
+;PCODE: $0000016E VOL: 0
+;PCODE: $0000016F VOL: 0
+; 0000 009E     DDRB=(1<<PHASE_C_PIN);
+;PCODE: $00000170 VOL: 0
+;PCODE: $00000171 VOL: 0
+; 0000 009F     start_PWM(frequency, amplitude);
+;PCODE: $00000172 VOL: 0
+;PCODE: $00000173 VOL: 0
+;PCODE: $00000174 VOL: 0
+; 0000 00A0 }
+;PCODE: $00000175 VOL: 0
+;PCODE: $00000176 VOL: 0
+;
+;void main(void)
+; 0000 00A3 {
+;PCODE: $00000177 VOL: 0
+; 0000 00A4  invertor_setup();
+;PCODE: $00000178 VOL: 0
+; 0000 00A5 while (1)
+;PCODE: $00000179 VOL: 0
+; 0000 00A6       {
+; 0000 00A7       }
+;PCODE: $0000017A VOL: 0
+;PCODE: $0000017B VOL: 0
+; 0000 00A8 }
+;PCODE: $0000017C VOL: 0
+;PCODE: $0000017D VOL: 0
+;PCODE: $0000017E VOL: 0
