@@ -1,33 +1,34 @@
 #include <mega328p.h>
-#include <delay.h>
+
 typedef unsigned char uint8_t;
 typedef unsigned int uint16_t;
 #define low(x)   ((x) & 0xFF)
 #define high(x)   (((x)>>8) & 0xFF)
 
-//#define FGEN 7946000UL
 #define FGEN 11900000UL
 #define TIMER0_PWM (1<<COM0A1) | (0<<COM0A0) | (1<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
 #define TIMER2_PWM (1<<COM2A1) | (0<<COM2A0) | (0<<COM2B1) | (0<<COM2B0) | (0<<WGM21) | (1<<WGM20)
 #define PWM_DIV (0<<WGM02) | (0<<CS02) | (0<<CS01) | (1<<CS00)
 #define TIMER1_DIV (0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (1<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10)
+#define ADC_VREF_TYPE (0<<REFS1) | (1<<REFS0) | (1<<ADLAR)
+#define A 0
+#define B 1
+#define C 2
+
 #define N 181 //points
 #define DEAD_TIME 0
 #define PHASE_B_DELAY N/3
 #define PHASE_C_DELAY 2*N/3
-#define A 0
-#define B 1
-#define C 2
 #define PHASE_A_PIN PORTD6
 #define PHASE_B_PIN PORTD5
 #define PHASE_C_PIN PORTB3
 #define PHASE_NOT_A_PIN PORTB5
 #define PHASE_NOT_B_PIN PORTB6
 #define PHASE_NOT_C_PIN PORTB7
+#define MAX_FREQUENCY 100
 
-unsigned char adc_data[2];
-unsigned char ADC_input=0;
-#define ADC_VREF_TYPE (0<<REFS1) | (1<<REFS0) | (1<<ADLAR)     // Voltage Reference: AVCC pin
+uint8_t adc_data[2];
+uint8_t ADC_input=0;
 
 uint8_t polarity[3];
 uint8_t polarity_not[3];
@@ -66,29 +67,24 @@ void stop_timers() {
     TIMSK1=0;
     TCCR2A=0; TCCR2B=0;
     OCR2A=0; OCR2B=0;
-    #asm("cli")
 }
 
-void DC_mode() {
+void closed_mode() {
     stop_timers();
-   // OPEN SOMETHING FOR DC ON LOAD
+    PORTD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
+    PORTB=(1<<PHASE_C_PIN) | (1<<PHASE_NOT_A_PIN) | (1<<PHASE_NOT_B_PIN) | (1<<PHASE_NOT_C_PIN);
 }
 
 void sinus_period(uint16_t frequency) {
-    if (frequency != 0) {
-        uint16_t period = FGEN/2/N/frequency;
-        OCR1AH = high(period);
-        OCR1AL = low(period);
-    } else {
-        DC_mode();
-    }
+    uint16_t period = FGEN/2/N/frequency;
+    OCR1AH = high(period);
+    OCR1AL = low(period);
 }
 
 void sinus_amplitude(uint8_t amplitude) {
     uint8_t i = 0;
-    for (i = 0; i < N; i++) {
-     sinus[i] = amplitude*sinus_table[i];
-    }
+    for (i = 0; i < N; i++)
+        sinus[i] = amplitude*sinus_table[i];
 }
 
 void start_PWM(uint16_t frequency, uint8_t amplitude) {
@@ -147,10 +143,10 @@ interrupt [TIM1_COMPA] void timer1_compa_isr(void)
 
 interrupt [ADC_INT] void adc_isr(void)
 {
-adc_data[ADC_input]=ADCH;
-if (ADC_input == 1) {ADC_input=0;} else {ADC_input=1;}
-ADMUX= ADC_input + ADC_VREF_TYPE;
-ADCSRA|=(1<<ADSC);
+    adc_data[ADC_input]=ADCH;
+    if (ADC_input == 1) {ADC_input=0;} else {ADC_input=1;}
+    ADMUX= ADC_input + ADC_VREF_TYPE;
+    ADCSRA|=(1<<ADSC);
 }
 
 void invertor_setup() {
@@ -164,23 +160,29 @@ void invertor_setup() {
     //ADC init
     ACSR=(1<<ACD);
     DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);
-    ADMUX= (0<<REFS1) | (1<<REFS0) | (1<<ADLAR);
+    ADMUX = ADC_VREF_TYPE;  // Voltage Reference: AVCC pin
     ADCSRA=(1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (0<<ADIF) | (1<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
     ADCSRB=(1<<ADTS2) | (0<<ADTS1) | (1<<ADTS0);
     OCR1BH=0xFF;
     OCR1BL=0xFF;
     // Ports init
     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
-    DDRB=(1<<PHASE_C_PIN) | (1<<PHASE_NOT_A_PIN) |(1<<PHASE_NOT_B_PIN) | (1<<PHASE_NOT_C_PIN);
+    DDRB=(1<<PHASE_C_PIN) | (1<<PHASE_NOT_A_PIN) | (1<<PHASE_NOT_B_PIN) | (1<<PHASE_NOT_C_PIN);
     start_PWM(frequency, amplitude);
 }
 
 void main(void)
 {
-invertor_setup();
-while (1)
-      {
-      if (amplitude != adc_data[0]) {amplitude = adc_data[0]; sinus_amplitude(amplitude);}
-      if (frequency != 100*adc_data[1]/255) {frequency = 100*adc_data[1]/255; sinus_period(frequency);}
-      }
+    invertor_setup();
+    while (1)
+          {
+          /* if frequency/amplitude is 0, stop invertor */
+          if (adc_data[0] == 0 || adc_data[1] == 0) {
+            while (adc_data[0] == 0 || adc_data[1] == 0) {closed_mode();};
+            start_PWM(MAX_FREQUENCY*adc_data[1]/255, adc_data[0]);
+          }
+          /* if ADC data is updated, change frequency/amplitude*/
+          if (amplitude != adc_data[0]) {amplitude = adc_data[0]; sinus_amplitude(amplitude);}
+          if (frequency != MAX_FREQUENCY*adc_data[1]/255) {frequency = MAX_FREQUENCY*adc_data[1]/255; sinus_period(frequency);}
+          }
 }

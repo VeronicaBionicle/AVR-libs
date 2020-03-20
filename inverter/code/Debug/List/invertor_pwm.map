@@ -23,12 +23,12 @@ frequency                                                                       
 FLASH Allocation [words]
 Function                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-stop_timers                                                                       0x001D6     25
-DC_mode                                                                           0x001EF      2
-sinus_period                                                                      0x001F1     25
-sinus_amplitude                                                                   0x0020A     41
-start_PWM                                                                         0x00233     63
-timer1_compa_isr                                                                  0x00272    176
-adc_isr                                                                           0x00322     34
-invertor_setup                                                                    0x00344     34
-main                                                                              0x00366     21
+stop_timers                                                                       0x001D6     24
+closed_mode                                                                       0x001EE      6
+sinus_period                                                                      0x001F4     19
+sinus_amplitude                                                                   0x00207     41
+start_PWM                                                                         0x00230     63
+timer1_compa_isr                                                                  0x0026F    176
+adc_isr                                                                           0x0031F     34
+invertor_setup                                                                    0x00341     34
+main                                                                              0x00363     45
