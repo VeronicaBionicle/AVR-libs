@@ -2,10 +2,8 @@ RAM Allocation [bytes]
 Variable                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
 adc_data                                                                          0x0300       2
-polarity                                                                          0x0302       3
-polarity_not                                                                      0x0305       3
-step                                                                              0x0308       3
-sinus                                                                             0x030B     182
+step                                                                              0x0302       3
+sinus                                                                             0x0305     182
 
 EEPROM Allocation [bytes]
 Variable                                                                          Address   Size
@@ -18,17 +16,17 @@ ADC_input                                                                       
 phase_b_step                                                                      R3           1
 phase_c_step                                                                      R6           1
 amplitude                                                                         R5           1
-frequency                                                                         R7,R8        2
+frequency                                                                         R8           1
 
 FLASH Allocation [words]
 Function                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-stop_timers                                                                       0x001D6     24
-closed_mode                                                                       0x001EE      6
-sinus_period                                                                      0x001F4     19
-sinus_amplitude                                                                   0x00207     41
-start_PWM                                                                         0x00230     63
-timer1_compa_isr                                                                  0x0026F    176
-adc_isr                                                                           0x0031F     34
-invertor_setup                                                                    0x00341     34
-main                                                                              0x00363     45
+stop_timers                                                                       0x001D6     26
+closed_mode                                                                       0x001F0      6
+sinus_period                                                                      0x001F6     18
+sinus_amplitude                                                                   0x00208     39
+start_PWM                                                                         0x0022F     49
+timer1_compa_isr                                                                  0x00260     70
+adc_isr                                                                           0x002A6     34
+invertor_setup                                                                    0x002C8     38
+main                                                                              0x002EE     44

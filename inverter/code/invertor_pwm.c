@@ -2,13 +2,14 @@
 
 typedef unsigned char uint8_t;
 typedef unsigned int uint16_t;
+
 #define low(x)   ((x) & 0xFF)
 #define high(x)   (((x)>>8) & 0xFF)
 
 #define FGEN 11900000UL
 #define TIMER0_PWM (1<<COM0A1) | (0<<COM0A0) | (1<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
 #define TIMER2_PWM (1<<COM2A1) | (0<<COM2A0) | (0<<COM2B1) | (0<<COM2B0) | (0<<WGM21) | (1<<WGM20)
-#define PWM_DIV (0<<WGM02) | (0<<CS02) | (0<<CS01) | (1<<CS00)
+#define PWM_DIV (0<<WGM02) | (0<<CS02) | (1<<CS01) | (0<<CS00)
 #define TIMER1_DIV (0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (1<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10)
 #define ADC_VREF_TYPE (0<<REFS1) | (1<<REFS0) | (1<<ADLAR)
 #define A 0
@@ -16,22 +17,16 @@ typedef unsigned int uint16_t;
 #define C 2
 
 #define N 181 //points
-#define DEAD_TIME 0
 #define PHASE_B_DELAY N/3
 #define PHASE_C_DELAY 2*N/3
 #define PHASE_A_PIN PORTD6
 #define PHASE_B_PIN PORTD5
 #define PHASE_C_PIN PORTB3
-#define PHASE_NOT_A_PIN PORTB5
-#define PHASE_NOT_B_PIN PORTB6
-#define PHASE_NOT_C_PIN PORTB7
 #define MAX_FREQUENCY 100
 
 uint8_t adc_data[2];
 uint8_t ADC_input=0;
 
-uint8_t polarity[3];
-uint8_t polarity_not[3];
 uint8_t step[3];
 
 uint8_t sinus[N+1];
@@ -40,7 +35,7 @@ uint8_t phase_b_step = 0;
 uint8_t phase_c_step = 0;
 
 uint8_t amplitude = 255;
-uint16_t frequency = 100;
+uint8_t frequency = 100;
 
 const float sinus_table[N+1] ={
     0.0, 0.0175, 0.035, 0.052, 0.0698, 0.087, 0.105, 0.122, 0.139, 0.156, 0.174, 0.191, 0.208,
@@ -64,7 +59,7 @@ void stop_timers() {
     OCR0A=0; OCR0B=0;
     TCCR1A=0; TCCR1B=0;
     OCR1AH=0; OCR1AL=0;
-    TIMSK1=0;
+    TIMSK1= (1<<OCIE1B);
     TCCR2A=0; TCCR2B=0;
     OCR2A=0; OCR2B=0;
 }
@@ -72,10 +67,10 @@ void stop_timers() {
 void closed_mode() {
     stop_timers();
     PORTD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
-    PORTB=(1<<PHASE_C_PIN) | (1<<PHASE_NOT_A_PIN) | (1<<PHASE_NOT_B_PIN) | (1<<PHASE_NOT_C_PIN);
+    PORTB=(1<<PHASE_C_PIN);
 }
 
-void sinus_period(uint16_t frequency) {
+void sinus_period(uint8_t frequency) {
     uint16_t period = FGEN/2/N/frequency;
     OCR1AH = high(period);
     OCR1AL = low(period);
@@ -87,13 +82,9 @@ void sinus_amplitude(uint8_t amplitude) {
         sinus[i] = amplitude*sinus_table[i];
 }
 
-void start_PWM(uint16_t frequency, uint8_t amplitude) {
-    polarity[A] = 1;
-    polarity[B] = 0;
-    polarity[C] = 1;
-    polarity_not[A] = 0;
-    polarity_not[B] = 0;
-    polarity_not[C] = 0;
+void start_PWM(uint8_t frequency, uint8_t amplitude) {
+    sinus_period(frequency);
+    sinus_amplitude(amplitude);
     step[A] = 0;
     step[B] = 0;
     step[C] = 0;
@@ -109,36 +100,28 @@ void start_PWM(uint16_t frequency, uint8_t amplitude) {
     TCCR1A=0;
     TCCR1B= TIMER1_DIV;
     TCNT1H=0; TCNT1L=0; ICR1H=0; ICR1L=0;
-    // Timer/Counter 1 Interrupt(s) initialization
-    TIMSK1=(1<<OCIE1A)|(1 << OCIE1B);
+    TIMSK1 |= (1<<OCIE1A);
     #asm("sei")
-    sinus_period(frequency);
-    sinus_amplitude(amplitude);
 }
 
 interrupt [TIM1_COMPA] void timer1_compa_isr(void)
 {
     /* For phase A */
-   if (step[A] > N) {polarity[A] ^= 1; step[A] = 0;};
-   if (step[A] == DEAD_TIME || step[A] == N-DEAD_TIME) {polarity_not[A] ^= 1;};
    step[A]++;
-   OCR0A = polarity[A]*sinus[step[A]];
+   if (step[A] > N) step[A] = 0;
+   OCR0A = sinus[step[A]];
    /* For phase B */
    if (phase_b_step < PHASE_B_DELAY) {phase_b_step++;} else {
-       if (step[B] > N) {polarity[B] ^= 1; step[B] = 0;};
-       if (step[B] == DEAD_TIME || step[B] == N-DEAD_TIME) {polarity_not[B] ^= 1;};
        step[B]++;
-       OCR2A = polarity[B]*sinus[step[B]];
+       if (step[B] > N) step[B] = 0;
+       OCR2A = sinus[step[B]];
    }
    /* For phase C */
    if (phase_c_step < PHASE_C_DELAY) {phase_c_step++;} else {
-       if (step[C] > N) {polarity[C] ^= 1; step[C] = 0;};
-       if (step[C] == DEAD_TIME || step[C] == N-DEAD_TIME) {polarity_not[C] ^= 1;};
        step[C]++;
-       OCR0B = polarity[C]*sinus[step[C]];
+       if (step[C] > N) step[C] = 0;
+       OCR0B = sinus[step[C]];
    }
-   /* Inverted phases */
-   PORTB =((!polarity[A]*polarity_not[A]) << PHASE_NOT_A_PIN) | ((!polarity[B]*polarity_not[B]) << PHASE_NOT_B_PIN) | ((!polarity[C]*polarity_not[C]) << PHASE_NOT_C_PIN);
 }
 
 interrupt [ADC_INT] void adc_isr(void)
@@ -157,17 +140,18 @@ void invertor_setup() {
     #ifdef _OPTIMIZE_SIZE_
     #pragma optsize+
     #endif
-    //ADC init
+    //ADC init (read each ~5 ms - CTCB Timer1 interrupt)
     ACSR=(1<<ACD);
-    DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);
+    DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);  //ADC0, ADC1 are used
     ADMUX = ADC_VREF_TYPE;  // Voltage Reference: AVCC pin
     ADCSRA=(1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (0<<ADIF) | (1<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
     ADCSRB=(1<<ADTS2) | (0<<ADTS1) | (1<<ADTS0);
+    TIMSK1 |= (1<<OCIE1B);
     OCR1BH=0xFF;
     OCR1BL=0xFF;
     // Ports init
     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
-    DDRB=(1<<PHASE_C_PIN) | (1<<PHASE_NOT_A_PIN) | (1<<PHASE_NOT_B_PIN) | (1<<PHASE_NOT_C_PIN);
+    DDRB=(1<<PHASE_C_PIN);
     start_PWM(frequency, amplitude);
 }
 
@@ -179,10 +163,10 @@ void main(void)
           /* if frequency/amplitude is 0, stop invertor */
           if (adc_data[0] == 0 || adc_data[1] == 0) {
             while (adc_data[0] == 0 || adc_data[1] == 0) {closed_mode();};
-            start_PWM(MAX_FREQUENCY*adc_data[1]/255, adc_data[0]);
+            start_PWM(MAX_FREQUENCY*(uint16_t)adc_data[1]/255, adc_data[0]);
           }
           /* if ADC data is updated, change frequency/amplitude*/
           if (amplitude != adc_data[0]) {amplitude = adc_data[0]; sinus_amplitude(amplitude);}
-          if (frequency != MAX_FREQUENCY*adc_data[1]/255) {frequency = MAX_FREQUENCY*adc_data[1]/255; sinus_period(frequency);}
+          if (frequency != MAX_FREQUENCY*(uint16_t)adc_data[1]/255) {frequency = MAX_FREQUENCY*(uint16_t)adc_data[1]/255; sinus_period(frequency);}
           }
 }
