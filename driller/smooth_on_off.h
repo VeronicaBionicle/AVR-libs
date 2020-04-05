@@ -11,5 +11,6 @@
 void DrillSmoothOn();
 void DrillOn();
 void DrillOff();
+void DrillSetDuty(uint8_t duty_cycle);
 
 #endif /*smooth_on_off_h_ */

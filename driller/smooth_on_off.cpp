@@ -1,10 +1,11 @@
 #include "smooth_on_off.h"
 
 uint8_t duty;
+uint8_t max_duty = 255;
 
 ISR(TIMER2_COMPB_vect) {
   OCR2B = duty;
-    if (duty < ON) duty += PWM_INCREMENT; else {
+    if (duty < max_duty) duty += PWM_INCREMENT; else {
       DrillOn();
     }
 }
@@ -30,5 +31,14 @@ void DrillSmoothOn() {
   TCCR2B = (0 << WGM22) | (0 << CS22) | (1 << CS21) | (1 << CS20);
   TIMSK2 = (1 << OCIE2B);
   OCR2B = 0; //255 - 100%
+  sei();
+};
+
+void DrillSetDuty(uint8_t duty_cycle) {
+  max_duty = duty_cycle;
+  //start pwm
+  TCCR2A = (1 << COM2B1) | (1 << WGM20);
+  TCCR2B = (0 << WGM22) | (0 << CS22) | (1 << CS21) | (1 << CS20);
+  OCR2B = duty_cycle; //255 - 100%
   sei();
 };
