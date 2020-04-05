@@ -1,10 +1,7 @@
 #include "timer_0_class.h"
 
-volatile uint32_t isr_0_periods;
-
 ISR(TIMER_INT)  //ISR for couners and timer
 {
-  isr_0_periods++;
   timer0.isrCallback();
 }
 
@@ -15,9 +12,6 @@ void (*Timer0::isrCallback)() = Timer0::isrDefaultUnused;
 void Timer0::startTimerForInterrupt(uint32_t Period) {
   cli();
   period = Period;
-  isr_0_periods = 0;
-  milliseconds = 0;
-  expirations = 0;
   TIMSK_ = (1 << OCIE_A);
   TCCR_A = TCCR_A_FOR_TIMER;
   Timer0::setupTimer(Period);
