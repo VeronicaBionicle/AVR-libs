@@ -11,6 +11,7 @@
 void DrillSmoothOn();
 void DrillOn();
 void DrillOff();
-void DrillSetDuty(uint8_t duty_cycle);
+void DrillPWM(uint8_t duty_cycle);
+void DrillSetMaxDuty(uint8_t new_max_duty);
 
 #endif /*smooth_on_off_h_ */
