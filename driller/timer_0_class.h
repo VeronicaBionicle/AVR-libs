@@ -1,6 +1,5 @@
 #ifndef timer_0_class_h_
 #define timer_0_class_h_
-#include <avr/io.h>
 #include <avr/interrupt.h>
 #include <inttypes.h>
 
