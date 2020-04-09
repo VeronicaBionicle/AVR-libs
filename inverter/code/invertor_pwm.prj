@@ -7,7 +7,7 @@ A=
 C=
 D=29.02.2020
 Files=1
-OpenedFiles=0
+OpenedFiles=2
 OF1=invertor_pwm.c
 Active1=1
 DebugOutputListFilesDirectory=Debug\List
@@ -22,16 +22,16 @@ AllowDisplayFunctionCallTree=1
 CleanUp=2
 EditorPanelMode=0
 ActiveEditorPanel=0
-Active0=1
+Active0=0
 EditorPanel0=0
 PageIndex0=0
 EditorPanel1=0
-TimeStamp1=1350088899
+TimeStamp1=1351180489
 PageIndex1=1
-OF2=Debug\List\invertor_pwm.asm
+OF2=Debug\List\invertor_pwm.map
 Active2=0
 EditorPanel2=0
-TimeStamp2=1350084983
+TimeStamp2=1350204087
 PageIndex2=2
 OF3=Debug\List\invertor_pwm.map
 Active3=0
@@ -147,8 +147,8 @@ WatchAVR8LAutoVariables=0
 UseEEPROMLocation0=1
 RebuildAll=0
 LinkageInformationPresent=1
-COFFileTimeStamp=1350137367
-Build=784
+COFFileTimeStamp=1351180490
+Build=804
 [DefinedSymbolsDebug]
 Count=0
 [Compiler]
@@ -250,7 +250,7 @@ UseEEPROMLocation0=1
 RebuildAll=1
 LinkageInformationPresent=0
 COFFileTimeStamp=-1
-Build=784
+Build=804
 IncludePath0=
 IncludePath1=
 IncludePath2=
@@ -482,8 +482,8 @@ L13=Enhanced function parameters passing: Yes
 L14=Automatic register allocation: Yes
 L15=Smart register allocation: Yes
 L16=
-L17=Build: 783
-L18=1032 line(s) compiled
+L17=Build: 803
+L18=1030 line(s) compiled
 L19=No errors
 L20=No warnings
 L21=
@@ -509,7 +509,7 @@ L38=14 words (28 bytes), 1,3% reduced by Code Compression
 L1=AVRASM: AVR macro assembler 2.1.30 (build 592 Nov  7 2008 12:38:17)
 L2=Copyright (C) 1995-2008 ATMEL Corporation
 L3=
-L4=D:\Студенческое\Системы управления преобразователями\code\Debug\List\invertor_pwm.asm(2215): No EEPROM data, deleting D:\Студенческое\Системы управления преобразователями\code\Debug\Exe\invertor_pwm.eep
+L4=D:\Студенческое\Системы управления преобразователями\code\Debug\List\invertor_pwm.asm(2213): No EEPROM data, deleting D:\Студенческое\Системы управления преобразователями\code\Debug\Exe\invertor_pwm.eep
 L5=
 L6=ATmega328P memory use summary [bytes]:
 L7=Segment   Begin    End      Code   Data   Used    Size   Use%
@@ -524,20 +524,21 @@ Row=0
 Column=0
 ScrollPosX=0
 ScrollPosY=0
-TimeStamp=1350137668
+TimeStamp=1351180507
 [BookmarksFoldedCode]
-Files=5
+Files=6
 F1=invertor_pwm.c
 F2=C:\cvavr\inc\mega328p_bits.h
 F3=C:\cvavr\inc\mega328p.h
 F4=Debug\List\invertor_pwm.map
 F5=Debug\List\invertor_pwm.asm
+F6=Debug\List\invertor_pwm.lst
 [Bookmarks1]
-TimeStamp=1350137457
-Row=126
-Column=25
+TimeStamp=1351180489
+Row=34
+Column=23
 ScrollPosX=0
-ScrollPosY=122
+ScrollPosY=18
 BK0=-1
 BK1=-1
 BK2=-1
@@ -581,7 +582,7 @@ BK7=-1
 BK8=-1
 BK9=-1
 [Bookmarks4]
-TimeStamp=1350136555
+TimeStamp=1351180490
 Row=0
 Column=0
 ScrollPosX=0
@@ -621,7 +622,27 @@ HIDMouse=0
 HIDJoystick=0
 [FoldedCode5]
 Blocks=0
-[FoldedCode4]
+[FoldedCode3]
+Blocks=0
+[FoldedCode2]
+Blocks=0
+[Bookmarks6]
+TimeStamp=1350204087
+Row=16
+Column=47
+ScrollPosX=0
+ScrollPosY=2128
+BK0=-1
+BK1=-1
+BK2=-1
+BK3=-1
+BK4=-1
+BK5=-1
+BK6=-1
+BK7=-1
+BK8=-1
+BK9=-1
+[FoldedCode6]
 Blocks=0
 [HeadersList]
 Files=1
@@ -630,9 +651,7 @@ F1=D:\Студенческое\Системы управления преобразователями\code\invertor_pwm.c
 Files=2
 F1=C:\cvavr\inc\mega328p.h
 F2=C:\cvavr\inc\mega328p_bits.h
-[FoldedCode3]
-Blocks=0
 [FoldedCode1]
 Blocks=0
-[FoldedCode2]
+[FoldedCode4]
 Blocks=0
