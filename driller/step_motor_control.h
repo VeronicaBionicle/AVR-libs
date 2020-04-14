@@ -5,9 +5,8 @@
 #define MAX_FULLSTEP_STAGES 3
 #define MAX_HALFSTEP_STAGES 7
 
-
-#define FULL_STEPS_PER_ROTATION int(50) //7.2 degrees per step
-#define HALF_STEPS_PER_ROTATION int(100) //3.6 degrees per step
+#define FULL_STEPS_PER_ROTATION 50 //7.2 degrees per step
+#define HALF_STEPS_PER_ROTATION 100 //3.6 degrees per step
 
 /*Modes of driver*/
 #define FORWARD_FULLSTEP 1

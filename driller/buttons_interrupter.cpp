@@ -12,5 +12,5 @@ ISR (INT0_vect) 	//interrupt for limit switch
 }
 
 void ReadButtons() {  //attach to Timer0 to read buttons state
-  button_state = PINC & BUTTON_MASK;
+  button_state = (PINC & BUTTON_MASK) | (PIND & ADD_BUTTON_MASK);
 };
