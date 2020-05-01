@@ -46,10 +46,10 @@
 ;#define PHASE_A_PIN PORTD6
 ;#define PHASE_B_PIN PORTD5
 ;#define PHASE_C_PIN PORTB3
-;#define MAX_FREQUENCY 100
+;#define MAX_FREQUENCY 50
 ;
-;uint8_t adc_data[2];
-;uint8_t ADC_input=0;
+;uint8_t adc_data;
+;uint8_t ADC_input=1;
 ;
 ;uint8_t step[3];
 ;
@@ -385,111 +385,114 @@
 ; 0000 007F {
 ;PCODE: $000000E9 VOL: 0
 ;PCODE: $000000EA VOL: 0
-; 0000 0080     adc_data[ADC_input]=ADCH;
+; 0000 0080     adc_data=ADCH;
 ;PCODE: $000000EB VOL: 0
 ;PCODE: $000000EC VOL: 0
+; 0000 0081     ADMUX= ADC_input + ADC_VREF_TYPE;
 ;PCODE: $000000ED VOL: 0
 ;PCODE: $000000EE VOL: 0
 ;PCODE: $000000EF VOL: 0
-; 0000 0081     if (ADC_input == 1) {ADC_input=0;} else {ADC_input=1;}
+; 0000 0082     ADCSRA|=(1<<ADSC);
 ;PCODE: $000000F0 VOL: 0
 ;PCODE: $000000F1 VOL: 0
 ;PCODE: $000000F2 VOL: 0
+; 0000 0083 }
 ;PCODE: $000000F3 VOL: 0
 ;PCODE: $000000F4 VOL: 0
 ;PCODE: $000000F5 VOL: 0
-;PCODE: $000000F6 VOL: 0
-;PCODE: $000000F7 VOL: 0
-;PCODE: $000000F8 VOL: 0
-; 0000 0082     ADMUX= ADC_input + ADC_VREF_TYPE;
-;PCODE: $000000F9 VOL: 0
-;PCODE: $000000FA VOL: 0
-;PCODE: $000000FB VOL: 0
-; 0000 0083     ADCSRA|=(1<<ADSC);
-;PCODE: $000000FC VOL: 0
-;PCODE: $000000FD VOL: 0
-;PCODE: $000000FE VOL: 0
-; 0000 0084 }
-;PCODE: $000000FF VOL: 0
-;PCODE: $00000100 VOL: 0
-;PCODE: $00000101 VOL: 0
 ;
 ;void invertor_setup() {
-; 0000 0086 void invertor_setup() {
+; 0000 0085 void invertor_setup() {
+;PCODE: $000000F6 VOL: 0
+;PCODE: $000000F7 VOL: 0
+; 0000 0086     // Crystal Oscillator division factor: 1
+; 0000 0087     #pragma optsize-
+; 0000 0088     CLKPR=(1<<CLKPCE);
+;PCODE: $000000F8 VOL: 0
+;PCODE: $000000F9 VOL: 0
+; 0000 0089     CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
+;PCODE: $000000FA VOL: 0
+;PCODE: $000000FB VOL: 0
+; 0000 008A     #ifdef _OPTIMIZE_SIZE_
+; 0000 008B     #pragma optsize+
+; 0000 008C     #endif
+; 0000 008D     //ADC init (read each ~5 ms - CTCB Timer1 interrupt)
+; 0000 008E     ACSR=(1<<ACD);
+;PCODE: $000000FC VOL: 0
+;PCODE: $000000FD VOL: 0
+; 0000 008F     DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);  //ADC0, ADC1 are used
+;PCODE: $000000FE VOL: 0
+;PCODE: $000000FF VOL: 0
+; 0000 0090     ADMUX = ADC_VREF_TYPE;  // Voltage Reference: AVCC pin
+;PCODE: $00000100 VOL: 0
+;PCODE: $00000101 VOL: 0
+; 0000 0091     ADCSRA=(1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (0<<ADIF) | (1<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
 ;PCODE: $00000102 VOL: 0
 ;PCODE: $00000103 VOL: 0
-; 0000 0087     // Crystal Oscillator division factor: 1
-; 0000 0088     #pragma optsize-
-; 0000 0089     CLKPR=(1<<CLKPCE);
+; 0000 0092     ADCSRB=(1<<ADTS2) | (0<<ADTS1) | (1<<ADTS0);
 ;PCODE: $00000104 VOL: 0
 ;PCODE: $00000105 VOL: 0
-; 0000 008A     CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
+; 0000 0093     TIMSK1 |= (1<<OCIE1B);
 ;PCODE: $00000106 VOL: 0
 ;PCODE: $00000107 VOL: 0
-; 0000 008B     #ifdef _OPTIMIZE_SIZE_
-; 0000 008C     #pragma optsize+
-; 0000 008D     #endif
-; 0000 008E     //ADC init (read each ~5 ms - CTCB Timer1 interrupt)
-; 0000 008F     ACSR=(1<<ACD);
 ;PCODE: $00000108 VOL: 0
+; 0000 0094     OCR1BH=0xFF;
 ;PCODE: $00000109 VOL: 0
-; 0000 0090     DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);  //ADC0, ADC1 are used
 ;PCODE: $0000010A VOL: 0
+; 0000 0095     OCR1BL=0xFF;
 ;PCODE: $0000010B VOL: 0
-; 0000 0091     ADMUX = ADC_VREF_TYPE;  // Voltage Reference: AVCC pin
 ;PCODE: $0000010C VOL: 0
+; 0000 0096     // Ports init
+; 0000 0097     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
 ;PCODE: $0000010D VOL: 0
-; 0000 0092     ADCSRA=(1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (0<<ADIF) | (1<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
 ;PCODE: $0000010E VOL: 0
+; 0000 0098     DDRB=(1<<PHASE_C_PIN);
 ;PCODE: $0000010F VOL: 0
-; 0000 0093     ADCSRB=(1<<ADTS2) | (0<<ADTS1) | (1<<ADTS0);
 ;PCODE: $00000110 VOL: 0
+; 0000 0099     start_PWM(frequency, amplitude);
 ;PCODE: $00000111 VOL: 0
-; 0000 0094     TIMSK1 |= (1<<OCIE1B);
 ;PCODE: $00000112 VOL: 0
 ;PCODE: $00000113 VOL: 0
+; 0000 009A }
 ;PCODE: $00000114 VOL: 0
-; 0000 0095     OCR1BH=0xFF;
 ;PCODE: $00000115 VOL: 0
+;
+;void main(void)
+; 0000 009D {
 ;PCODE: $00000116 VOL: 0
-; 0000 0096     OCR1BL=0xFF;
+; 0000 009E     invertor_setup();
 ;PCODE: $00000117 VOL: 0
+; 0000 009F     while (1)
 ;PCODE: $00000118 VOL: 0
-; 0000 0097     // Ports init
-; 0000 0098     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
+; 0000 00A0           {
+; 0000 00A1           /* if frequency/amplitude is 0, stop invertor */
+; 0000 00A2           if (adc_data == 0) {
 ;PCODE: $00000119 VOL: 0
 ;PCODE: $0000011A VOL: 0
-; 0000 0099     DDRB=(1<<PHASE_C_PIN);
+; 0000 00A3             while (adc_data == 0) {closed_mode();};
 ;PCODE: $0000011B VOL: 0
 ;PCODE: $0000011C VOL: 0
-; 0000 009A     start_PWM(frequency, amplitude);
 ;PCODE: $0000011D VOL: 0
 ;PCODE: $0000011E VOL: 0
 ;PCODE: $0000011F VOL: 0
-; 0000 009B }
 ;PCODE: $00000120 VOL: 0
+; 0000 00A4             start_PWM(MAX_FREQUENCY*(uint16_t)adc_data/255, adc_data);
 ;PCODE: $00000121 VOL: 0
-;
-;void main(void)
-; 0000 009E {
 ;PCODE: $00000122 VOL: 0
-; 0000 009F     invertor_setup();
 ;PCODE: $00000123 VOL: 0
-; 0000 00A0     while (1)
 ;PCODE: $00000124 VOL: 0
-; 0000 00A1           {
-; 0000 00A2           /* if frequency/amplitude is 0, stop invertor */
-; 0000 00A3           if (adc_data[0] == 0 || adc_data[1] == 0) {
 ;PCODE: $00000125 VOL: 0
 ;PCODE: $00000126 VOL: 0
 ;PCODE: $00000127 VOL: 0
 ;PCODE: $00000128 VOL: 0
 ;PCODE: $00000129 VOL: 0
+; 0000 00A5           }
+; 0000 00A6           /* if ADC data is updated, change frequency/amplitude*/
+; 0000 00A7           if (frequency != MAX_FREQUENCY*(uint16_t)adc_data/255) {
 ;PCODE: $0000012A VOL: 0
 ;PCODE: $0000012B VOL: 0
 ;PCODE: $0000012C VOL: 0
 ;PCODE: $0000012D VOL: 0
-; 0000 00A4             while (adc_data[0] == 0 || adc_data[1] == 0) {closed_mode();};
 ;PCODE: $0000012E VOL: 0
 ;PCODE: $0000012F VOL: 0
 ;PCODE: $00000130 VOL: 0
@@ -497,62 +500,26 @@
 ;PCODE: $00000132 VOL: 0
 ;PCODE: $00000133 VOL: 0
 ;PCODE: $00000134 VOL: 0
+; 0000 00A8             frequency = MAX_FREQUENCY*(uint16_t)adc_data/255;
 ;PCODE: $00000135 VOL: 0
 ;PCODE: $00000136 VOL: 0
 ;PCODE: $00000137 VOL: 0
 ;PCODE: $00000138 VOL: 0
 ;PCODE: $00000139 VOL: 0
 ;PCODE: $0000013A VOL: 0
-; 0000 00A5             start_PWM(MAX_FREQUENCY*(uint16_t)adc_data[1]/255, adc_data[0]);
 ;PCODE: $0000013B VOL: 0
+; 0000 00A9             sinus_period(frequency);
 ;PCODE: $0000013C VOL: 0
 ;PCODE: $0000013D VOL: 0
+; 0000 00AA             sinus_amplitude(adc_data);
 ;PCODE: $0000013E VOL: 0
 ;PCODE: $0000013F VOL: 0
+; 0000 00AB             }
+; 0000 00AC           }
 ;PCODE: $00000140 VOL: 0
 ;PCODE: $00000141 VOL: 0
 ;PCODE: $00000142 VOL: 0
+; 0000 00AD }
 ;PCODE: $00000143 VOL: 0
 ;PCODE: $00000144 VOL: 0
-; 0000 00A6           }
-; 0000 00A7           /* if ADC data is updated, change frequency/amplitude*/
-; 0000 00A8           if (amplitude != adc_data[0]) {amplitude = adc_data[0]; sinus_amplitude(amplitude);}
 ;PCODE: $00000145 VOL: 0
-;PCODE: $00000146 VOL: 0
-;PCODE: $00000147 VOL: 0
-;PCODE: $00000148 VOL: 0
-;PCODE: $00000149 VOL: 0
-;PCODE: $0000014A VOL: 0
-;PCODE: $0000014B VOL: 0
-;PCODE: $0000014C VOL: 0
-; 0000 00A9           if (frequency != MAX_FREQUENCY*(uint16_t)adc_data[1]/255) {frequency = MAX_FREQUENCY*(uint16_t)adc_data[1]/255 ...
-;PCODE: $0000014D VOL: 0
-;PCODE: $0000014E VOL: 0
-;PCODE: $0000014F VOL: 0
-;PCODE: $00000150 VOL: 0
-;PCODE: $00000151 VOL: 0
-;PCODE: $00000152 VOL: 0
-;PCODE: $00000153 VOL: 0
-;PCODE: $00000154 VOL: 0
-;PCODE: $00000155 VOL: 0
-;PCODE: $00000156 VOL: 0
-;PCODE: $00000157 VOL: 0
-;PCODE: $00000158 VOL: 0
-;PCODE: $00000159 VOL: 0
-;PCODE: $0000015A VOL: 0
-;PCODE: $0000015B VOL: 0
-;PCODE: $0000015C VOL: 0
-;PCODE: $0000015D VOL: 0
-;PCODE: $0000015E VOL: 0
-;PCODE: $0000015F VOL: 0
-;PCODE: $00000160 VOL: 0
-;PCODE: $00000161 VOL: 0
-;PCODE: $00000162 VOL: 0
-; 0000 00AA           }
-;PCODE: $00000163 VOL: 0
-;PCODE: $00000164 VOL: 0
-;PCODE: $00000165 VOL: 0
-; 0000 00AB }
-;PCODE: $00000166 VOL: 0
-;PCODE: $00000167 VOL: 0
-;PCODE: $00000168 VOL: 0

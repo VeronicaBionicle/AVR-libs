@@ -36,7 +36,7 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="invertor_pwm.c">
+    <Compile Include="invertor_pwm_uf.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

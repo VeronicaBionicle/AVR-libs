@@ -24,8 +24,8 @@ typedef unsigned int uint16_t;
 #define PHASE_C_PIN PORTB3
 #define MAX_FREQUENCY 50
 
-uint8_t adc_data[2];
-uint8_t ADC_input=0;
+uint8_t adc_data;
+uint8_t ADC_input=1;
 
 uint8_t step[3];
 
@@ -125,8 +125,7 @@ interrupt [TIM1_COMPA] void timer1_compa_isr(void)
 
 interrupt [ADC_INT] void adc_isr(void)
 {
-    adc_data[ADC_input]=ADCH;
-    if (ADC_input == 1) {ADC_input=0;} else {ADC_input=1;}
+    adc_data=ADCH;
     ADMUX= ADC_input + ADC_VREF_TYPE;
     ADCSRA|=(1<<ADSC);
 }
@@ -160,16 +159,15 @@ void main(void)
     while (1)
           {
           /* if frequency/amplitude is 0, stop invertor */
-          if (adc_data[0] == 0 || adc_data[1] == 0) {
-            while (adc_data[0] == 0 || adc_data[1] == 0) {closed_mode();};
-            start_PWM(MAX_FREQUENCY*(uint16_t)adc_data[1]/255, adc_data[0]);
+          if (adc_data == 0) {
+            while (adc_data == 0) {closed_mode();};
+            start_PWM(MAX_FREQUENCY*(uint16_t)adc_data/255, adc_data);
           }
           /* if ADC data is updated, change frequency/amplitude*/
-          //if (amplitude != adc_data[0]) {amplitude = adc_data[0]; sinus_amplitude(amplitude);}
-          if (frequency != MAX_FREQUENCY*(uint16_t)adc_data[1]/255) {
-            frequency = MAX_FREQUENCY*(uint16_t)adc_data[1]/255;
+          if (frequency != MAX_FREQUENCY*(uint16_t)adc_data/255) {
+            frequency = MAX_FREQUENCY*(uint16_t)adc_data/255;
             sinus_period(frequency);
-            sinus_amplitude((float)frequency/MAX_FREQUENCY*255);
+            sinus_amplitude(adc_data);
             }
           }
 }

@@ -1087,11 +1087,12 @@ __DELAY_USW_LOOP:
 	.ENDM
 
 ;NAME DEFINITIONS FOR GLOBAL VARIABLES ALLOCATED TO REGISTERS
-	.DEF _ADC_input=R4
-	.DEF _phase_b_step=R3
-	.DEF _phase_c_step=R6
-	.DEF _amplitude=R5
-	.DEF _frequency=R8
+	.DEF _adc_data=R4
+	.DEF _ADC_input=R3
+	.DEF _phase_b_step=R6
+	.DEF _phase_c_step=R5
+	.DEF _amplitude=R8
+	.DEF _frequency=R7
 
 ;GPIOR0 INITIALIZATION VALUE
 	.EQU __GPIOR0_INIT=0x00
@@ -1225,8 +1226,8 @@ _sinus_table:
 
 ;GLOBAL REGISTER VARIABLES INITIALIZATION
 __REG_VARS:
-	.DB  0x0,0x0,0xFF,0x0
-	.DB  0x0,0x64
+	.DB  0x1,0x0,0x0,0x0
+	.DB  0x32,0xFF
 
 
 __GLOBAL_INI_TBL:
@@ -1350,10 +1351,10 @@ __GLOBAL_INI_END:
 ;#define PHASE_A_PIN PORTD6
 ;#define PHASE_B_PIN PORTD5
 ;#define PHASE_C_PIN PORTB3
-;#define MAX_FREQUENCY 100
+;#define MAX_FREQUENCY 50
 ;
-;uint8_t adc_data[2];
-;uint8_t ADC_input=0;
+;uint8_t adc_data;
+;uint8_t ADC_input=1;
 ;
 ;uint8_t step[3];
 ;
@@ -1363,7 +1364,7 @@ __GLOBAL_INI_END:
 ;uint8_t phase_c_step = 0;
 ;
 ;uint8_t amplitude = 255;
-;uint8_t frequency = 100;
+;uint8_t frequency = 50;
 ;
 ;const float sinus_table[N+1] = {
 ;    0.5,0.517,0.535,0.552,0.57,0.587,0.604,0.621,0.638,0.655,0.671,0.687,0.703,0.719,0.735,0.75,
@@ -1597,9 +1598,9 @@ _0x6:
 ; 0000 0070    /* For phase B */
 ; 0000 0071    if (phase_b_step < PHASE_B_DELAY) {phase_b_step++;} else {
 	LDI  R30,LOW(120)
-	CP   R3,R30
+	CP   R6,R30
 	BRSH _0x7
-	INC  R3
+	INC  R6
 	RJMP _0x8
 _0x7:
 ; 0000 0072        step[B]++;
@@ -1622,9 +1623,9 @@ _0x8:
 ; 0000 0076    /* For phase C */
 ; 0000 0077    if (phase_c_step < PHASE_C_DELAY) {phase_c_step++;} else {
 	LDI  R30,LOW(60)
-	CP   R6,R30
+	CP   R5,R30
 	BRSH _0xA
-	INC  R6
+	INC  R5
 	RJMP _0xB
 _0xA:
 ; 0000 0078        step[C]++;
@@ -1657,168 +1658,135 @@ _0xB:
 ; 0000 007F {
 _adc_isr:
 ; .FSTART _adc_isr
-	ST   -Y,R26
-	ST   -Y,R27
 	ST   -Y,R30
 	IN   R30,SREG
 	ST   -Y,R30
-; 0000 0080     adc_data[ADC_input]=ADCH;
-	MOV  R26,R4
-	LDI  R27,0
-	SUBI R26,LOW(-_adc_data)
-	SBCI R27,HIGH(-_adc_data)
-	LDS  R30,121
-	ST   X,R30
-; 0000 0081     if (ADC_input == 1) {ADC_input=0;} else {ADC_input=1;}
-	LDI  R30,LOW(1)
-	CP   R30,R4
-	BRNE _0xD
-	CLR  R4
-	RJMP _0xE
-_0xD:
-	LDI  R30,LOW(1)
-	MOV  R4,R30
-_0xE:
-; 0000 0082     ADMUX= ADC_input + ADC_VREF_TYPE;
-	MOV  R30,R4
+; 0000 0080     adc_data=ADCH;
+	LDS  R4,121
+; 0000 0081     ADMUX= ADC_input + ADC_VREF_TYPE;
+	MOV  R30,R3
 	ORI  R30,LOW(0x60)
 	STS  124,R30
-; 0000 0083     ADCSRA|=(1<<ADSC);
+; 0000 0082     ADCSRA|=(1<<ADSC);
 	LDS  R30,122
 	ORI  R30,0x40
 	STS  122,R30
-; 0000 0084 }
+; 0000 0083 }
 	LD   R30,Y+
 	OUT  SREG,R30
 	LD   R30,Y+
-	LD   R27,Y+
-	LD   R26,Y+
 	RETI
 ; .FEND
 ;
 ;void invertor_setup() {
-; 0000 0086 void invertor_setup() {
+; 0000 0085 void invertor_setup() {
 _invertor_setup:
 ; .FSTART _invertor_setup
-; 0000 0087     // Crystal Oscillator division factor: 1
-; 0000 0088     #pragma optsize-
-; 0000 0089     CLKPR=(1<<CLKPCE);
+; 0000 0086     // Crystal Oscillator division factor: 1
+; 0000 0087     #pragma optsize-
+; 0000 0088     CLKPR=(1<<CLKPCE);
 	LDI  R30,LOW(128)
 	STS  97,R30
-; 0000 008A     CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
+; 0000 0089     CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
 	LDI  R30,LOW(0)
 	STS  97,R30
-; 0000 008B     #ifdef _OPTIMIZE_SIZE_
-; 0000 008C     #pragma optsize+
-; 0000 008D     #endif
-; 0000 008E     //ADC init (read each ~5 ms - CTCB Timer1 interrupt)
-; 0000 008F     ACSR=(1<<ACD);
+; 0000 008A     #ifdef _OPTIMIZE_SIZE_
+; 0000 008B     #pragma optsize+
+; 0000 008C     #endif
+; 0000 008D     //ADC init (read each ~5 ms - CTCB Timer1 interrupt)
+; 0000 008E     ACSR=(1<<ACD);
 	LDI  R30,LOW(128)
 	OUT  0x30,R30
-; 0000 0090     DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);  //ADC0, ADC1 are used
+; 0000 008F     DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);  //ADC0, ADC1 are used
 	LDI  R30,LOW(60)
 	STS  126,R30
-; 0000 0091     ADMUX = ADC_VREF_TYPE;  // Voltage Reference: AVCC pin
+; 0000 0090     ADMUX = ADC_VREF_TYPE;  // Voltage Reference: AVCC pin
 	LDI  R30,LOW(96)
 	STS  124,R30
-; 0000 0092     ADCSRA=(1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (0<<ADIF) | (1<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
+; 0000 0091     ADCSRA=(1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (0<<ADIF) | (1<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
 	LDI  R30,LOW(235)
 	STS  122,R30
-; 0000 0093     ADCSRB=(1<<ADTS2) | (0<<ADTS1) | (1<<ADTS0);
+; 0000 0092     ADCSRB=(1<<ADTS2) | (0<<ADTS1) | (1<<ADTS0);
 	LDI  R30,LOW(5)
 	STS  123,R30
-; 0000 0094     TIMSK1 |= (1<<OCIE1B);
+; 0000 0093     TIMSK1 |= (1<<OCIE1B);
 	LDS  R30,111
 	ORI  R30,4
 	STS  111,R30
-; 0000 0095     OCR1BH=0xFF;
+; 0000 0094     OCR1BH=0xFF;
 	LDI  R30,LOW(255)
 	STS  139,R30
-; 0000 0096     OCR1BL=0xFF;
+; 0000 0095     OCR1BL=0xFF;
 	STS  138,R30
-; 0000 0097     // Ports init
-; 0000 0098     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
+; 0000 0096     // Ports init
+; 0000 0097     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
 	LDI  R30,LOW(96)
 	OUT  0xA,R30
-; 0000 0099     DDRB=(1<<PHASE_C_PIN);
+; 0000 0098     DDRB=(1<<PHASE_C_PIN);
 	LDI  R30,LOW(8)
 	OUT  0x4,R30
-; 0000 009A     start_PWM(frequency, amplitude);
-	ST   -Y,R8
-	MOV  R26,R5
+; 0000 0099     start_PWM(frequency, amplitude);
+	ST   -Y,R7
+	MOV  R26,R8
 	RCALL _start_PWM
-; 0000 009B }
+; 0000 009A }
 	RET
 ; .FEND
 ;
 ;void main(void)
-; 0000 009E {
+; 0000 009D {
 _main:
 ; .FSTART _main
-; 0000 009F     invertor_setup();
+; 0000 009E     invertor_setup();
 	RCALL _invertor_setup
-; 0000 00A0     while (1)
-_0xF:
-; 0000 00A1           {
-; 0000 00A2           /* if frequency/amplitude is 0, stop invertor */
-; 0000 00A3           if (adc_data[0] == 0 || adc_data[1] == 0) {
-	LDS  R26,_adc_data
-	CPI  R26,LOW(0x0)
-	BREQ _0x13
-	__GETB2MN _adc_data,1
-	CPI  R26,LOW(0x0)
-	BRNE _0x12
-_0x13:
-; 0000 00A4             while (adc_data[0] == 0 || adc_data[1] == 0) {closed_mode();};
-_0x15:
-	LDS  R26,_adc_data
-	CPI  R26,LOW(0x0)
-	BREQ _0x18
-	__GETB2MN _adc_data,1
-	CPI  R26,LOW(0x0)
-	BRNE _0x17
-_0x18:
+; 0000 009F     while (1)
+_0xD:
+; 0000 00A0           {
+; 0000 00A1           /* if frequency/amplitude is 0, stop invertor */
+; 0000 00A2           if (adc_data == 0) {
+	TST  R4
+	BRNE _0x10
+; 0000 00A3             while (adc_data == 0) {closed_mode();};
+_0x11:
+	TST  R4
+	BRNE _0x13
 	RCALL _closed_mode
-	RJMP _0x15
-_0x17:
-; 0000 00A5             start_PWM(MAX_FREQUENCY*(uint16_t)adc_data[1]/255, adc_data[0]);
+	RJMP _0x11
+_0x13:
+; 0000 00A4             start_PWM(MAX_FREQUENCY*(uint16_t)adc_data/255, adc_data);
 	RCALL SUBOPT_0x1
 	ST   -Y,R30
-	LDS  R26,_adc_data
+	MOV  R26,R4
 	RCALL _start_PWM
-; 0000 00A6           }
-; 0000 00A7           /* if ADC data is updated, change frequency/amplitude*/
-; 0000 00A8           if (amplitude != adc_data[0]) {amplitude = adc_data[0]; sinus_amplitude(amplitude);}
-_0x12:
-	LDS  R30,_adc_data
-	CP   R30,R5
-	BREQ _0x1A
-	LDS  R5,_adc_data
-	MOV  R26,R5
-	RCALL _sinus_amplitude
-; 0000 00A9           if (frequency != MAX_FREQUENCY*(uint16_t)adc_data[1]/255) {frequency = MAX_FREQUENCY*(uint16_t)adc_data[1]/255 ...
-_0x1A:
+; 0000 00A5           }
+; 0000 00A6           /* if ADC data is updated, change frequency/amplitude*/
+; 0000 00A7           if (frequency != MAX_FREQUENCY*(uint16_t)adc_data/255) {
+_0x10:
 	RCALL SUBOPT_0x1
-	MOV  R26,R8
+	MOV  R26,R7
 	LDI  R27,0
 	CP   R30,R26
 	CPC  R31,R27
-	BREQ _0x1B
+	BREQ _0x14
+; 0000 00A8             frequency = MAX_FREQUENCY*(uint16_t)adc_data/255;
 	RCALL SUBOPT_0x1
-	MOV  R8,R30
-	MOV  R26,R8
+	MOV  R7,R30
+; 0000 00A9             sinus_period(frequency);
+	MOV  R26,R7
 	RCALL _sinus_period
-; 0000 00AA           }
-_0x1B:
-	RJMP _0xF
-; 0000 00AB }
-_0x1C:
-	RJMP _0x1C
+; 0000 00AA             sinus_amplitude(adc_data);
+	MOV  R26,R4
+	RCALL _sinus_amplitude
+; 0000 00AB             }
+; 0000 00AC           }
+_0x14:
+	RJMP _0xD
+; 0000 00AD }
+_0x15:
+	RJMP _0x15
 ; .FEND
 
 	.DSEG
-_adc_data:
-	.BYTE 0x2
 _step:
 	.BYTE 0x3
 _sinus:
@@ -1833,10 +1801,10 @@ SUBOPT_0x0:
 	LD   R30,Z
 	RET
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:13 WORDS
+;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:11 WORDS
 SUBOPT_0x1:
-	__GETB1MN _adc_data,1
-	LDI  R26,LOW(100)
+	MOV  R30,R4
+	LDI  R26,LOW(50)
 	MUL  R30,R26
 	MOVW R30,R0
 	MOVW R26,R30

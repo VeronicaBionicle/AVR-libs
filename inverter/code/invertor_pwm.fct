@@ -1,5 +1,5 @@
-main DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"invertor_pwm.c" LINE:157
-invertor_setup DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"invertor_pwm.c" LINE:134
-start_PWM DSTACK_USAGE:2 DSTACK_LEVEL:2 FILE:"invertor_pwm.c" LINE:84
-sinus_period DSTACK_USAGE:3 DSTACK_LEVEL:5 FILE:"invertor_pwm.c" LINE:72
-timer1_compa_isr DSTACK_USAGE:4 DSTACK_LEVEL:9 FILE:"invertor_pwm.c" LINE:106
+main DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"invertor_pwm_uf.c" LINE:156
+invertor_setup DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"invertor_pwm_uf.c" LINE:133
+start_PWM DSTACK_USAGE:2 DSTACK_LEVEL:2 FILE:"invertor_pwm_uf.c" LINE:84
+sinus_period DSTACK_USAGE:3 DSTACK_LEVEL:5 FILE:"invertor_pwm_uf.c" LINE:72
+timer1_compa_isr DSTACK_USAGE:4 DSTACK_LEVEL:9 FILE:"invertor_pwm_uf.c" LINE:106

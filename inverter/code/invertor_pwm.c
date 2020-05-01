@@ -35,7 +35,7 @@ uint8_t phase_b_step = 0;
 uint8_t phase_c_step = 0;
 
 uint8_t amplitude = 255;
-uint8_t frequency = 100;
+uint8_t frequency = 50;
 
 const float sinus_table[N+1] = {
     0.5,0.517,0.535,0.552,0.57,0.587,0.604,0.621,0.638,0.655,0.671,0.687,0.703,0.719,0.735,0.75,
