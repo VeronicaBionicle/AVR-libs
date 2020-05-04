@@ -6,7 +6,7 @@
 ;Build configuration    : Debug
 ;Chip type              : ATmega328P
 ;Program type           : Application
-;Clock frequency        : 12,000000 MHz
+;Clock frequency        : 3,072000 MHz
 ;Memory model           : Small
 ;Optimize for           : Size
 ;(s)printf features     : int, width
@@ -1087,12 +1087,11 @@ __DELAY_USW_LOOP:
 	.ENDM
 
 ;NAME DEFINITIONS FOR GLOBAL VARIABLES ALLOCATED TO REGISTERS
-	.DEF _adc_data=R4
-	.DEF _ADC_input=R3
-	.DEF _phase_b_step=R6
-	.DEF _phase_c_step=R5
-	.DEF _amplitude=R8
-	.DEF _frequency=R7
+	.DEF _ADC_input=R4
+	.DEF _phase_b_step=R3
+	.DEF _phase_c_step=R6
+	.DEF _amplitude=R5
+	.DEF _frequency=R8
 
 ;GPIOR0 INITIALIZATION VALUE
 	.EQU __GPIOR0_INIT=0x00
@@ -1132,108 +1131,117 @@ __START_OF_CODE:
 	JMP  0x00
 
 _sinus_table:
-	.DB  0x0,0x0,0x0,0x3F,0x1D,0x5A,0x4,0x3F
-	.DB  0xC3,0xF5,0x8,0x3F,0xDF,0x4F,0xD,0x3F
-	.DB  0x85,0xEB,0x11,0x3F,0xA2,0x45,0x16,0x3F
-	.DB  0xBE,0x9F,0x1A,0x3F,0xDB,0xF9,0x1E,0x3F
-	.DB  0xF8,0x53,0x23,0x3F,0x14,0xAE,0x27,0x3F
-	.DB  0xA8,0xC6,0x2B,0x3F,0x3B,0xDF,0x2F,0x3F
-	.DB  0xCF,0xF7,0x33,0x3F,0x62,0x10,0x38,0x3F
-	.DB  0xF6,0x28,0x3C,0x3F,0x0,0x0,0x40,0x3F
-	.DB  0xA,0xD7,0x43,0x3F,0x14,0xAE,0x47,0x3F
-	.DB  0x96,0x43,0x4B,0x3F,0x17,0xD9,0x4E,0x3F
-	.DB  0xE,0x2D,0x52,0x3F,0x8F,0xC2,0x55,0x3F
-	.DB  0xFE,0xD4,0x58,0x3F,0xF6,0x28,0x5C,0x3F
-	.DB  0x64,0x3B,0x5F,0x3F,0x4A,0xC,0x62,0x3F
-	.DB  0x2F,0xDD,0x64,0x3F,0x14,0xAE,0x67,0x3F
-	.DB  0x71,0x3D,0x6A,0x3F,0x44,0x8B,0x6C,0x3F
-	.DB  0x17,0xD9,0x6E,0x3F,0x60,0xE5,0x70,0x3F
-	.DB  0xAA,0xF1,0x72,0x3F,0xF4,0xFD,0x74,0x3F
-	.DB  0xB4,0xC8,0x76,0x3F,0xEC,0x51,0x78,0x3F
-	.DB  0x23,0xDB,0x79,0x3F,0xD1,0x22,0x7B,0x3F
-	.DB  0xF6,0x28,0x7C,0x3F,0x1B,0x2F,0x7D,0x3F
-	.DB  0xB6,0xF3,0x7D,0x3F,0x52,0xB8,0x7E,0x3F
-	.DB  0x64,0x3B,0x7F,0x3F,0x77,0xBE,0x7F,0x3F
-	.DB  0x0,0x0,0x80,0x3F,0x0,0x0,0x80,0x3F
-	.DB  0x0,0x0,0x80,0x3F,0x77,0xBE,0x7F,0x3F
-	.DB  0x64,0x3B,0x7F,0x3F,0x52,0xB8,0x7E,0x3F
-	.DB  0xB6,0xF3,0x7D,0x3F,0x1B,0x2F,0x7D,0x3F
-	.DB  0xF6,0x28,0x7C,0x3F,0xD1,0x22,0x7B,0x3F
-	.DB  0x23,0xDB,0x79,0x3F,0xEC,0x51,0x78,0x3F
-	.DB  0xB4,0xC8,0x76,0x3F,0xF4,0xFD,0x74,0x3F
-	.DB  0xAA,0xF1,0x72,0x3F,0x60,0xE5,0x70,0x3F
-	.DB  0x17,0xD9,0x6E,0x3F,0x44,0x8B,0x6C,0x3F
-	.DB  0x71,0x3D,0x6A,0x3F,0x14,0xAE,0x67,0x3F
-	.DB  0x2F,0xDD,0x64,0x3F,0x4A,0xC,0x62,0x3F
-	.DB  0x64,0x3B,0x5F,0x3F,0xF6,0x28,0x5C,0x3F
-	.DB  0xFE,0xD4,0x58,0x3F,0x8F,0xC2,0x55,0x3F
-	.DB  0xE,0x2D,0x52,0x3F,0x17,0xD9,0x4E,0x3F
-	.DB  0x96,0x43,0x4B,0x3F,0x14,0xAE,0x47,0x3F
-	.DB  0xA,0xD7,0x43,0x3F,0x0,0x0,0x40,0x3F
-	.DB  0xF6,0x28,0x3C,0x3F,0x62,0x10,0x38,0x3F
-	.DB  0xCF,0xF7,0x33,0x3F,0x3B,0xDF,0x2F,0x3F
-	.DB  0xA8,0xC6,0x2B,0x3F,0x14,0xAE,0x27,0x3F
-	.DB  0xF8,0x53,0x23,0x3F,0xDB,0xF9,0x1E,0x3F
-	.DB  0xBE,0x9F,0x1A,0x3F,0xA2,0x45,0x16,0x3F
-	.DB  0x85,0xEB,0x11,0x3F,0xDF,0x4F,0xD,0x3F
-	.DB  0xC3,0xF5,0x8,0x3F,0x1D,0x5A,0x4,0x3F
-	.DB  0x0,0x0,0x0,0x3F,0xC7,0x4B,0xF7,0x3E
-	.DB  0x7B,0x14,0xEE,0x3E,0x42,0x60,0xE5,0x3E
-	.DB  0xF6,0x28,0xDC,0x3E,0xBC,0x74,0xD3,0x3E
-	.DB  0x83,0xC0,0xCA,0x3E,0x4A,0xC,0xC2,0x3E
-	.DB  0x10,0x58,0xB9,0x3E,0xD7,0xA3,0xB0,0x3E
-	.DB  0xB0,0x72,0xA8,0x3E,0x89,0x41,0xA0,0x3E
-	.DB  0x62,0x10,0x98,0x3E,0x3B,0xDF,0x8F,0x3E
-	.DB  0x14,0xAE,0x87,0x3E,0x0,0x0,0x80,0x3E
-	.DB  0xD7,0xA3,0x70,0x3E,0xAE,0x47,0x61,0x3E
-	.DB  0xAA,0xF1,0x52,0x3E,0xA6,0x9B,0x44,0x3E
-	.DB  0xC7,0x4B,0x37,0x3E,0xC3,0xF5,0x28,0x3E
-	.DB  0x8,0xAC,0x1C,0x3E,0x29,0x5C,0xF,0x3E
-	.DB  0x6F,0x12,0x3,0x3E,0xB2,0x9D,0xEF,0x3D
-	.DB  0x87,0x16,0xD9,0x3D,0x81,0x95,0xC3,0x3D
-	.DB  0xA0,0x1A,0xAF,0x3D,0xE3,0xA5,0x9B,0x3D
-	.DB  0x4C,0x37,0x89,0x3D,0xB2,0x9D,0x6F,0x3D
-	.DB  0xF2,0x41,0x4F,0x3D,0x7C,0xF2,0x30,0x3D
-	.DB  0x2B,0x18,0x15,0x3D,0xFE,0x65,0xF7,0x3C
-	.DB  0x39,0xB4,0xC8,0x3C,0xC0,0xEC,0x9E,0x3C
-	.DB  0x21,0x1F,0x74,0x3C,0xEA,0x95,0x32,0x3C
-	.DB  0x6C,0x9,0xF9,0x3B,0x85,0x94,0x9F,0x3B
-	.DB  0x92,0x91,0x33,0x3B,0x68,0xE8,0x9F,0x3A
-	.DB  0x68,0xE8,0x9F,0x39,0x0,0x0,0x0,0x0
-	.DB  0x68,0xE8,0x9F,0x39,0x68,0xE8,0x9F,0x3A
-	.DB  0x92,0x91,0x33,0x3B,0x85,0x94,0x9F,0x3B
-	.DB  0x6C,0x9,0xF9,0x3B,0xEA,0x95,0x32,0x3C
-	.DB  0x21,0x1F,0x74,0x3C,0xC0,0xEC,0x9E,0x3C
-	.DB  0x39,0xB4,0xC8,0x3C,0xFE,0x65,0xF7,0x3C
-	.DB  0x2B,0x18,0x15,0x3D,0x7C,0xF2,0x30,0x3D
-	.DB  0xF2,0x41,0x4F,0x3D,0xB2,0x9D,0x6F,0x3D
-	.DB  0x4C,0x37,0x89,0x3D,0xE3,0xA5,0x9B,0x3D
-	.DB  0xA0,0x1A,0xAF,0x3D,0x81,0x95,0xC3,0x3D
-	.DB  0x87,0x16,0xD9,0x3D,0xB2,0x9D,0xEF,0x3D
-	.DB  0x6F,0x12,0x3,0x3E,0x29,0x5C,0xF,0x3E
-	.DB  0x8,0xAC,0x1C,0x3E,0xC3,0xF5,0x28,0x3E
-	.DB  0xC7,0x4B,0x37,0x3E,0xA6,0x9B,0x44,0x3E
-	.DB  0xAA,0xF1,0x52,0x3E,0xAE,0x47,0x61,0x3E
-	.DB  0xD7,0xA3,0x70,0x3E,0x0,0x0,0x80,0x3E
-	.DB  0x14,0xAE,0x87,0x3E,0x3B,0xDF,0x8F,0x3E
-	.DB  0x62,0x10,0x98,0x3E,0x89,0x41,0xA0,0x3E
-	.DB  0xB0,0x72,0xA8,0x3E,0xD7,0xA3,0xB0,0x3E
-	.DB  0x10,0x58,0xB9,0x3E,0x4A,0xC,0xC2,0x3E
-	.DB  0x83,0xC0,0xCA,0x3E,0xBC,0x74,0xD3,0x3E
-	.DB  0xF6,0x28,0xDC,0x3E,0x42,0x60,0xE5,0x3E
-	.DB  0x7B,0x14,0xEE,0x3E,0xC7,0x4B,0xF7,0x3E
-	.DB  0x0,0x0,0x0,0x3F,0x0,0x0,0x0,0x0
+	.DB  0x0,0x0,0x0,0x0,0xC6,0xF2,0x8E,0x3C
+	.DB  0x7B,0xDC,0xE,0x3D,0x5,0x13,0x56,0x3D
+	.DB  0x65,0x83,0x8E,0x3D,0xD4,0xD0,0xB1,0x3D
+	.DB  0xCD,0xE6,0xD4,0x3D,0x60,0xBA,0xF7,0x3D
+	.DB  0x57,0x20,0xD,0x3E,0x7A,0x37,0x1E,0x3E
+	.DB  0x44,0x1D,0x2F,0x3E,0x6F,0xCC,0x3F,0x3E
+	.DB  0xC9,0x3F,0x50,0x3E,0x2F,0x72,0x60,0x3E
+	.DB  0x94,0x5E,0x70,0x3E,0x0,0x0,0x80,0x3E
+	.DB  0xCA,0xA8,0x87,0x3E,0x44,0x27,0x8F,0x3E
+	.DB  0x18,0x79,0x96,0x3E,0xFE,0x9B,0x9D,0x3E
+	.DB  0xBB,0x8D,0xA4,0x3E,0x25,0x4C,0xAB,0x3E
+	.DB  0x22,0xD5,0xB1,0x3E,0xA7,0x26,0xB8,0x3E
+	.DB  0xBD,0x3E,0xBE,0x3E,0x7D,0x1B,0xC4,0x3E
+	.DB  0x13,0xBB,0xC9,0x3E,0xBD,0x1B,0xCF,0x3E
+	.DB  0xCE,0x3B,0xD4,0x3E,0xAE,0x19,0xD9,0x3E
+	.DB  0xD7,0xB3,0xDD,0x3E,0xDA,0x8,0xE2,0x3E
+	.DB  0x5E,0x17,0xE6,0x3E,0x1D,0xDE,0xE9,0x3E
+	.DB  0xEC,0x5B,0xED,0x3E,0xB2,0x8F,0xF0,0x3E
+	.DB  0x71,0x78,0xF3,0x3E,0x3F,0x15,0xF6,0x3E
+	.DB  0x4D,0x65,0xF8,0x3E,0xE2,0x67,0xFA,0x3E
+	.DB  0x5C,0x1C,0xFC,0x3E,0x35,0x82,0xFD,0x3E
+	.DB  0xFD,0x98,0xFE,0x3E,0x5C,0x60,0xFF,0x3E
+	.DB  0x14,0xD8,0xFF,0x3E,0x0,0x0,0x0,0x3F
+	.DB  0x14,0xD8,0xFF,0x3E,0x5C,0x60,0xFF,0x3E
+	.DB  0xFD,0x98,0xFE,0x3E,0x35,0x82,0xFD,0x3E
+	.DB  0x5C,0x1C,0xFC,0x3E,0xE2,0x67,0xFA,0x3E
+	.DB  0x4D,0x65,0xF8,0x3E,0x3F,0x15,0xF6,0x3E
+	.DB  0x71,0x78,0xF3,0x3E,0xB2,0x8F,0xF0,0x3E
+	.DB  0xEC,0x5B,0xED,0x3E,0x1D,0xDE,0xE9,0x3E
+	.DB  0x5E,0x17,0xE6,0x3E,0xDA,0x8,0xE2,0x3E
+	.DB  0xD7,0xB3,0xDD,0x3E,0xAE,0x19,0xD9,0x3E
+	.DB  0xCE,0x3B,0xD4,0x3E,0xBD,0x1B,0xCF,0x3E
+	.DB  0x13,0xBB,0xC9,0x3E,0x7D,0x1B,0xC4,0x3E
+	.DB  0xBD,0x3E,0xBE,0x3E,0xA7,0x26,0xB8,0x3E
+	.DB  0x22,0xD5,0xB1,0x3E,0x25,0x4C,0xAB,0x3E
+	.DB  0xBB,0x8D,0xA4,0x3E,0xFE,0x9B,0x9D,0x3E
+	.DB  0x18,0x79,0x96,0x3E,0x44,0x27,0x8F,0x3E
+	.DB  0xCA,0xA8,0x87,0x3E,0x0,0x0,0x80,0x3E
+	.DB  0x94,0x5E,0x70,0x3E,0x2F,0x72,0x60,0x3E
+	.DB  0xC9,0x3F,0x50,0x3E,0x6F,0xCC,0x3F,0x3E
+	.DB  0x44,0x1D,0x2F,0x3E,0x7A,0x37,0x1E,0x3E
+	.DB  0x57,0x20,0xD,0x3E,0x60,0xBA,0xF7,0x3D
+	.DB  0xCD,0xE6,0xD4,0x3D,0xD4,0xD0,0xB1,0x3D
+	.DB  0x65,0x83,0x8E,0x3D,0x5,0x13,0x56,0x3D
+	.DB  0x7B,0xDC,0xE,0x3D,0xC6,0xF2,0x8E,0x3C
+	.DB  0x0,0x0,0x0,0x0,0xC6,0xF2,0x8E,0xBC
+	.DB  0x7B,0xDC,0xE,0xBD,0x5,0x13,0x56,0xBD
+	.DB  0x65,0x83,0x8E,0xBD,0xD4,0xD0,0xB1,0xBD
+	.DB  0xCD,0xE6,0xD4,0xBD,0x60,0xBA,0xF7,0xBD
+	.DB  0x57,0x20,0xD,0xBE,0x7A,0x37,0x1E,0xBE
+	.DB  0x44,0x1D,0x2F,0xBE,0x6F,0xCC,0x3F,0xBE
+	.DB  0xC9,0x3F,0x50,0xBE,0x2F,0x72,0x60,0xBE
+	.DB  0x94,0x5E,0x70,0xBE,0x0,0x0,0x80,0xBE
+	.DB  0xCA,0xA8,0x87,0xBE,0x44,0x27,0x8F,0xBE
+	.DB  0x18,0x79,0x96,0xBE,0xFE,0x9B,0x9D,0xBE
+	.DB  0xBB,0x8D,0xA4,0xBE,0x25,0x4C,0xAB,0xBE
+	.DB  0x22,0xD5,0xB1,0xBE,0xA7,0x26,0xB8,0xBE
+	.DB  0xBD,0x3E,0xBE,0xBE,0x7D,0x1B,0xC4,0xBE
+	.DB  0x13,0xBB,0xC9,0xBE,0xBD,0x1B,0xCF,0xBE
+	.DB  0xCE,0x3B,0xD4,0xBE,0xAE,0x19,0xD9,0xBE
+	.DB  0xD7,0xB3,0xDD,0xBE,0xDA,0x8,0xE2,0xBE
+	.DB  0x5E,0x17,0xE6,0xBE,0x1D,0xDE,0xE9,0xBE
+	.DB  0xEC,0x5B,0xED,0xBE,0xB2,0x8F,0xF0,0xBE
+	.DB  0x71,0x78,0xF3,0xBE,0x3F,0x15,0xF6,0xBE
+	.DB  0x4D,0x65,0xF8,0xBE,0xE2,0x67,0xFA,0xBE
+	.DB  0x5C,0x1C,0xFC,0xBE,0x35,0x82,0xFD,0xBE
+	.DB  0xFD,0x98,0xFE,0xBE,0x5C,0x60,0xFF,0xBE
+	.DB  0x14,0xD8,0xFF,0xBE,0x0,0x0,0x0,0xBF
+	.DB  0x14,0xD8,0xFF,0xBE,0x5C,0x60,0xFF,0xBE
+	.DB  0xFD,0x98,0xFE,0xBE,0x35,0x82,0xFD,0xBE
+	.DB  0x5C,0x1C,0xFC,0xBE,0xE2,0x67,0xFA,0xBE
+	.DB  0x4D,0x65,0xF8,0xBE,0x3F,0x15,0xF6,0xBE
+	.DB  0x71,0x78,0xF3,0xBE,0xB2,0x8F,0xF0,0xBE
+	.DB  0xEC,0x5B,0xED,0xBE,0x1D,0xDE,0xE9,0xBE
+	.DB  0x5E,0x17,0xE6,0xBE,0xDA,0x8,0xE2,0xBE
+	.DB  0xD7,0xB3,0xDD,0xBE,0xAE,0x19,0xD9,0xBE
+	.DB  0xCE,0x3B,0xD4,0xBE,0xBD,0x1B,0xCF,0xBE
+	.DB  0x13,0xBB,0xC9,0xBE,0x7D,0x1B,0xC4,0xBE
+	.DB  0xBD,0x3E,0xBE,0xBE,0xA7,0x26,0xB8,0xBE
+	.DB  0x22,0xD5,0xB1,0xBE,0x25,0x4C,0xAB,0xBE
+	.DB  0xBB,0x8D,0xA4,0xBE,0xFE,0x9B,0x9D,0xBE
+	.DB  0x18,0x79,0x96,0xBE,0x44,0x27,0x8F,0xBE
+	.DB  0xCA,0xA8,0x87,0xBE,0x0,0x0,0x80,0xBE
+	.DB  0x94,0x5E,0x70,0xBE,0x2F,0x72,0x60,0xBE
+	.DB  0xC9,0x3F,0x50,0xBE,0x6F,0xCC,0x3F,0xBE
+	.DB  0x44,0x1D,0x2F,0xBE,0x7A,0x37,0x1E,0xBE
+	.DB  0x57,0x20,0xD,0xBE,0x60,0xBA,0xF7,0xBD
+	.DB  0xCD,0xE6,0xD4,0xBD,0xD4,0xD0,0xB1,0xBD
+	.DB  0x65,0x83,0x8E,0xBD,0x0,0x0,0x0,0x0
+	.DB  0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0
+	.DB  0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0
 
 ;GLOBAL REGISTER VARIABLES INITIALIZATION
 __REG_VARS:
-	.DB  0x1,0x0,0x0,0x0
-	.DB  0x32,0xFF
+	.DB  0x0,0x0,0xFF,0x0
+	.DB  0x0,0xC8
 
+_0x2020060:
+	.DB  0x1
+_0x2020000:
+	.DB  0x2D,0x4E,0x41,0x4E,0x0,0x49,0x4E,0x46
+	.DB  0x0
 
 __GLOBAL_INI_TBL:
 	.DW  0x06
 	.DW  0x03
 	.DW  __REG_VARS*2
+
+	.DW  0x01
+	.DW  __seed_G101
+	.DW  _0x2020060*2
 
 _0xFFFFFFFF:
 	.DW  0
@@ -1328,6 +1336,7 @@ __GLOBAL_INI_END:
 	.EQU __sm_ext_standby=0x0E
 	.SET power_ctrl_reg=smcr
 	#endif
+;#include <math.h>
 ;
 ;typedef unsigned char uint8_t;
 ;typedef unsigned int uint16_t;
@@ -1335,10 +1344,12 @@ __GLOBAL_INI_END:
 ;#define low(x)   ((x) & 0xFF)
 ;#define high(x)   (((x)>>8) & 0xFF)
 ;
-;#define FGEN 11900000UL
+;//#define FGEN 9216000UL
+;#define FGEN 3072000UL
 ;#define TIMER0_PWM (1<<COM0A1) | (0<<COM0A0) | (1<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (1<<WGM00)
 ;#define TIMER2_PWM (1<<COM2A1) | (0<<COM2A0) | (0<<COM2B1) | (0<<COM2B0) | (0<<WGM21) | (1<<WGM20)
-;#define PWM_DIV (0<<WGM02) | (0<<CS02) | (1<<CS01) | (0<<CS00)
+;#define PWM_DIV (0<<WGM02) | (0<<CS02) | (0<<CS01) | (1<<CS00)
+;
 ;#define TIMER1_DIV (0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (1<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10)
 ;#define ADC_VREF_TYPE (0<<REFS1) | (1<<REFS0) | (1<<ADLAR)
 ;#define A 0
@@ -1351,10 +1362,11 @@ __GLOBAL_INI_END:
 ;#define PHASE_A_PIN PORTD6
 ;#define PHASE_B_PIN PORTD5
 ;#define PHASE_C_PIN PORTB3
-;#define MAX_FREQUENCY 50
+;#define MAX_FREQUENCY 200
+;#define TR_REST 1.2
 ;
-;uint8_t adc_data;
-;uint8_t ADC_input=1;
+;uint8_t adc_data[2];
+;uint8_t ADC_input=0;
 ;
 ;uint8_t step[3];
 ;
@@ -1364,79 +1376,66 @@ __GLOBAL_INI_END:
 ;uint8_t phase_c_step = 0;
 ;
 ;uint8_t amplitude = 255;
-;uint8_t frequency = 50;
+;uint8_t frequency = 200;
 ;
-;const float sinus_table[N+1] = {
-;    0.5,0.517,0.535,0.552,0.57,0.587,0.604,0.621,0.638,0.655,0.671,0.687,0.703,0.719,0.735,0.75,
-;    0.765,0.78,0.794,0.808,0.821,0.835,0.847,0.86,0.872,0.883,0.894,0.905,0.915,0.924,0.933,0.941,
-;    0.949,0.957,0.964,0.97,0.976,0.981,0.985,0.989,0.992,0.995,0.997,0.999,1.0,1.0,1.0,0.999,0.997,
-;    0.995,0.992,0.989,0.985,0.981,0.976,0.97,0.964,0.957,0.949,0.941,0.933,0.924,0.915,0.905,0.894,
-;    0.883,0.872,0.86,0.847,0.835,0.821,0.808,0.794,0.78,0.765,0.75,0.735,0.719,0.703,0.687,0.671,
-;    0.655,0.638,0.621,0.604,0.587,0.57,0.552,0.535,0.517,0.5,0.483,0.465,0.448,0.43,0.413,0.396,0.379,
-;    0.362,0.345,0.329,0.313,0.297,0.281,0.265,0.25,0.235,0.22,0.206,0.192,0.179,0.165,0.153,0.14,0.128,
-;    0.117,0.106,0.0955,0.0855,0.076,0.067,0.0585,0.0506,0.0432,0.0364,0.0302,
-;    0.0245,0.0194,0.0149,0.0109,0.0076,0.00487,0.00274,0.00122,0.000305,0.0,
-;    0.000305,0.00122,0.00274,0.00487,0.0076,0.0109,0.0149,0.0194,0.0245,0.0302,
-;    0.0364,0.0432,0.0506,0.0585,0.067,0.076,0.0855,0.0955,0.106,0.117,0.128,
-;    0.14,0.153,0.165,0.179,0.192,0.206,0.22,0.235,0.25,0.265,0.281,0.297,
-;    0.313,0.329,0.345,0.362,0.379,0.396,0.413,0.43,0.448,0.465,0.483,0.5
+;const float sinus_table[N+1]={0, 0.0174497483512505, 0.0348782368720627, 0.0522642316338267, 0.0695865504800327, 0.08682 ...
 ;};
 ;
 ;void stop_timers() {
-; 0000 0038 void stop_timers() {
+; 0000 002F void stop_timers() {
 
 	.CSEG
 _stop_timers:
 ; .FSTART _stop_timers
-; 0000 0039     TCCR0A=0; TCCR0B=0;
+; 0000 0030     TCCR0A=0; TCCR0B=0;
 	LDI  R30,LOW(0)
 	OUT  0x24,R30
 	OUT  0x25,R30
-; 0000 003A     OCR0A=0; OCR0B=0;
+; 0000 0031     OCR0A=0; OCR0B=0;
 	OUT  0x27,R30
 	OUT  0x28,R30
-; 0000 003B     TCCR1A=0; TCCR1B=0;
+; 0000 0032     TCCR1A=0; TCCR1B=0;
 	STS  128,R30
 	STS  129,R30
-; 0000 003C     OCR1AH=0; OCR1AL=0;
+; 0000 0033     OCR1AH=0; OCR1AL=0;
 	STS  137,R30
 	STS  136,R30
-; 0000 003D     TIMSK1= (1<<OCIE1B);
+; 0000 0034     TIMSK1= (1<<OCIE1B);
 	LDI  R30,LOW(4)
 	STS  111,R30
-; 0000 003E     TCCR2A=0; TCCR2B=0;
+; 0000 0035     TCCR2A=0; TCCR2B=0;
 	LDI  R30,LOW(0)
 	STS  176,R30
 	STS  177,R30
-; 0000 003F     OCR2A=0; OCR2B=0;
+; 0000 0036     OCR2A=0; OCR2B=0;
 	STS  179,R30
 	STS  180,R30
-; 0000 0040 }
+; 0000 0037 }
 	RET
 ; .FEND
 ;
 ;void closed_mode() {
-; 0000 0042 void closed_mode() {
+; 0000 0039 void closed_mode() {
 _closed_mode:
 ; .FSTART _closed_mode
-; 0000 0043     stop_timers();
+; 0000 003A     stop_timers();
 	RCALL _stop_timers
-; 0000 0044     PORTD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
+; 0000 003B     PORTD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
 	LDI  R30,LOW(96)
 	OUT  0xB,R30
-; 0000 0045     PORTB=(1<<PHASE_C_PIN);
+; 0000 003C     PORTB=(1<<PHASE_C_PIN);
 	LDI  R30,LOW(8)
 	OUT  0x5,R30
-; 0000 0046 }
+; 0000 003D }
 	RET
 ; .FEND
 ;
 ;void sinus_period(uint8_t frequency) {
-; 0000 0048 void sinus_period(uint8_t frequency) {
+; 0000 003F void sinus_period(uint8_t frequency) {
 _sinus_period:
 ; .FSTART _sinus_period
-; 0000 0049     uint16_t period = FGEN/2/N/frequency;
-; 0000 004A     OCR1AH = high(period);
+; 0000 0040     uint16_t period = FGEN/N/frequency;
+; 0000 0041     OCR1AH = high(period);
 	ST   -Y,R26
 	ST   -Y,R17
 	ST   -Y,R16
@@ -1444,14 +1443,14 @@ _sinus_period:
 ;	period -> R16,R17
 	LDD  R30,Y+2
 	LDI  R31,0
-	LDI  R26,LOW(32872)
-	LDI  R27,HIGH(32872)
-	CALL __DIVW21U
+	LDI  R26,LOW(16972)
+	LDI  R27,HIGH(16972)
+	CALL __DIVW21
 	MOVW R16,R30
 	STS  137,R17
-; 0000 004B     OCR1AL = low(period);
+; 0000 0042     OCR1AL = low(period);
 	STS  136,R30
-; 0000 004C }
+; 0000 0043 }
 	LDD  R17,Y+1
 	LDD  R16,Y+0
 	ADIW R28,3
@@ -1459,25 +1458,32 @@ _sinus_period:
 ; .FEND
 ;
 ;void sinus_amplitude(uint8_t amplitude) {
-; 0000 004E void sinus_amplitude(uint8_t amplitude) {
+; 0000 0045 void sinus_amplitude(uint8_t amplitude) {
 _sinus_amplitude:
 ; .FSTART _sinus_amplitude
-; 0000 004F     uint8_t i = 0;
-; 0000 0050     for (i = 0; i < N; i++)
+; 0000 0046     uint8_t i = 0;
+; 0000 0047     int current_amplitude;
+; 0000 0048     for (i = 0; i < N; i++){
 	ST   -Y,R26
-	ST   -Y,R17
-;	amplitude -> Y+1
+	CALL __SAVELOCR4
+;	amplitude -> Y+4
 ;	i -> R17
+;	current_amplitude -> R18,R19
 	LDI  R17,0
 	LDI  R17,LOW(0)
 _0x4:
 	CPI  R17,181
 	BRSH _0x5
-; 0000 0051         sinus[i] = amplitude*sinus_table[i];
-	MOV  R30,R17
-	LDI  R31,0
-	SUBI R30,LOW(-_sinus)
-	SBCI R31,HIGH(-_sinus)
+; 0000 0049     current_amplitude = (int)(127 + TR_REST*amplitude*sinus_table[i]);
+	LDD  R30,Y+4
+	CLR  R31
+	CLR  R22
+	CLR  R23
+	CALL __CDF1
+	__GETD2N 0x3F99999A
+	CALL __MULF12
+	PUSH R23
+	PUSH R22
 	PUSH R31
 	PUSH R30
 	MOV  R30,R17
@@ -1488,90 +1494,111 @@ _0x4:
 	ADD  R30,R26
 	ADC  R31,R27
 	CALL __GETD1PF
-	LDD  R26,Y+1
-	CLR  R27
-	CLR  R24
-	CLR  R25
-	CALL __CDF2
-	CALL __MULF12
 	POP  R26
 	POP  R27
-	CALL __CFD1U
-	ST   X,R30
+	POP  R24
+	POP  R25
+	CALL __MULF12
+	__GETD2N 0x42FE0000
+	CALL __ADDF12
+	CALL __CFD1
+	MOVW R18,R30
+; 0000 004A         if (current_amplitude > 255) sinus[i] = 255; else {
+	__CPWRN 18,19,256
+	BRLT _0x6
+	CALL SUBOPT_0x0
+	LDI  R26,LOW(255)
+	STD  Z+0,R26
+	RJMP _0x7
+_0x6:
+; 0000 004B             if (current_amplitude < 0) {sinus[i] = 0;} else sinus[i] = current_amplitude;
+	TST  R19
+	BRPL _0x8
+	CALL SUBOPT_0x0
+	LDI  R26,LOW(0)
+	STD  Z+0,R26
+	RJMP _0x9
+_0x8:
+	CALL SUBOPT_0x0
+	ST   Z,R18
+; 0000 004C         }
+_0x9:
+_0x7:
+; 0000 004D     }
 	SUBI R17,-1
 	RJMP _0x4
 _0x5:
-; 0000 0052 }
-	LDD  R17,Y+0
-	RJMP _0x2000001
+; 0000 004E }
+	CALL __LOADLOCR4
+	ADIW R28,5
+	RET
 ; .FEND
 ;
 ;void start_PWM(uint8_t frequency, uint8_t amplitude) {
-; 0000 0054 void start_PWM(uint8_t frequency, uint8_t amplitude) {
+; 0000 0050 void start_PWM(uint8_t frequency, uint8_t amplitude) {
 _start_PWM:
 ; .FSTART _start_PWM
-; 0000 0055     sinus_period(frequency);
+; 0000 0051     sinus_period(frequency);
 	ST   -Y,R26
 ;	frequency -> Y+1
 ;	amplitude -> Y+0
 	LDD  R26,Y+1
 	RCALL _sinus_period
-; 0000 0056     sinus_amplitude(amplitude);
+; 0000 0052     sinus_amplitude(amplitude);
 	LD   R26,Y
 	RCALL _sinus_amplitude
-; 0000 0057     step[A] = 0;
+; 0000 0053     step[A] = 0;
 	LDI  R30,LOW(0)
 	STS  _step,R30
-; 0000 0058     step[B] = 0;
+; 0000 0054     step[B] = 0;
 	__PUTB1MN _step,1
-; 0000 0059     step[C] = 0;
+; 0000 0055     step[C] = 0;
 	__PUTB1MN _step,2
-; 0000 005A     // Timer/Counter 0 initialization
-; 0000 005B     TCCR0A=TIMER0_PWM;
+; 0000 0056     // Timer/Counter 0 initialization
+; 0000 0057     TCCR0A=TIMER0_PWM;
 	LDI  R30,LOW(161)
 	OUT  0x24,R30
-; 0000 005C     TCCR0B=PWM_DIV;
-	LDI  R30,LOW(2)
+; 0000 0058     TCCR0B=PWM_DIV;
+	LDI  R30,LOW(1)
 	OUT  0x25,R30
-; 0000 005D     TCNT0=0;
+; 0000 0059     TCNT0=0;
 	LDI  R30,LOW(0)
 	OUT  0x26,R30
-; 0000 005E     // Timer/Counter 2 initialization
-; 0000 005F     TCCR2A=TIMER2_PWM;
+; 0000 005A     // Timer/Counter 2 initialization
+; 0000 005B     TCCR2A=TIMER2_PWM;
 	LDI  R30,LOW(129)
 	STS  176,R30
-; 0000 0060     TCCR2B=PWM_DIV;
-	LDI  R30,LOW(2)
+; 0000 005C     TCCR2B=PWM_DIV;
+	LDI  R30,LOW(1)
 	STS  177,R30
-; 0000 0061     TCNT2=0;
+; 0000 005D     TCNT2=0;
 	LDI  R30,LOW(0)
 	STS  178,R30
-; 0000 0062     // Timer/Counter 1 initialization
-; 0000 0063     TCCR1A=0;
+; 0000 005E     // Timer/Counter 1 initialization
+; 0000 005F     TCCR1A=0;
 	STS  128,R30
-; 0000 0064     TCCR1B= TIMER1_DIV;
+; 0000 0060     TCCR1B= TIMER1_DIV;
 	LDI  R30,LOW(9)
 	STS  129,R30
-; 0000 0065     TCNT1H=0; TCNT1L=0; ICR1H=0; ICR1L=0;
+; 0000 0061     TCNT1H=0; TCNT1L=0; ICR1H=0; ICR1L=0;
 	LDI  R30,LOW(0)
 	STS  133,R30
 	STS  132,R30
 	STS  135,R30
 	STS  134,R30
-; 0000 0066     TIMSK1 |= (1<<OCIE1A);
+; 0000 0062     TIMSK1 |= (1<<OCIE1A);
 	LDS  R30,111
 	ORI  R30,2
 	STS  111,R30
-; 0000 0067     #asm("sei")
+; 0000 0063     #asm("sei")
 	sei
-; 0000 0068 }
-_0x2000001:
+; 0000 0064 }
 	ADIW R28,2
 	RET
 ; .FEND
 ;
 ;interrupt [TIM1_COMPA] void timer1_compa_isr(void)
-; 0000 006B {
+; 0000 0067 {
 _timer1_compa_isr:
 ; .FSTART _timer1_compa_isr
 	ST   -Y,R26
@@ -1579,73 +1606,73 @@ _timer1_compa_isr:
 	ST   -Y,R31
 	IN   R30,SREG
 	ST   -Y,R30
-; 0000 006C     /* For phase A */
-; 0000 006D    step[A]++;
+; 0000 0068     /* For phase A */
+; 0000 0069    step[A]++;
 	LDS  R30,_step
 	SUBI R30,-LOW(1)
 	STS  _step,R30
-; 0000 006E    if (step[A] > N-1) step[A] = 0;
+; 0000 006A    if (step[A] > N-1) step[A] = 0;
 	LDS  R26,_step
 	CPI  R26,LOW(0xB5)
-	BRLO _0x6
+	BRLO _0xA
 	LDI  R30,LOW(0)
 	STS  _step,R30
-; 0000 006F    OCR0A = sinus[step[A]];
-_0x6:
+; 0000 006B    OCR0A = sinus[step[A]];
+_0xA:
 	LDS  R30,_step
-	RCALL SUBOPT_0x0
+	CALL SUBOPT_0x1
 	OUT  0x27,R30
-; 0000 0070    /* For phase B */
-; 0000 0071    if (phase_b_step < PHASE_B_DELAY) {phase_b_step++;} else {
+; 0000 006C    /* For phase B */
+; 0000 006D    if (phase_b_step < PHASE_B_DELAY) {phase_b_step++;} else {
 	LDI  R30,LOW(120)
-	CP   R6,R30
-	BRSH _0x7
-	INC  R6
-	RJMP _0x8
-_0x7:
-; 0000 0072        step[B]++;
+	CP   R3,R30
+	BRSH _0xB
+	INC  R3
+	RJMP _0xC
+_0xB:
+; 0000 006E        step[B]++;
 	__GETB1MN _step,1
 	SUBI R30,-LOW(1)
 	__PUTB1MN _step,1
-; 0000 0073        if (step[B] > N-1) step[B] = 0;
+; 0000 006F        if (step[B] > N-1) step[B] = 0;
 	__GETB2MN _step,1
 	CPI  R26,LOW(0xB5)
-	BRLO _0x9
+	BRLO _0xD
 	LDI  R30,LOW(0)
 	__PUTB1MN _step,1
-; 0000 0074        OCR2A = sinus[step[B]];
-_0x9:
+; 0000 0070        OCR2A = sinus[step[B]];
+_0xD:
 	__GETB1MN _step,1
-	RCALL SUBOPT_0x0
+	CALL SUBOPT_0x1
 	STS  179,R30
-; 0000 0075    }
-_0x8:
-; 0000 0076    /* For phase C */
-; 0000 0077    if (phase_c_step < PHASE_C_DELAY) {phase_c_step++;} else {
+; 0000 0071    }
+_0xC:
+; 0000 0072    /* For phase C */
+; 0000 0073    if (phase_c_step < PHASE_C_DELAY) {phase_c_step++;} else {
 	LDI  R30,LOW(60)
-	CP   R5,R30
-	BRSH _0xA
-	INC  R5
-	RJMP _0xB
-_0xA:
-; 0000 0078        step[C]++;
+	CP   R6,R30
+	BRSH _0xE
+	INC  R6
+	RJMP _0xF
+_0xE:
+; 0000 0074        step[C]++;
 	__GETB1MN _step,2
 	SUBI R30,-LOW(1)
 	__PUTB1MN _step,2
-; 0000 0079        if (step[C] > N-1) step[C] = 0;
+; 0000 0075        if (step[C] > N-1) step[C] = 0;
 	__GETB2MN _step,2
 	CPI  R26,LOW(0xB5)
-	BRLO _0xC
+	BRLO _0x10
 	LDI  R30,LOW(0)
 	__PUTB1MN _step,2
-; 0000 007A        OCR0B = sinus[step[C]];
-_0xC:
+; 0000 0076        OCR0B = sinus[step[C]];
+_0x10:
 	__GETB1MN _step,2
-	RCALL SUBOPT_0x0
+	CALL SUBOPT_0x1
 	OUT  0x28,R30
-; 0000 007B    }
-_0xB:
-; 0000 007C }
+; 0000 0077    }
+_0xF:
+; 0000 0078 }
 	LD   R30,Y+
 	OUT  SREG,R30
 	LD   R31,Y+
@@ -1655,156 +1682,211 @@ _0xB:
 ; .FEND
 ;
 ;interrupt [ADC_INT] void adc_isr(void)
-; 0000 007F {
+; 0000 007B {
 _adc_isr:
 ; .FSTART _adc_isr
+	ST   -Y,R26
+	ST   -Y,R27
 	ST   -Y,R30
 	IN   R30,SREG
 	ST   -Y,R30
-; 0000 0080     adc_data=ADCH;
-	LDS  R4,121
-; 0000 0081     ADMUX= ADC_input + ADC_VREF_TYPE;
-	MOV  R30,R3
+; 0000 007C     adc_data[ADC_input]=ADCH;
+	MOV  R26,R4
+	LDI  R27,0
+	SUBI R26,LOW(-_adc_data)
+	SBCI R27,HIGH(-_adc_data)
+	LDS  R30,121
+	ST   X,R30
+; 0000 007D     if (ADC_input == 1) {ADC_input=0;} else {ADC_input=1;}
+	LDI  R30,LOW(1)
+	CP   R30,R4
+	BRNE _0x11
+	CLR  R4
+	RJMP _0x12
+_0x11:
+	LDI  R30,LOW(1)
+	MOV  R4,R30
+_0x12:
+; 0000 007E     ADMUX= ADC_input + ADC_VREF_TYPE;
+	MOV  R30,R4
 	ORI  R30,LOW(0x60)
 	STS  124,R30
-; 0000 0082     ADCSRA|=(1<<ADSC);
+; 0000 007F     ADCSRA|=(1<<ADSC);
 	LDS  R30,122
 	ORI  R30,0x40
 	STS  122,R30
-; 0000 0083 }
+; 0000 0080 }
 	LD   R30,Y+
 	OUT  SREG,R30
 	LD   R30,Y+
+	LD   R27,Y+
+	LD   R26,Y+
 	RETI
 ; .FEND
 ;
 ;void invertor_setup() {
-; 0000 0085 void invertor_setup() {
+; 0000 0082 void invertor_setup() {
 _invertor_setup:
 ; .FSTART _invertor_setup
-; 0000 0086     // Crystal Oscillator division factor: 1
-; 0000 0087     #pragma optsize-
-; 0000 0088     CLKPR=(1<<CLKPCE);
+; 0000 0083     // Crystal Oscillator division factor: 1
+; 0000 0084     #pragma optsize-
+; 0000 0085     CLKPR=(1<<CLKPCE);
 	LDI  R30,LOW(128)
 	STS  97,R30
-; 0000 0089     CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
+; 0000 0086     CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
 	LDI  R30,LOW(0)
 	STS  97,R30
-; 0000 008A     #ifdef _OPTIMIZE_SIZE_
-; 0000 008B     #pragma optsize+
-; 0000 008C     #endif
-; 0000 008D     //ADC init (read each ~5 ms - CTCB Timer1 interrupt)
-; 0000 008E     ACSR=(1<<ACD);
+; 0000 0087     #ifdef _OPTIMIZE_SIZE_
+; 0000 0088     #pragma optsize+
+; 0000 0089     #endif
+; 0000 008A     //ADC init (read each ~5 ms - CTCB Timer1 interrupt)
+; 0000 008B     ACSR=(1<<ACD);
 	LDI  R30,LOW(128)
 	OUT  0x30,R30
-; 0000 008F     DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);  //ADC0, ADC1 are used
+; 0000 008C     DIDR0=(1<<ADC5D) | (1<<ADC4D) | (1<<ADC3D) | (1<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);  //ADC0, ADC1 are used
 	LDI  R30,LOW(60)
 	STS  126,R30
-; 0000 0090     ADMUX = ADC_VREF_TYPE;  // Voltage Reference: AVCC pin
+; 0000 008D     ADMUX = ADC_VREF_TYPE;  // Voltage Reference: AVCC pin
 	LDI  R30,LOW(96)
 	STS  124,R30
-; 0000 0091     ADCSRA=(1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (0<<ADIF) | (1<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
+; 0000 008E     ADCSRA=(1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (0<<ADIF) | (1<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
 	LDI  R30,LOW(235)
 	STS  122,R30
-; 0000 0092     ADCSRB=(1<<ADTS2) | (0<<ADTS1) | (1<<ADTS0);
+; 0000 008F     ADCSRB=(1<<ADTS2) | (0<<ADTS1) | (1<<ADTS0);
 	LDI  R30,LOW(5)
 	STS  123,R30
-; 0000 0093     TIMSK1 |= (1<<OCIE1B);
+; 0000 0090     TIMSK1 |= (1<<OCIE1B);
 	LDS  R30,111
 	ORI  R30,4
 	STS  111,R30
-; 0000 0094     OCR1BH=0xFF;
+; 0000 0091     OCR1BH=0xFF;
 	LDI  R30,LOW(255)
 	STS  139,R30
-; 0000 0095     OCR1BL=0xFF;
+; 0000 0092     OCR1BL=0xFF;
 	STS  138,R30
-; 0000 0096     // Ports init
-; 0000 0097     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
+; 0000 0093     // Ports init
+; 0000 0094     DDRD=(1<<PHASE_A_PIN) | (1<<PHASE_B_PIN);
 	LDI  R30,LOW(96)
 	OUT  0xA,R30
-; 0000 0098     DDRB=(1<<PHASE_C_PIN);
+; 0000 0095     DDRB=(1<<PHASE_C_PIN);
 	LDI  R30,LOW(8)
 	OUT  0x4,R30
-; 0000 0099     start_PWM(frequency, amplitude);
-	ST   -Y,R7
-	MOV  R26,R8
+; 0000 0096     start_PWM(frequency, amplitude);
+	ST   -Y,R8
+	MOV  R26,R5
 	RCALL _start_PWM
-; 0000 009A }
+; 0000 0097 }
 	RET
 ; .FEND
 ;
 ;void main(void)
-; 0000 009D {
+; 0000 009A {
 _main:
 ; .FSTART _main
-; 0000 009E     invertor_setup();
+; 0000 009B     invertor_setup();
 	RCALL _invertor_setup
-; 0000 009F     while (1)
-_0xD:
-; 0000 00A0           {
-; 0000 00A1           /* if frequency/amplitude is 0, stop invertor */
-; 0000 00A2           if (adc_data == 0) {
-	TST  R4
-	BRNE _0x10
-; 0000 00A3             while (adc_data == 0) {closed_mode();};
-_0x11:
-	TST  R4
-	BRNE _0x13
-	RCALL _closed_mode
-	RJMP _0x11
+; 0000 009C     while (1)
 _0x13:
-; 0000 00A4             start_PWM(MAX_FREQUENCY*(uint16_t)adc_data/255, adc_data);
-	RCALL SUBOPT_0x1
+; 0000 009D           {
+; 0000 009E           /* if frequency/amplitude is 0, stop invertor */
+; 0000 009F           if (adc_data[0] == 0 || adc_data[1] == 0) {
+	LDS  R26,_adc_data
+	CPI  R26,LOW(0x0)
+	BREQ _0x17
+	__GETB2MN _adc_data,1
+	CPI  R26,LOW(0x0)
+	BRNE _0x16
+_0x17:
+; 0000 00A0             while (adc_data[0] == 0 || adc_data[1] == 0) {closed_mode();};
+_0x19:
+	LDS  R26,_adc_data
+	CPI  R26,LOW(0x0)
+	BREQ _0x1C
+	__GETB2MN _adc_data,1
+	CPI  R26,LOW(0x0)
+	BRNE _0x1B
+_0x1C:
+	RCALL _closed_mode
+	RJMP _0x19
+_0x1B:
+; 0000 00A1             start_PWM(MAX_FREQUENCY*(uint16_t)adc_data[1]/255, adc_data[0]);
+	CALL SUBOPT_0x2
 	ST   -Y,R30
-	MOV  R26,R4
+	LDS  R26,_adc_data
 	RCALL _start_PWM
-; 0000 00A5           }
-; 0000 00A6           /* if ADC data is updated, change frequency/amplitude*/
-; 0000 00A7           if (frequency != MAX_FREQUENCY*(uint16_t)adc_data/255) {
-_0x10:
-	RCALL SUBOPT_0x1
-	MOV  R26,R7
+; 0000 00A2           }
+; 0000 00A3           /* if ADC data is updated, change frequency/amplitude*/
+; 0000 00A4           if (amplitude != adc_data[0]) {amplitude = adc_data[0]; sinus_amplitude(amplitude);}
+_0x16:
+	LDS  R30,_adc_data
+	CP   R30,R5
+	BREQ _0x1E
+	LDS  R5,_adc_data
+	MOV  R26,R5
+	RCALL _sinus_amplitude
+; 0000 00A5           if (frequency != MAX_FREQUENCY*(uint16_t)adc_data[1]/255) {frequency = MAX_FREQUENCY*(uint16_t)adc_data[1]/255 ...
+_0x1E:
+	CALL SUBOPT_0x2
+	MOV  R26,R8
 	LDI  R27,0
 	CP   R30,R26
 	CPC  R31,R27
-	BREQ _0x14
-; 0000 00A8             frequency = MAX_FREQUENCY*(uint16_t)adc_data/255;
-	RCALL SUBOPT_0x1
-	MOV  R7,R30
-; 0000 00A9             sinus_period(frequency);
-	MOV  R26,R7
+	BREQ _0x1F
+	CALL SUBOPT_0x2
+	MOV  R8,R30
+	MOV  R26,R8
 	RCALL _sinus_period
-; 0000 00AA             sinus_amplitude(adc_data);
-	MOV  R26,R4
-	RCALL _sinus_amplitude
-; 0000 00AB             }
-; 0000 00AC           }
-_0x14:
-	RJMP _0xD
-; 0000 00AD }
-_0x15:
-	RJMP _0x15
+; 0000 00A6           }
+_0x1F:
+	RJMP _0x13
+; 0000 00A7 }
+_0x20:
+	RJMP _0x20
 ; .FEND
 
+	.CSEG
+
+	.CSEG
+
 	.DSEG
+
+	.CSEG
+
+	.CSEG
+
+	.CSEG
+
+	.DSEG
+_adc_data:
+	.BYTE 0x2
 _step:
 	.BYTE 0x3
 _sinus:
 	.BYTE 0xB6
+__seed_G101:
+	.BYTE 0x4
 
 	.CSEG
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:1 WORDS
 SUBOPT_0x0:
+	MOV  R30,R17
+	LDI  R31,0
+	SUBI R30,LOW(-_sinus)
+	SBCI R31,HIGH(-_sinus)
+	RET
+
+;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:1 WORDS
+SUBOPT_0x1:
 	LDI  R31,0
 	SUBI R30,LOW(-_sinus)
 	SBCI R31,HIGH(-_sinus)
 	LD   R30,Z
 	RET
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:11 WORDS
-SUBOPT_0x1:
-	MOV  R30,R4
-	LDI  R26,LOW(50)
+;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:13 WORDS
+SUBOPT_0x2:
+	__GETB1MN _adc_data,1
+	LDI  R26,LOW(200)
 	MUL  R30,R26
 	MOVW R30,R0
 	MOVW R26,R30
@@ -1979,6 +2061,112 @@ __CDF13:
 __CDF10:
 	RET
 
+__SWAPACC:
+	PUSH R20
+	MOVW R20,R30
+	MOVW R30,R26
+	MOVW R26,R20
+	MOVW R20,R22
+	MOVW R22,R24
+	MOVW R24,R20
+	MOV  R20,R0
+	MOV  R0,R1
+	MOV  R1,R20
+	POP  R20
+	RET
+
+__UADD12:
+	ADD  R30,R26
+	ADC  R31,R27
+	ADC  R22,R24
+	RET
+
+__NEGMAN1:
+	COM  R30
+	COM  R31
+	COM  R22
+	SUBI R30,-1
+	SBCI R31,-1
+	SBCI R22,-1
+	RET
+
+__ADDF12:
+	PUSH R21
+	RCALL __UNPACK
+	CPI  R25,0x80
+	BREQ __ADDF129
+
+__ADDF120:
+	CPI  R23,0x80
+	BREQ __ADDF128
+__ADDF121:
+	MOV  R21,R23
+	SUB  R21,R25
+	BRVS __ADDF1211
+	BRPL __ADDF122
+	RCALL __SWAPACC
+	RJMP __ADDF121
+__ADDF122:
+	CPI  R21,24
+	BRLO __ADDF123
+	CLR  R26
+	CLR  R27
+	CLR  R24
+__ADDF123:
+	CPI  R21,8
+	BRLO __ADDF124
+	MOV  R26,R27
+	MOV  R27,R24
+	CLR  R24
+	SUBI R21,8
+	RJMP __ADDF123
+__ADDF124:
+	TST  R21
+	BREQ __ADDF126
+__ADDF125:
+	LSR  R24
+	ROR  R27
+	ROR  R26
+	DEC  R21
+	BRNE __ADDF125
+__ADDF126:
+	MOV  R21,R0
+	EOR  R21,R1
+	BRMI __ADDF127
+	RCALL __UADD12
+	BRCC __ADDF129
+	ROR  R22
+	ROR  R31
+	ROR  R30
+	INC  R23
+	BRVC __ADDF129
+	RJMP __MAXRES
+__ADDF128:
+	RCALL __SWAPACC
+__ADDF129:
+	RCALL __REPACK
+	POP  R21
+	RET
+__ADDF1211:
+	BRCC __ADDF128
+	RJMP __ADDF129
+__ADDF127:
+	SUB  R30,R26
+	SBC  R31,R27
+	SBC  R22,R24
+	BREQ __ZERORES
+	BRCC __ADDF1210
+	COM  R0
+	RCALL __NEGMAN1
+__ADDF1210:
+	TST  R22
+	BRMI __ADDF129
+	LSL  R30
+	ROL  R31
+	ROL  R22
+	DEC  R23
+	BRVC __ADDF1210
+
 __ZERORES:
 	CLR  R30
 	CLR  R31
@@ -2091,6 +2279,12 @@ __MULF128:
 	ADC  R21,R25
 	RET
 
+__ANEGW1:
+	NEG  R31
+	NEG  R30
+	SBCI R31,0
+	RET
+
 __ANEGD1:
 	COM  R31
 	COM  R22
@@ -2108,12 +2302,12 @@ __LSLW2:
 	ROL  R31
 	RET
 
-__CBD2:
-	MOV  R27,R26
-	ADD  R27,R27
-	SBC  R27,R27
-	MOV  R24,R27
-	MOV  R25,R27
+__CBD1:
+	MOV  R31,R30
+	ADD  R31,R31
+	SBC  R31,R31
+	MOV  R22,R31
+	MOV  R23,R31
 	RET
 
 __DIVW21U:
@@ -2140,6 +2334,32 @@ __DIVW21U3:
 	MOVW R26,R0
 	RET
 
+__DIVW21:
+	RCALL __CHKSIGNW
+	RCALL __DIVW21U
+	BRTC __DIVW211
+	RCALL __ANEGW1
+__DIVW211:
+	RET
+
+__CHKSIGNW:
+	CLT
+	SBRS R31,7
+	RJMP __CHKSW1
+	RCALL __ANEGW1
+	SET
+__CHKSW1:
+	SBRS R27,7
+	RJMP __CHKSW2
+	COM  R26
+	COM  R27
+	ADIW R26,1
+	BLD  R0,0
+	INC  R0
+	BST  R0,0
+__CHKSW2:
+	RET
+
 __GETD1PF:
 	LPM  R0,Z+
 	LPM  R1,Z+
@@ -2148,32 +2368,22 @@ __GETD1PF:
 	MOVW R30,R0
 	RET
 
-__CDF2U:
-	SET
-	RJMP __CDF2U0
-__CDF2:
-	CLT
-__CDF2U0:
-	RCALL __SWAPD12
-	RCALL __CDF1U0
+__SAVELOCR4:
+	ST   -Y,R19
+__SAVELOCR3:
+	ST   -Y,R18
+__SAVELOCR2:
+	ST   -Y,R17
+	ST   -Y,R16
+	RET
 
-__SWAPD12:
-	MOV  R1,R24
-	MOV  R24,R22
-	MOV  R22,R1
-	MOV  R1,R25
-	MOV  R25,R23
-	MOV  R23,R1
-
-__SWAPW12:
-	MOV  R1,R27
-	MOV  R27,R31
-	MOV  R31,R1
-
-__SWAPB12:
-	MOV  R1,R26
-	MOV  R26,R30
-	MOV  R30,R1
+__LOADLOCR4:
+	LDD  R19,Y+3
+__LOADLOCR3:
+	LDD  R18,Y+2
+__LOADLOCR2:
+	LDD  R17,Y+1
+	LD   R16,Y
 	RET
 
 ;END OF CODE MARKER

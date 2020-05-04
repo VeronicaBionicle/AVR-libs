@@ -22,7 +22,7 @@ typedef unsigned int uint16_t;
 #define PHASE_A_PIN PORTD6
 #define PHASE_B_PIN PORTD5
 #define PHASE_C_PIN PORTB3
-#define MAX_FREQUENCY 50
+#define MAX_FREQUENCY 200
 
 uint8_t adc_data;
 uint8_t ADC_input=1;
@@ -35,7 +35,7 @@ uint8_t phase_b_step = 0;
 uint8_t phase_c_step = 0;
 
 uint8_t amplitude = 255;
-uint8_t frequency = 50;
+uint8_t frequency = 150;
 
 const float sinus_table[N+1] = {
     0.5,0.517,0.535,0.552,0.57,0.587,0.604,0.621,0.638,0.655,0.671,0.687,0.703,0.719,0.735,0.75,
@@ -70,7 +70,7 @@ void closed_mode() {
 }
 
 void sinus_period(uint8_t frequency) {
-    uint16_t period = FGEN/2/N/frequency;
+    uint16_t period = FGEN/N/frequency;
     OCR1AH = high(period);
     OCR1AL = low(period);
 }
@@ -78,7 +78,7 @@ void sinus_period(uint8_t frequency) {
 void sinus_amplitude(uint8_t amplitude) {
     uint8_t i = 0;
     for (i = 0; i < N; i++)
-        sinus[i] = amplitude*sinus_table[i];
+        sinus[i] = amplitude*sinus_table[i]*1.2;
 }
 
 void start_PWM(uint8_t frequency, uint8_t amplitude) {

@@ -1,8 +1,10 @@
 RAM Allocation [bytes]
 Variable                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-step                                                                              0x0300       3
-sinus                                                                             0x0303     182
+adc_data                                                                          0x0300       2
+step                                                                              0x0302       3
+sinus                                                                             0x0305     182
+_seed                                                                             0x03BB       4
 
 EEPROM Allocation [bytes]
 Variable                                                                          Address   Size
@@ -11,22 +13,21 @@ Variable                                                                        
 Register Allocation
 Variable                                                                          Register  Size
 ------------------------------------------------------------------------------------------------
-adc_data                                                                          R4           1
-ADC_input                                                                         R3           1
-phase_b_step                                                                      R6           1
-phase_c_step                                                                      R5           1
-amplitude                                                                         R8           1
-frequency                                                                         R7           1
+ADC_input                                                                         R4           1
+phase_b_step                                                                      R3           1
+phase_c_step                                                                      R6           1
+amplitude                                                                         R5           1
+frequency                                                                         R8           1
 
 FLASH Allocation [words]
 Function                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-stop_timers                                                                       0x001D6     26
-closed_mode                                                                       0x001F0      6
-sinus_period                                                                      0x001F6     18
-sinus_amplitude                                                                   0x00208     39
-start_PWM                                                                         0x0022F     49
-timer1_compa_isr                                                                  0x00260     70
-adc_isr                                                                           0x002A6     18
-invertor_setup                                                                    0x002B8     38
-main                                                                              0x002DE     25
+stop_timers                                                                       0x001DF     26
+closed_mode                                                                       0x001F9      6
+sinus_period                                                                      0x001FF     18
+sinus_amplitude                                                                   0x00211     73
+start_PWM                                                                         0x0025A     49
+timer1_compa_isr                                                                  0x0028B     73
+adc_isr                                                                           0x002D4     34
+invertor_setup                                                                    0x002F6     38
+main                                                                              0x0031C     47
