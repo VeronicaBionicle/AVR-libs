@@ -97,20 +97,18 @@ void loop() {
   }
 
   if (MadeSteps() == do_steps) {  //when turns are made
+    MadeSteps(0);
     switch (drilling_stage) {
       case DRILLING_DOWN: //after the end of first stage (turns down are made)
-        MadeSteps(0);
         drilling_stage = DRILLING_UP; //the second stage starts
         StepperMode(REVERSE_HALFSTEP, speed_factor * RETURN_BOOST * ROTATE_TIME);
         do_steps = HALF_STEPS_PER_ROTATION * TURNS_TO_DRILL_PCB; //make some turns up
         break;
-      case DRILLING_UP: //after the end of srcond stage (4 turns up are made)
+      case DRILLING_UP: //after the end of second stage (4 turns up are made)
         DrillOff();
-        MadeSteps(0);
         drilling_stage = NO_DRILLING; //driller stops
         break;
       case POINTING: //turns up are made
-        MadeSteps(0);
         drilling_stage = NO_DRILLING; //driller stops
         break;      
       default: break;
