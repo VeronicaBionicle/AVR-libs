@@ -88,28 +88,30 @@ void loop() {
         MadeSteps(0);
       } else if (drilling_stage == MANUAL_DRILLING) { //when DRILL button is released, starts going up
         drilling_stage = DRILLING_UP; 
-        StepperMode(REVERSE_HALFSTEP, speed_factor * RETURN_BOOST * ROTATE_TIME);
         do_steps = MadeSteps();
         MadeSteps(0);
+        StepperMode(REVERSE_HALFSTEP, speed_factor * RETURN_BOOST * ROTATE_TIME);
         }
       break;
     default: break;
   }
 
   if (MadeSteps() == do_steps) {  //when turns are made
-    MadeSteps(0);
     switch (drilling_stage) {
       case DRILLING_DOWN: //after the end of first stage (turns down are made)
         drilling_stage = DRILLING_UP; //the second stage starts
         StepperMode(REVERSE_HALFSTEP, speed_factor * RETURN_BOOST * ROTATE_TIME);
         do_steps = HALF_STEPS_PER_ROTATION * TURNS_TO_DRILL_PCB; //make some turns up
+        MadeSteps(0);
         break;
       case DRILLING_UP: //after the end of second stage (4 turns up are made)
         DrillOff();
         drilling_stage = NO_DRILLING; //driller stops
+        MadeSteps(0);
         break;
       case POINTING: //turns up are made
         drilling_stage = NO_DRILLING; //driller stops
+        MadeSteps(0);
         break;      
       default: break;
     }
