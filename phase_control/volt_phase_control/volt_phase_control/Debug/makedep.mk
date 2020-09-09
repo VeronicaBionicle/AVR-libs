@@ -6,5 +6,5 @@ main.cpp
 
 PhaseControl.cpp
 
-timer_class.cpp
+PhaseControlTimer.cpp
 

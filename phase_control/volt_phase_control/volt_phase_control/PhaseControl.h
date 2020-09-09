@@ -38,10 +38,16 @@
 #define OUT_DDR DDRB
 #define OUT_PORT PORTB
 
+/*	States for Smooth on/off	*/
+#define  ON 1
+#define OFF 0
+
 /*	Functions definitions	*/
 void OutputInit (uint8_t out_pin);	//Initialize output pin
 void ZerocrossInit (void);	//Initialize zerocross pin
+void ZerocrossStart (void);
 void ZerocrossStop (void);
 void On (void);	//High level on output pin
 void Off (void);	//Low level on output pin
-void PhaseControlSetup (uint8_t);
+void PhaseControl (uint8_t state);
+void PhaseSmooth (uint8_t);

@@ -1,5 +1,5 @@
-#ifndef timer_class_h_
-#define timer_class_h_
+#ifndef phase_control_timer_h_
+#define phase_control_timer_h_
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <inttypes.h>
@@ -19,9 +19,9 @@ Timer1 is 16-bit (period 1 us-4.19 s) */
 //#define TIMER TIMER_1   
 #define TIMER TIMER_2
 
-	void initTimer();
-    void startTimer(uint16_t Period);  //start timer for attaching function to ISR, period`s unit measure is microseconds
-    void stopTimer();  //stop counting and interrupts from Timer
+	void InitPhaseControlTimer();
+    void StartPhaseControlTimer(uint16_t Period);  //start timer for attaching function to ISR, period`s unit measure is microseconds
+    void StopPhaseControlTimer();  //stop counting and interrupts from Timer
 
 /*  Some definitions for our timers */
 #if TIMER == TIMER_0
@@ -99,4 +99,4 @@ Timer1 is 16-bit (period 1 us-4.19 s) */
   #define OCR_FOR_COUNTER 0xF9 //max period 0.26214 sec = (64)/(16 MHz) * 65535 / OCR_A = 250 -> 0.001 sec
 #endif
 
-#endif /*timer_class_h_ */
+#endif /*phase_control_timer_h_ */
