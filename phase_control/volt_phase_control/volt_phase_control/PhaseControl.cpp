@@ -32,25 +32,25 @@ void ZerocrossStart (void) {
 void ZerocrossStop (void) { GENERAL_INTERRUPT &= ~(1<<INT0); }
 
 ISR (EXT_INT){
-	PhaseControl(state);
+	PhaseControl();
 }
 
-void PhaseControl (uint8_t state) {
+void PhaseControl (void) {
 	if (zerocross < MAX_STEPS) {
 		Off();
-		StartPhaseControlTimer(deltas[state == ON ? zerocross : MAX_STEPS-zerocross-1]);
+		StartPhaseControlTimer(deltas[state == OFF ? zerocross : MAX_STEPS-zerocross-1]);
 		zerocross++;
 	} else {
 		ZerocrossStop();
-		zerocross = 0;
 		StopPhaseControlTimer();
-		if (state == ON) On(); else Off();
+		if (state == OFF) { On(); state = ON; } else { Off(); state = OFF; }
 	}
 }
 
 void PhaseSmooth (uint8_t final_state) {
-	cli();
-	ZerocrossStart();
-	state = final_state;
-	sei();
+	if (state != final_state) {
+		//cli();
+		ZerocrossStart();
+		//sei();
+	}
 }

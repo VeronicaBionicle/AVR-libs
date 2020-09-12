@@ -49,5 +49,5 @@ void ZerocrossStart (void);
 void ZerocrossStop (void);
 void On (void);	//High level on output pin
 void Off (void);	//Low level on output pin
-void PhaseControl (uint8_t state);
+void PhaseControl (void);
 void PhaseSmooth (uint8_t);

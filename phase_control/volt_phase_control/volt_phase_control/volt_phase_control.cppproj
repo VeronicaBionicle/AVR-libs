@@ -168,6 +168,12 @@
     <Compile Include="PhaseControlTimer.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="timer_0_class.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="timer_0_class.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

@@ -2,7 +2,7 @@
 #include "PhaseControl.h"
 
 ISR(TIMER_INT) {
-	if (PIND != (1<<ZEROCROSS_PIN)) On(); 
+	if ((1<<ZEROCROSS_PIN) != PIND) On(); 
 }
 
 void InitPhaseControlTimer () {
@@ -12,11 +12,13 @@ void InitPhaseControlTimer () {
 }
 
 void StartPhaseControlTimer(uint16_t Period) {
-  cli();
+  //cli();
   OCR_A = ((uint32_t)Period * F_CPU_SH) / PRESCALER_4 - 1;
   TCNT2 = 0;
   TIMSK_ = (1<<OCIE_A);
-  sei();
+  //sei();
 }
 
-void StopPhaseControlTimer() { TIMSK_ &= ~(1<<OCIE_A); }
+void StopPhaseControlTimer() {
+	TIMSK_ &= ~(1<<OCIE_A);
+	}

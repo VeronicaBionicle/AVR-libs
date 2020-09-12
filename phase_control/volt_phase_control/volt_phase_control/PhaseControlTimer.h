@@ -11,11 +11,9 @@
 #define F_CPU_SH 16 //F_CPU/1000000 i had some problems with overflow
               
 /*Choose your timer here
-Timer0 and Timer2 have 8-bit resolution (period 1 us-16384 us)
+Timer2 have 8-bit resolution (period 1 us-16384 us)
 Timer1 is 16-bit (period 1 us-4.19 s) */
-//Timer0 is used for Delay and etc in Arduino, be careful with it
 
-//#define TIMER TIMER_0
 //#define TIMER TIMER_1   
 #define TIMER TIMER_2
 
