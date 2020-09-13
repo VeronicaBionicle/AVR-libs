@@ -1,9 +1,9 @@
 #include "PhaseControl.h"
-#include "PhaseControlTimer.h"
+#include "TimersButtons.h"
 
 uint8_t zerocross;
 uint8_t out_pin;
-uint8_t state = OFF;
+extern uint8_t triac_state;
 
 #define MAX_STEPS 10
 
@@ -31,24 +31,23 @@ void ZerocrossStart (void) {
 
 void ZerocrossStop (void) { GENERAL_INTERRUPT &= ~(1<<INT0); }
 
-ISR (EXT_INT){
-	PhaseControl();
-}
+ISR (EXT_INT){ PhaseControl(); }
 
 void PhaseControl (void) {
 	if (zerocross < MAX_STEPS) {
 		Off();
-		StartPhaseControlTimer(deltas[state == OFF ? zerocross : MAX_STEPS-zerocross-1]);
+		StartPhaseControlTimer(deltas[triac_state == TURNING_ON ? zerocross : MAX_STEPS-zerocross-1]);
 		zerocross++;
-	} else {
-		ZerocrossStop();
-		StopPhaseControlTimer();
-		if (state == OFF) { On(); state = ON; } else { Off(); state = OFF; }
+		} else {
+			ZerocrossStop();
+			StopPhaseControlTimer();
+			if (triac_state == TURNING_ON) { On(); triac_state = ON; } else { Off(); triac_state = OFF; }
 	}
 }
 
 void PhaseSmooth (uint8_t final_state) {
-	if (state != final_state) {
+	if (STEADY_ST(triac_state) && triac_state != final_state) {
+		TOGGLE(triac_state);
 		//cli();
 		ZerocrossStart();
 		//sei();

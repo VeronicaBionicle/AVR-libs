@@ -39,8 +39,7 @@ SUBDIRS :=
 C_SRCS +=  \
 ../main.cpp \
 ../PhaseControl.cpp \
-../PhaseControlTimer.cpp \
-../timer_0_class.cpp
+../TimersButtons.cpp
 
 
 PREPROCESSING_SRCS += 
@@ -52,26 +51,22 @@ ASM_SRCS +=
 OBJS +=  \
 main.o \
 PhaseControl.o \
-PhaseControlTimer.o \
-timer_0_class.o
+TimersButtons.o
 
 OBJS_AS_ARGS +=  \
 main.o \
 PhaseControl.o \
-PhaseControlTimer.o \
-timer_0_class.o
+TimersButtons.o
 
 C_DEPS +=  \
 main.d \
 PhaseControl.d \
-PhaseControlTimer.d \
-timer_0_class.d
+TimersButtons.d
 
 C_DEPS_AS_ARGS +=  \
 main.d \
 PhaseControl.d \
-PhaseControlTimer.d \
-timer_0_class.d
+TimersButtons.d
 
 OUTPUT_FILE_PATH +=volt_phase_control.elf
 
@@ -101,14 +96,7 @@ LINKER_SCRIPT_DEP+=
 	@echo Finished building: $<
 	
 
-./PhaseControlTimer.o: .././PhaseControlTimer.cpp
-	@echo Building file: $<
-	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega328p -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\gcc\dev\atmega328p" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
-	@echo Finished building: $<
-	
-
-./timer_0_class.o: .././timer_0_class.cpp
+./TimersButtons.o: .././TimersButtons.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega328p -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\gcc\dev\atmega328p" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

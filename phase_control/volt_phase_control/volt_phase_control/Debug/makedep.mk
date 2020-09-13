@@ -6,7 +6,5 @@ main.cpp
 
 PhaseControl.cpp
 
-PhaseControlTimer.cpp
-
-timer_0_class.cpp
+TimersButtons.cpp
 

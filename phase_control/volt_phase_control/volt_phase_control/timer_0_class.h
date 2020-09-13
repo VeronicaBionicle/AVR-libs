@@ -3,11 +3,11 @@
 #include <avr/interrupt.h>
 #include <inttypes.h>
 
-#define DOOR_BELL (1<<PORTC0)
-#define DOOR_1 (1<<PORTC1)
-#define DOOR_2 (1<<PORTC2)
-#define BUTTON_1 (1<<PORTC3)
-#define BUTTON_2 (1<<PORTC4)
+#define DOOR_BELL (1<<PORTD3)
+#define DOOR_1 (1<<PORTD4)
+#define DOOR_2 (1<<PORTD5)
+#define BUTTON_1 (1<<PORTD6)
+#define BUTTON_2 (1<<PORTD7)
 
 #define BUTTON_MASK (DOOR_BELL | DOOR_1 | DOOR_2 | BUTTON_1 | BUTTON_2)
 

@@ -3,51 +3,51 @@ volt_phase_control.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000014  00800100  000002ee  00000382  2**0
+  0 .data         00000014  00800100  000002da  0000036e  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         000002ee  00000000  00000000  00000094  2**1
+  1 .text         000002da  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000005  00800114  00800114  00000396  2**0
+  2 .bss          00000004  00800114  00800114  00000382  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000396  2**0
+  3 .comment      00000030  00000000  00000000  00000382  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000003c8  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000003b4  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 000000e8  00000000  00000000  00000408  2**0
+  5 .debug_aranges 000000c8  00000000  00000000  000003f4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000b7c  00000000  00000000  000004f0  2**0
+  6 .debug_info   00000b27  00000000  00000000  000004bc  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000885  00000000  00000000  0000106c  2**0
+  7 .debug_abbrev 0000088a  00000000  00000000  00000fe3  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000066a  00000000  00000000  000018f1  2**0
+  8 .debug_line   000005b0  00000000  00000000  0000186d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000200  00000000  00000000  00001f5c  2**2
+  9 .debug_frame  000001dc  00000000  00000000  00001e20  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000005e9  00000000  00000000  0000215c  2**0
+ 10 .debug_str    000005c3  00000000  00000000  00001ffc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000249  00000000  00000000  00002745  2**0
+ 11 .debug_loc    00000249  00000000  00000000  000025bf  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000000a8  00000000  00000000  0000298e  2**0
+ 12 .debug_ranges 00000098  00000000  00000000  00002808  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
 
 00000000 <__vectors>:
    0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
-   4:	0c 94 e7 00 	jmp	0x1ce	; 0x1ce <__vector_1>
+   4:	0c 94 d8 00 	jmp	0x1b0	; 0x1b0 <__vector_1>
    8:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
    c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   10:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   14:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   18:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
-  1c:	0c 94 11 01 	jmp	0x222	; 0x222 <__vector_7>
+  1c:	0c 94 08 01 	jmp	0x210	; 0x210 <__vector_7>
   20:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   24:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   28:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   2c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   30:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   34:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
-  38:	0c 94 5b 01 	jmp	0x2b6	; 0x2b6 <__vector_14>
+  38:	0c 94 2d 01 	jmp	0x25a	; 0x25a <__vector_14>
   3c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   40:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
   44:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
@@ -72,7 +72,7 @@ Disassembly of section .text:
   74:	11 e0       	ldi	r17, 0x01	; 1
   76:	a0 e0       	ldi	r26, 0x00	; 0
   78:	b1 e0       	ldi	r27, 0x01	; 1
-  7a:	ee ee       	ldi	r30, 0xEE	; 238
+  7a:	ea ed       	ldi	r30, 0xDA	; 218
   7c:	f2 e0       	ldi	r31, 0x02	; 2
   7e:	02 c0       	rjmp	.+4      	; 0x84 <__do_copy_data+0x10>
   80:	05 90       	lpm	r0, Z+
@@ -91,412 +91,390 @@ Disassembly of section .text:
   92:	1d 92       	st	X+, r1
 
 00000094 <.do_clear_bss_start>:
-  94:	a9 31       	cpi	r26, 0x19	; 25
+  94:	a8 31       	cpi	r26, 0x18	; 24
   96:	b2 07       	cpc	r27, r18
   98:	e1 f7       	brne	.-8      	; 0x92 <.do_clear_bss_loop>
-  9a:	0e 94 5f 00 	call	0xbe	; 0xbe <main>
-  9e:	0c 94 75 01 	jmp	0x2ea	; 0x2ea <_exit>
+  9a:	0e 94 5d 00 	call	0xba	; 0xba <main>
+  9e:	0c 94 6b 01 	jmp	0x2d6	; 0x2d6 <_exit>
 
 000000a2 <__bad_interrupt>:
   a2:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 000000a6 <_Z5setupv>:
-#define OUT_PIN 0
+# define F_CPU 16000000UL
 
-#define IS_ON (PINB & (1<<OUT_PIN))
+#define OUT_PIN 0
 
 void setup () {
 	cli();
   a6:	f8 94       	cli
-	InitPhaseControlTimer();
-  a8:	0e 94 38 01 	call	0x270	; 0x270 <_Z21InitPhaseControlTimerv>
+	InitTimersButtons();
+  a8:	0e 94 57 01 	call	0x2ae	; 0x2ae <_Z17InitTimersButtonsv>
 	OutputInit(OUT_PIN);
   ac:	80 e0       	ldi	r24, 0x00	; 0
-  ae:	0e 94 7a 00 	call	0xf4	; 0xf4 <_Z10OutputInith>
+  ae:	0e 94 6b 00 	call	0xd6	; 0xd6 <_Z10OutputInith>
 	ZerocrossInit();
-  b2:	0e 94 a4 00 	call	0x148	; 0x148 <_Z13ZerocrossInitv>
-	InitButtonTimer();
-  b6:	0e 94 6b 01 	call	0x2d6	; 0x2d6 <_Z15InitButtonTimerv>
+  b2:	0e 94 95 00 	call	0x12a	; 0x12a <_Z13ZerocrossInitv>
 	sei();
-  ba:	78 94       	sei
-  bc:	08 95       	ret
+  b6:	78 94       	sei
+  b8:	08 95       	ret
 
-000000be <main>:
+000000ba <main>:
 }
-
-uint8_t current_state = OFF;
 
 int main(void){
 	setup();
-  be:	0e 94 53 00 	call	0xa6	; 0xa6 <_Z5setupv>
+  ba:	0e 94 53 00 	call	0xa6	; 0xa6 <_Z5setupv>
 	while (1) {
-		if (button_state == DOOR_BELL) {
-  c2:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <button_state>
-  c6:	81 30       	cpi	r24, 0x01	; 1
-  c8:	59 f4       	brne	.+22     	; 0xe0 <main+0x22>
-			if (current_state != ON) { PhaseSmooth(ON); current_state = ON; }
-  ca:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <__data_end>
-  ce:	81 30       	cpi	r24, 0x01	; 1
-  d0:	c1 f3       	breq	.-16     	; 0xc2 <main+0x4>
-  d2:	81 e0       	ldi	r24, 0x01	; 1
-  d4:	0e 94 0b 01 	call	0x216	; 0x216 <_Z11PhaseSmoothh>
-  d8:	81 e0       	ldi	r24, 0x01	; 1
-  da:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <__data_end>
-  de:	f1 cf       	rjmp	.-30     	; 0xc2 <main+0x4>
-			} else { if (current_state != OFF) { PhaseSmooth(OFF); current_state = OFF; } }
-  e0:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <__data_end>
-  e4:	88 23       	and	r24, r24
-  e6:	69 f3       	breq	.-38     	; 0xc2 <main+0x4>
-  e8:	80 e0       	ldi	r24, 0x00	; 0
-  ea:	0e 94 0b 01 	call	0x216	; 0x216 <_Z11PhaseSmoothh>
-  ee:	10 92 14 01 	sts	0x0114, r1	; 0x800114 <__data_end>
-  f2:	e7 cf       	rjmp	.-50     	; 0xc2 <main+0x4>
+		if (button_state & (DOOR_BELL | BUTTON_1 | BUTTON_2)) PhaseSmooth(ON); else PhaseSmooth(OFF);
+  be:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <button_state>
+  c2:	88 7c       	andi	r24, 0xC8	; 200
+  c4:	21 f0       	breq	.+8      	; 0xce <main+0x14>
+  c6:	81 e0       	ldi	r24, 0x01	; 1
+  c8:	0e 94 fc 00 	call	0x1f8	; 0x1f8 <_Z11PhaseSmoothh>
+  cc:	f8 cf       	rjmp	.-16     	; 0xbe <main+0x4>
+  ce:	80 e0       	ldi	r24, 0x00	; 0
+  d0:	0e 94 fc 00 	call	0x1f8	; 0x1f8 <_Z11PhaseSmoothh>
+  d4:	f4 cf       	rjmp	.-24     	; 0xbe <main+0x4>
 
-000000f4 <_Z10OutputInith>:
+000000d6 <_Z10OutputInith>:
 #define MAX_STEPS 10
 
 uint16_t deltas[MAX_STEPS] = {7000, 6500, 6000, 5500, 5000, 4500, 4000, 3500, 3000, 2000};
 
 void OutputInit (uint8_t output_pin){
 	out_pin = output_pin;
-  f4:	80 93 17 01 	sts	0x0117, r24	; 0x800117 <out_pin>
+  d6:	80 93 16 01 	sts	0x0116, r24	; 0x800116 <out_pin>
 	OUT_DDR |= (1<<out_pin);
-  f8:	44 b1       	in	r20, 0x04	; 4
-  fa:	21 e0       	ldi	r18, 0x01	; 1
-  fc:	30 e0       	ldi	r19, 0x00	; 0
-  fe:	b9 01       	movw	r22, r18
- 100:	02 c0       	rjmp	.+4      	; 0x106 <_Z10OutputInith+0x12>
- 102:	66 0f       	add	r22, r22
- 104:	77 1f       	adc	r23, r23
- 106:	8a 95       	dec	r24
- 108:	e2 f7       	brpl	.-8      	; 0x102 <_Z10OutputInith+0xe>
- 10a:	cb 01       	movw	r24, r22
- 10c:	84 2b       	or	r24, r20
- 10e:	84 b9       	out	0x04, r24	; 4
- 110:	08 95       	ret
+  da:	44 b1       	in	r20, 0x04	; 4
+  dc:	21 e0       	ldi	r18, 0x01	; 1
+  de:	30 e0       	ldi	r19, 0x00	; 0
+  e0:	b9 01       	movw	r22, r18
+  e2:	02 c0       	rjmp	.+4      	; 0xe8 <_Z10OutputInith+0x12>
+  e4:	66 0f       	add	r22, r22
+  e6:	77 1f       	adc	r23, r23
+  e8:	8a 95       	dec	r24
+  ea:	e2 f7       	brpl	.-8      	; 0xe4 <_Z10OutputInith+0xe>
+  ec:	cb 01       	movw	r24, r22
+  ee:	84 2b       	or	r24, r20
+  f0:	84 b9       	out	0x04, r24	; 4
+  f2:	08 95       	ret
 
-00000112 <_Z2Onv>:
+000000f4 <_Z2Onv>:
 }
 
 void On (void){ OUT_PORT |= (1<<out_pin); }
- 112:	25 b1       	in	r18, 0x05	; 5
- 114:	81 e0       	ldi	r24, 0x01	; 1
- 116:	90 e0       	ldi	r25, 0x00	; 0
- 118:	00 90 17 01 	lds	r0, 0x0117	; 0x800117 <out_pin>
- 11c:	02 c0       	rjmp	.+4      	; 0x122 <_Z2Onv+0x10>
- 11e:	88 0f       	add	r24, r24
- 120:	99 1f       	adc	r25, r25
- 122:	0a 94       	dec	r0
- 124:	e2 f7       	brpl	.-8      	; 0x11e <_Z2Onv+0xc>
- 126:	82 2b       	or	r24, r18
- 128:	85 b9       	out	0x05, r24	; 5
- 12a:	08 95       	ret
+  f4:	25 b1       	in	r18, 0x05	; 5
+  f6:	81 e0       	ldi	r24, 0x01	; 1
+  f8:	90 e0       	ldi	r25, 0x00	; 0
+  fa:	00 90 16 01 	lds	r0, 0x0116	; 0x800116 <out_pin>
+  fe:	02 c0       	rjmp	.+4      	; 0x104 <_Z2Onv+0x10>
+ 100:	88 0f       	add	r24, r24
+ 102:	99 1f       	adc	r25, r25
+ 104:	0a 94       	dec	r0
+ 106:	e2 f7       	brpl	.-8      	; 0x100 <_Z2Onv+0xc>
+ 108:	82 2b       	or	r24, r18
+ 10a:	85 b9       	out	0x05, r24	; 5
+ 10c:	08 95       	ret
 
-0000012c <_Z3Offv>:
+0000010e <_Z3Offv>:
 
 void Off (void){ OUT_PORT &= ~(1<<out_pin); }
- 12c:	25 b1       	in	r18, 0x05	; 5
- 12e:	81 e0       	ldi	r24, 0x01	; 1
- 130:	90 e0       	ldi	r25, 0x00	; 0
- 132:	00 90 17 01 	lds	r0, 0x0117	; 0x800117 <out_pin>
- 136:	02 c0       	rjmp	.+4      	; 0x13c <_Z3Offv+0x10>
- 138:	88 0f       	add	r24, r24
- 13a:	99 1f       	adc	r25, r25
- 13c:	0a 94       	dec	r0
- 13e:	e2 f7       	brpl	.-8      	; 0x138 <_Z3Offv+0xc>
- 140:	80 95       	com	r24
- 142:	82 23       	and	r24, r18
- 144:	85 b9       	out	0x05, r24	; 5
- 146:	08 95       	ret
+ 10e:	25 b1       	in	r18, 0x05	; 5
+ 110:	81 e0       	ldi	r24, 0x01	; 1
+ 112:	90 e0       	ldi	r25, 0x00	; 0
+ 114:	00 90 16 01 	lds	r0, 0x0116	; 0x800116 <out_pin>
+ 118:	02 c0       	rjmp	.+4      	; 0x11e <_Z3Offv+0x10>
+ 11a:	88 0f       	add	r24, r24
+ 11c:	99 1f       	adc	r25, r25
+ 11e:	0a 94       	dec	r0
+ 120:	e2 f7       	brpl	.-8      	; 0x11a <_Z3Offv+0xc>
+ 122:	80 95       	com	r24
+ 124:	82 23       	and	r24, r18
+ 126:	85 b9       	out	0x05, r24	; 5
+ 128:	08 95       	ret
 
-00000148 <_Z13ZerocrossInitv>:
+0000012a <_Z13ZerocrossInitv>:
 
 void ZerocrossInit (void) {
 	EXTERNAL_INTERRUPT_PORT &= ~(1<<ZEROCROSS_PIN);
- 148:	52 98       	cbi	0x0a, 2	; 10
+ 12a:	52 98       	cbi	0x0a, 2	; 10
 	INTERRUPT_INIT |= (1<<ISC01) | (1<<ISC00);
- 14a:	e9 e6       	ldi	r30, 0x69	; 105
- 14c:	f0 e0       	ldi	r31, 0x00	; 0
- 14e:	80 81       	ld	r24, Z
- 150:	83 60       	ori	r24, 0x03	; 3
- 152:	80 83       	st	Z, r24
+ 12c:	e9 e6       	ldi	r30, 0x69	; 105
+ 12e:	f0 e0       	ldi	r31, 0x00	; 0
+ 130:	80 81       	ld	r24, Z
+ 132:	83 60       	ori	r24, 0x03	; 3
+ 134:	80 83       	st	Z, r24
 	INTERRUPT_FLAG |= (1<<INTF0);
- 154:	e0 9a       	sbi	0x1c, 0	; 28
- 156:	08 95       	ret
+ 136:	e0 9a       	sbi	0x1c, 0	; 28
+ 138:	08 95       	ret
 
-00000158 <_Z14ZerocrossStartv>:
+0000013a <_Z14ZerocrossStartv>:
 }
 
 void ZerocrossStart (void) {
 	zerocross = 0;
- 158:	10 92 18 01 	sts	0x0118, r1	; 0x800118 <zerocross>
+ 13a:	10 92 17 01 	sts	0x0117, r1	; 0x800117 <zerocross>
 	GENERAL_INTERRUPT |= (1<<INT0);
- 15c:	e8 9a       	sbi	0x1d, 0	; 29
- 15e:	08 95       	ret
+ 13e:	e8 9a       	sbi	0x1d, 0	; 29
+ 140:	08 95       	ret
 
-00000160 <_Z13ZerocrossStopv>:
+00000142 <_Z13ZerocrossStopv>:
 }
 
 void ZerocrossStop (void) { GENERAL_INTERRUPT &= ~(1<<INT0); }
- 160:	e8 98       	cbi	0x1d, 0	; 29
- 162:	08 95       	ret
+ 142:	e8 98       	cbi	0x1d, 0	; 29
+ 144:	08 95       	ret
 
-00000164 <_Z12PhaseControlv>:
-ISR (EXT_INT){
-	PhaseControl();
-}
+00000146 <_Z12PhaseControlv>:
+
+ISR (EXT_INT){ PhaseControl(); }
 
 void PhaseControl (void) {
 	if (zerocross < MAX_STEPS) {
- 164:	80 91 18 01 	lds	r24, 0x0118	; 0x800118 <zerocross>
- 168:	8a 30       	cpi	r24, 0x0A	; 10
- 16a:	f0 f4       	brcc	.+60     	; 0x1a8 <_Z12PhaseControlv+0x44>
+ 146:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <zerocross>
+ 14a:	8a 30       	cpi	r24, 0x0A	; 10
+ 14c:	f0 f4       	brcc	.+60     	; 0x18a <_Z12PhaseControlv+0x44>
 		Off();
- 16c:	0e 94 96 00 	call	0x12c	; 0x12c <_Z3Offv>
-		StartPhaseControlTimer(deltas[state == OFF ? zerocross : MAX_STEPS-zerocross-1]);
- 170:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <state>
- 174:	81 11       	cpse	r24, r1
- 176:	04 c0       	rjmp	.+8      	; 0x180 <_Z12PhaseControlv+0x1c>
- 178:	e0 91 18 01 	lds	r30, 0x0118	; 0x800118 <zerocross>
- 17c:	f0 e0       	ldi	r31, 0x00	; 0
- 17e:	06 c0       	rjmp	.+12     	; 0x18c <_Z12PhaseControlv+0x28>
- 180:	80 91 18 01 	lds	r24, 0x0118	; 0x800118 <zerocross>
- 184:	e9 e0       	ldi	r30, 0x09	; 9
- 186:	f0 e0       	ldi	r31, 0x00	; 0
- 188:	e8 1b       	sub	r30, r24
- 18a:	f1 09       	sbc	r31, r1
- 18c:	ee 0f       	add	r30, r30
- 18e:	ff 1f       	adc	r31, r31
- 190:	e0 50       	subi	r30, 0x00	; 0
- 192:	ff 4f       	sbci	r31, 0xFF	; 255
- 194:	80 81       	ld	r24, Z
- 196:	91 81       	ldd	r25, Z+1	; 0x01
- 198:	0e 94 41 01 	call	0x282	; 0x282 <_Z22StartPhaseControlTimerj>
+ 14e:	0e 94 87 00 	call	0x10e	; 0x10e <_Z3Offv>
+		StartPhaseControlTimer(deltas[triac_state == TURNING_ON ? zerocross : MAX_STEPS-zerocross-1]);
+ 152:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <__data_end>
+ 156:	82 30       	cpi	r24, 0x02	; 2
+ 158:	21 f4       	brne	.+8      	; 0x162 <_Z12PhaseControlv+0x1c>
+ 15a:	e0 91 17 01 	lds	r30, 0x0117	; 0x800117 <zerocross>
+ 15e:	f0 e0       	ldi	r31, 0x00	; 0
+ 160:	06 c0       	rjmp	.+12     	; 0x16e <_Z12PhaseControlv+0x28>
+ 162:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <zerocross>
+ 166:	e9 e0       	ldi	r30, 0x09	; 9
+ 168:	f0 e0       	ldi	r31, 0x00	; 0
+ 16a:	e8 1b       	sub	r30, r24
+ 16c:	f1 09       	sbc	r31, r1
+ 16e:	ee 0f       	add	r30, r30
+ 170:	ff 1f       	adc	r31, r31
+ 172:	e0 50       	subi	r30, 0x00	; 0
+ 174:	ff 4f       	sbci	r31, 0xFF	; 255
+ 176:	80 81       	ld	r24, Z
+ 178:	91 81       	ldd	r25, Z+1	; 0x01
+ 17a:	0e 94 3d 01 	call	0x27a	; 0x27a <_Z22StartPhaseControlTimerj>
 		zerocross++;
- 19c:	80 91 18 01 	lds	r24, 0x0118	; 0x800118 <zerocross>
- 1a0:	8f 5f       	subi	r24, 0xFF	; 255
- 1a2:	80 93 18 01 	sts	0x0118, r24	; 0x800118 <zerocross>
- 1a6:	08 95       	ret
-	} else {
-		ZerocrossStop();
- 1a8:	0e 94 b0 00 	call	0x160	; 0x160 <_Z13ZerocrossStopv>
-		StopPhaseControlTimer();
- 1ac:	0e 94 55 01 	call	0x2aa	; 0x2aa <_Z21StopPhaseControlTimerv>
-		if (state == OFF) { On(); state = ON; } else { Off(); state = OFF; }
- 1b0:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <state>
- 1b4:	81 11       	cpse	r24, r1
- 1b6:	06 c0       	rjmp	.+12     	; 0x1c4 <_Z12PhaseControlv+0x60>
- 1b8:	0e 94 89 00 	call	0x112	; 0x112 <_Z2Onv>
- 1bc:	81 e0       	ldi	r24, 0x01	; 1
- 1be:	80 93 16 01 	sts	0x0116, r24	; 0x800116 <state>
- 1c2:	08 95       	ret
- 1c4:	0e 94 96 00 	call	0x12c	; 0x12c <_Z3Offv>
- 1c8:	10 92 16 01 	sts	0x0116, r1	; 0x800116 <state>
- 1cc:	08 95       	ret
+ 17e:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <zerocross>
+ 182:	8f 5f       	subi	r24, 0xFF	; 255
+ 184:	80 93 17 01 	sts	0x0117, r24	; 0x800117 <zerocross>
+ 188:	08 95       	ret
+		} else {
+			ZerocrossStop();
+ 18a:	0e 94 a1 00 	call	0x142	; 0x142 <_Z13ZerocrossStopv>
+			StopPhaseControlTimer();
+ 18e:	0e 94 51 01 	call	0x2a2	; 0x2a2 <_Z21StopPhaseControlTimerv>
+			if (triac_state == TURNING_ON) { On(); triac_state = ON; } else { Off(); triac_state = OFF; }
+ 192:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <__data_end>
+ 196:	82 30       	cpi	r24, 0x02	; 2
+ 198:	31 f4       	brne	.+12     	; 0x1a6 <_Z12PhaseControlv+0x60>
+ 19a:	0e 94 7a 00 	call	0xf4	; 0xf4 <_Z2Onv>
+ 19e:	81 e0       	ldi	r24, 0x01	; 1
+ 1a0:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <__data_end>
+ 1a4:	08 95       	ret
+ 1a6:	0e 94 87 00 	call	0x10e	; 0x10e <_Z3Offv>
+ 1aa:	10 92 14 01 	sts	0x0114, r1	; 0x800114 <__data_end>
+ 1ae:	08 95       	ret
 
-000001ce <__vector_1>:
+000001b0 <__vector_1>:
 	GENERAL_INTERRUPT |= (1<<INT0);
 }
 
 void ZerocrossStop (void) { GENERAL_INTERRUPT &= ~(1<<INT0); }
 
-ISR (EXT_INT){
- 1ce:	1f 92       	push	r1
- 1d0:	0f 92       	push	r0
- 1d2:	0f b6       	in	r0, 0x3f	; 63
- 1d4:	0f 92       	push	r0
- 1d6:	11 24       	eor	r1, r1
- 1d8:	2f 93       	push	r18
- 1da:	3f 93       	push	r19
- 1dc:	4f 93       	push	r20
- 1de:	5f 93       	push	r21
- 1e0:	6f 93       	push	r22
- 1e2:	7f 93       	push	r23
- 1e4:	8f 93       	push	r24
- 1e6:	9f 93       	push	r25
- 1e8:	af 93       	push	r26
- 1ea:	bf 93       	push	r27
- 1ec:	ef 93       	push	r30
- 1ee:	ff 93       	push	r31
-	PhaseControl();
- 1f0:	0e 94 b2 00 	call	0x164	; 0x164 <_Z12PhaseControlv>
-}
- 1f4:	ff 91       	pop	r31
- 1f6:	ef 91       	pop	r30
- 1f8:	bf 91       	pop	r27
- 1fa:	af 91       	pop	r26
- 1fc:	9f 91       	pop	r25
- 1fe:	8f 91       	pop	r24
- 200:	7f 91       	pop	r23
- 202:	6f 91       	pop	r22
- 204:	5f 91       	pop	r21
- 206:	4f 91       	pop	r20
- 208:	3f 91       	pop	r19
- 20a:	2f 91       	pop	r18
- 20c:	0f 90       	pop	r0
- 20e:	0f be       	out	0x3f, r0	; 63
- 210:	0f 90       	pop	r0
- 212:	1f 90       	pop	r1
- 214:	18 95       	reti
+ISR (EXT_INT){ PhaseControl(); }
+ 1b0:	1f 92       	push	r1
+ 1b2:	0f 92       	push	r0
+ 1b4:	0f b6       	in	r0, 0x3f	; 63
+ 1b6:	0f 92       	push	r0
+ 1b8:	11 24       	eor	r1, r1
+ 1ba:	2f 93       	push	r18
+ 1bc:	3f 93       	push	r19
+ 1be:	4f 93       	push	r20
+ 1c0:	5f 93       	push	r21
+ 1c2:	6f 93       	push	r22
+ 1c4:	7f 93       	push	r23
+ 1c6:	8f 93       	push	r24
+ 1c8:	9f 93       	push	r25
+ 1ca:	af 93       	push	r26
+ 1cc:	bf 93       	push	r27
+ 1ce:	ef 93       	push	r30
+ 1d0:	ff 93       	push	r31
+ 1d2:	0e 94 a3 00 	call	0x146	; 0x146 <_Z12PhaseControlv>
+ 1d6:	ff 91       	pop	r31
+ 1d8:	ef 91       	pop	r30
+ 1da:	bf 91       	pop	r27
+ 1dc:	af 91       	pop	r26
+ 1de:	9f 91       	pop	r25
+ 1e0:	8f 91       	pop	r24
+ 1e2:	7f 91       	pop	r23
+ 1e4:	6f 91       	pop	r22
+ 1e6:	5f 91       	pop	r21
+ 1e8:	4f 91       	pop	r20
+ 1ea:	3f 91       	pop	r19
+ 1ec:	2f 91       	pop	r18
+ 1ee:	0f 90       	pop	r0
+ 1f0:	0f be       	out	0x3f, r0	; 63
+ 1f2:	0f 90       	pop	r0
+ 1f4:	1f 90       	pop	r1
+ 1f6:	18 95       	reti
 
-00000216 <_Z11PhaseSmoothh>:
-		if (state == OFF) { On(); state = ON; } else { Off(); state = OFF; }
+000001f8 <_Z11PhaseSmoothh>:
+			if (triac_state == TURNING_ON) { On(); triac_state = ON; } else { Off(); triac_state = OFF; }
 	}
 }
 
 void PhaseSmooth (uint8_t final_state) {
-	if (state != final_state) {
- 216:	90 91 16 01 	lds	r25, 0x0116	; 0x800116 <state>
- 21a:	98 13       	cpse	r25, r24
+	if (STEADY_ST(triac_state) && triac_state != final_state) {
+ 1f8:	90 91 14 01 	lds	r25, 0x0114	; 0x800114 <__data_end>
+ 1fc:	92 30       	cpi	r25, 0x02	; 2
+ 1fe:	38 f4       	brcc	.+14     	; 0x20e <_Z11PhaseSmoothh+0x16>
+ 200:	98 17       	cp	r25, r24
+ 202:	29 f0       	breq	.+10     	; 0x20e <_Z11PhaseSmoothh+0x16>
+		TOGGLE(triac_state);
+ 204:	9e 5f       	subi	r25, 0xFE	; 254
+ 206:	90 93 14 01 	sts	0x0114, r25	; 0x800114 <__data_end>
 		//cli();
 		ZerocrossStart();
- 21c:	0e 94 ac 00 	call	0x158	; 0x158 <_Z14ZerocrossStartv>
- 220:	08 95       	ret
+ 20a:	0e 94 9d 00 	call	0x13a	; 0x13a <_Z14ZerocrossStartv>
+ 20e:	08 95       	ret
 
-00000222 <__vector_7>:
-#include "PhaseControlTimer.h"
+00000210 <__vector_7>:
 #include "PhaseControl.h"
+#include "TimersButtons.h"
 
-ISR(TIMER_INT) {
- 222:	1f 92       	push	r1
- 224:	0f 92       	push	r0
- 226:	0f b6       	in	r0, 0x3f	; 63
- 228:	0f 92       	push	r0
- 22a:	11 24       	eor	r1, r1
- 22c:	2f 93       	push	r18
- 22e:	3f 93       	push	r19
- 230:	4f 93       	push	r20
- 232:	5f 93       	push	r21
- 234:	6f 93       	push	r22
- 236:	7f 93       	push	r23
- 238:	8f 93       	push	r24
- 23a:	9f 93       	push	r25
- 23c:	af 93       	push	r26
- 23e:	bf 93       	push	r27
- 240:	ef 93       	push	r30
- 242:	ff 93       	push	r31
-	if ((1<<ZEROCROSS_PIN) != PIND) On(); 
- 244:	89 b1       	in	r24, 0x09	; 9
- 246:	84 30       	cpi	r24, 0x04	; 4
- 248:	11 f0       	breq	.+4      	; 0x24e <__vector_7+0x2c>
- 24a:	0e 94 89 00 	call	0x112	; 0x112 <_Z2Onv>
-}
- 24e:	ff 91       	pop	r31
- 250:	ef 91       	pop	r30
- 252:	bf 91       	pop	r27
- 254:	af 91       	pop	r26
- 256:	9f 91       	pop	r25
- 258:	8f 91       	pop	r24
- 25a:	7f 91       	pop	r23
- 25c:	6f 91       	pop	r22
- 25e:	5f 91       	pop	r21
- 260:	4f 91       	pop	r20
- 262:	3f 91       	pop	r19
- 264:	2f 91       	pop	r18
- 266:	0f 90       	pop	r0
- 268:	0f be       	out	0x3f, r0	; 63
- 26a:	0f 90       	pop	r0
- 26c:	1f 90       	pop	r1
- 26e:	18 95       	reti
+extern uint8_t button_state;
 
-00000270 <_Z21InitPhaseControlTimerv>:
+ISR(PHASE_CONTROL_TIMER_INT) { if (((1<<ZEROCROSS_PIN) & PIND) == 0) On(); }
+ 210:	1f 92       	push	r1
+ 212:	0f 92       	push	r0
+ 214:	0f b6       	in	r0, 0x3f	; 63
+ 216:	0f 92       	push	r0
+ 218:	11 24       	eor	r1, r1
+ 21a:	2f 93       	push	r18
+ 21c:	3f 93       	push	r19
+ 21e:	4f 93       	push	r20
+ 220:	5f 93       	push	r21
+ 222:	6f 93       	push	r22
+ 224:	7f 93       	push	r23
+ 226:	8f 93       	push	r24
+ 228:	9f 93       	push	r25
+ 22a:	af 93       	push	r26
+ 22c:	bf 93       	push	r27
+ 22e:	ef 93       	push	r30
+ 230:	ff 93       	push	r31
+ 232:	4a 9b       	sbis	0x09, 2	; 9
+ 234:	0e 94 7a 00 	call	0xf4	; 0xf4 <_Z2Onv>
+ 238:	ff 91       	pop	r31
+ 23a:	ef 91       	pop	r30
+ 23c:	bf 91       	pop	r27
+ 23e:	af 91       	pop	r26
+ 240:	9f 91       	pop	r25
+ 242:	8f 91       	pop	r24
+ 244:	7f 91       	pop	r23
+ 246:	6f 91       	pop	r22
+ 248:	5f 91       	pop	r21
+ 24a:	4f 91       	pop	r20
+ 24c:	3f 91       	pop	r19
+ 24e:	2f 91       	pop	r18
+ 250:	0f 90       	pop	r0
+ 252:	0f be       	out	0x3f, r0	; 63
+ 254:	0f 90       	pop	r0
+ 256:	1f 90       	pop	r1
+ 258:	18 95       	reti
 
-void InitPhaseControlTimer () {
-  TCCR_A = TCCR_A_FOR_TIMER;
- 270:	82 e0       	ldi	r24, 0x02	; 2
- 272:	80 93 b0 00 	sts	0x00B0, r24	; 0x8000b0 <__TEXT_REGION_LENGTH__+0x7e00b0>
-  TCCR_B = CS_FOR_4_PRESC;
- 276:	87 e0       	ldi	r24, 0x07	; 7
- 278:	80 93 b1 00 	sts	0x00B1, r24	; 0x8000b1 <__TEXT_REGION_LENGTH__+0x7e00b1>
-  TCNT2 = 0;	
- 27c:	10 92 b2 00 	sts	0x00B2, r1	; 0x8000b2 <__TEXT_REGION_LENGTH__+0x7e00b2>
- 280:	08 95       	ret
+0000025a <__vector_14>:
+	
+ISR(BUTTON_TIMER_INT) { button_state = (PIND & BUTTON_MASK); }
+ 25a:	1f 92       	push	r1
+ 25c:	0f 92       	push	r0
+ 25e:	0f b6       	in	r0, 0x3f	; 63
+ 260:	0f 92       	push	r0
+ 262:	11 24       	eor	r1, r1
+ 264:	8f 93       	push	r24
+ 266:	89 b1       	in	r24, 0x09	; 9
+ 268:	88 7f       	andi	r24, 0xF8	; 248
+ 26a:	80 93 15 01 	sts	0x0115, r24	; 0x800115 <button_state>
+ 26e:	8f 91       	pop	r24
+ 270:	0f 90       	pop	r0
+ 272:	0f be       	out	0x3f, r0	; 63
+ 274:	0f 90       	pop	r0
+ 276:	1f 90       	pop	r1
+ 278:	18 95       	reti
 
-00000282 <_Z22StartPhaseControlTimerj>:
-}
+0000027a <_Z22StartPhaseControlTimerj>:
 
 void StartPhaseControlTimer(uint16_t Period) {
-  //cli();
-  OCR_A = ((uint32_t)Period * F_CPU_SH) / PRESCALER_4 - 1;
- 282:	a0 e0       	ldi	r26, 0x00	; 0
- 284:	b0 e0       	ldi	r27, 0x00	; 0
+	//cli();
+	PHASE_CONTROL_OCR = ((uint32_t)Period * F_CPU_SH) / TIMERS_PRESCALER - 1;
+ 27a:	a0 e0       	ldi	r26, 0x00	; 0
+ 27c:	b0 e0       	ldi	r27, 0x00	; 0
+ 27e:	88 0f       	add	r24, r24
+ 280:	99 1f       	adc	r25, r25
+ 282:	aa 1f       	adc	r26, r26
+ 284:	bb 1f       	adc	r27, r27
  286:	88 0f       	add	r24, r24
  288:	99 1f       	adc	r25, r25
  28a:	aa 1f       	adc	r26, r26
  28c:	bb 1f       	adc	r27, r27
- 28e:	88 0f       	add	r24, r24
- 290:	99 1f       	adc	r25, r25
- 292:	aa 1f       	adc	r26, r26
- 294:	bb 1f       	adc	r27, r27
- 296:	8f ef       	ldi	r24, 0xFF	; 255
- 298:	89 0f       	add	r24, r25
- 29a:	80 93 b3 00 	sts	0x00B3, r24	; 0x8000b3 <__TEXT_REGION_LENGTH__+0x7e00b3>
-  TCNT2 = 0;
- 29e:	10 92 b2 00 	sts	0x00B2, r1	; 0x8000b2 <__TEXT_REGION_LENGTH__+0x7e00b2>
-  TIMSK_ = (1<<OCIE_A);
- 2a2:	82 e0       	ldi	r24, 0x02	; 2
- 2a4:	80 93 70 00 	sts	0x0070, r24	; 0x800070 <__TEXT_REGION_LENGTH__+0x7e0070>
- 2a8:	08 95       	ret
+ 28e:	8f ef       	ldi	r24, 0xFF	; 255
+ 290:	89 0f       	add	r24, r25
+ 292:	80 93 b3 00 	sts	0x00B3, r24	; 0x8000b3 <__TEXT_REGION_LENGTH__+0x7e00b3>
+	TCNT2 = 0;
+ 296:	10 92 b2 00 	sts	0x00B2, r1	; 0x8000b2 <__TEXT_REGION_LENGTH__+0x7e00b2>
+	PHASE_CONTROL_TIMER_TIMSK = (1<<TIMERS_OCIE_A);
+ 29a:	82 e0       	ldi	r24, 0x02	; 2
+ 29c:	80 93 70 00 	sts	0x0070, r24	; 0x800070 <__TEXT_REGION_LENGTH__+0x7e0070>
+ 2a0:	08 95       	ret
 
-000002aa <_Z21StopPhaseControlTimerv>:
-  //sei();
+000002a2 <_Z21StopPhaseControlTimerv>:
+	//sei();
 }
 
-void StopPhaseControlTimer() {
-	TIMSK_ &= ~(1<<OCIE_A);
- 2aa:	e0 e7       	ldi	r30, 0x70	; 112
- 2ac:	f0 e0       	ldi	r31, 0x00	; 0
- 2ae:	80 81       	ld	r24, Z
- 2b0:	8d 7f       	andi	r24, 0xFD	; 253
- 2b2:	80 83       	st	Z, r24
- 2b4:	08 95       	ret
+void StopPhaseControlTimer() { PHASE_CONTROL_TIMER_TIMSK &= ~(1<<TIMERS_OCIE_A); }
+ 2a2:	e0 e7       	ldi	r30, 0x70	; 112
+ 2a4:	f0 e0       	ldi	r31, 0x00	; 0
+ 2a6:	80 81       	ld	r24, Z
+ 2a8:	8d 7f       	andi	r24, 0xFD	; 253
+ 2aa:	80 83       	st	Z, r24
+ 2ac:	08 95       	ret
 
-000002b6 <__vector_14>:
-#include "timer_0_class.h"
-#include "PhaseControlTimer.h"
+000002ae <_Z17InitTimersButtonsv>:
 
-extern uint8_t button_state;
-
-ISR(BUTTON_TIMER_INT) {
- 2b6:	1f 92       	push	r1
- 2b8:	0f 92       	push	r0
- 2ba:	0f b6       	in	r0, 0x3f	; 63
- 2bc:	0f 92       	push	r0
- 2be:	11 24       	eor	r1, r1
- 2c0:	8f 93       	push	r24
-  button_state = (PINC & BUTTON_MASK);
- 2c2:	86 b1       	in	r24, 0x06	; 6
- 2c4:	8f 71       	andi	r24, 0x1F	; 31
- 2c6:	80 93 15 01 	sts	0x0115, r24	; 0x800115 <button_state>
-}
- 2ca:	8f 91       	pop	r24
- 2cc:	0f 90       	pop	r0
- 2ce:	0f be       	out	0x3f, r0	; 63
- 2d0:	0f 90       	pop	r0
- 2d2:	1f 90       	pop	r1
- 2d4:	18 95       	reti
-
-000002d6 <_Z15InitButtonTimerv>:
-
-void InitButtonTimer(void){
+void InitTimersButtons(void) {
 	//cli();
-	DDRC = 0;
- 2d6:	17 b8       	out	0x07, r1	; 7
-	BUTTON_TIMER_TIMSK = (1 << BUTTON_TIMER_OCIE_A);
- 2d8:	82 e0       	ldi	r24, 0x02	; 2
- 2da:	80 93 6e 00 	sts	0x006E, r24	; 0x80006e <__TEXT_REGION_LENGTH__+0x7e006e>
-	BUTTON_TIMER_TCCR_A = BUTTON_TIMER_TCCR_A_FOR_TIMER;
- 2de:	84 bd       	out	0x24, r24	; 36
-	BUTTON_TIMER_TCCR_B = (1 << BUTTON_TIMER_CS_2)|(1 << BUTTON_TIMER_CS_0);
- 2e0:	85 e0       	ldi	r24, 0x05	; 5
- 2e2:	85 bd       	out	0x25, r24	; 37
-	BUTTON_TIMER_OCR_A = ((uint32_t)READ_BUTTONS_TIME * F_CPU_SH) / PRESCALER_4 - 1;
- 2e4:	89 ee       	ldi	r24, 0xE9	; 233
- 2e6:	87 bd       	out	0x27, r24	; 39
- 2e8:	08 95       	ret
+	DDRD &= ~(BUTTON_MASK);
+ 2ae:	8a b1       	in	r24, 0x0a	; 10
+ 2b0:	87 70       	andi	r24, 0x07	; 7
+ 2b2:	8a b9       	out	0x0a, r24	; 10
+	
+	PHASE_CONTROL_TIMER_TCCR_A = TCCR_A_FOR_TIMERS;
+ 2b4:	82 e0       	ldi	r24, 0x02	; 2
+ 2b6:	80 93 b0 00 	sts	0x00B0, r24	; 0x8000b0 <__TEXT_REGION_LENGTH__+0x7e00b0>
+	PHASE_CONTROL_TIMER_TCCR_B = PHASE_CONTROL_TIMER_CS;
+ 2ba:	97 e0       	ldi	r25, 0x07	; 7
+ 2bc:	90 93 b1 00 	sts	0x00B1, r25	; 0x8000b1 <__TEXT_REGION_LENGTH__+0x7e00b1>
+	TCNT2 = 0;
+ 2c0:	10 92 b2 00 	sts	0x00B2, r1	; 0x8000b2 <__TEXT_REGION_LENGTH__+0x7e00b2>
+	
+	BUTTON_TIMER_TCCR_A = TCCR_A_FOR_TIMERS;
+ 2c4:	84 bd       	out	0x24, r24	; 36
+	BUTTON_TIMER_TCCR_B = BUTTON_TIMER_CS;
+ 2c6:	95 e0       	ldi	r25, 0x05	; 5
+ 2c8:	95 bd       	out	0x25, r25	; 37
+	BUTTON_TIMER_OCR = ((uint32_t)READ_BUTTONS_TIME * F_CPU_SH) / TIMERS_PRESCALER - 1;
+ 2ca:	99 ee       	ldi	r25, 0xE9	; 233
+ 2cc:	97 bd       	out	0x27, r25	; 39
+	BUTTON_TIMER_TIMSK = (1 << TIMERS_OCIE_A);
+ 2ce:	80 93 6e 00 	sts	0x006E, r24	; 0x80006e <__TEXT_REGION_LENGTH__+0x7e006e>
+	TCNT0 = 0;
+ 2d2:	16 bc       	out	0x26, r1	; 38
+ 2d4:	08 95       	ret
 
-000002ea <_exit>:
- 2ea:	f8 94       	cli
+000002d6 <_exit>:
+ 2d6:	f8 94       	cli
 
-000002ec <__stop_program>:
- 2ec:	ff cf       	rjmp	.-2      	; 0x2ec <__stop_program>
+000002d8 <__stop_program>:
+ 2d8:	ff cf       	rjmp	.-2      	; 0x2d8 <__stop_program>

@@ -39,8 +39,9 @@
 #define OUT_PORT PORTB
 
 /*	States for Smooth on/off	*/
-#define  ON 1
-#define OFF 0
+enum TRIAC_STATES {OFF, ON, TURNING_ON, TURNING_OFF};
+#define STEADY_ST(x) x < 2
+#define TOGGLE(x) x+=2
 
 /*	Functions definitions	*/
 void OutputInit (uint8_t out_pin);	//Initialize output pin

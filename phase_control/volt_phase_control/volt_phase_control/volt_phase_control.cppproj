@@ -162,16 +162,10 @@
     <Compile Include="PhaseControl.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PhaseControlTimer.cpp">
+    <Compile Include="TimersButtons.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PhaseControlTimer.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="timer_0_class.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="timer_0_class.h">
+    <Compile Include="TimersButtons.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
