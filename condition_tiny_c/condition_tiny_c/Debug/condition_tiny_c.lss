@@ -1,0 +1,567 @@
+
+condition_tiny_c.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000296  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000006  00800060  00000296  0000032a  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000001  00800066  00800066  00000330  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  00000330  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000360  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 000000c0  00000000  00000000  0000039c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   00000be2  00000000  00000000  0000045c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 0000069c  00000000  00000000  0000103e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   000006b5  00000000  00000000  000016da  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  00000130  00000000  00000000  00001d90  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    000003d5  00000000  00000000  00001ec0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    000004c4  00000000  00000000  00002295  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000080  00000000  00000000  00002759  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	09 c0       	rjmp	.+18     	; 0x14 <__ctors_end>
+   2:	47 c0       	rjmp	.+142    	; 0x92 <__vector_1>
+   4:	20 c0       	rjmp	.+64     	; 0x46 <__bad_interrupt>
+   6:	1f c0       	rjmp	.+62     	; 0x46 <__bad_interrupt>
+   8:	1e c0       	rjmp	.+60     	; 0x46 <__bad_interrupt>
+   a:	1d c0       	rjmp	.+58     	; 0x46 <__bad_interrupt>
+   c:	1c c0       	rjmp	.+56     	; 0x46 <__bad_interrupt>
+   e:	1b c0       	rjmp	.+54     	; 0x46 <__bad_interrupt>
+  10:	1a c0       	rjmp	.+52     	; 0x46 <__bad_interrupt>
+  12:	19 c0       	rjmp	.+50     	; 0x46 <__bad_interrupt>
+
+00000014 <__ctors_end>:
+  14:	11 24       	eor	r1, r1
+  16:	1f be       	out	0x3f, r1	; 63
+  18:	cf e9       	ldi	r28, 0x9F	; 159
+  1a:	cd bf       	out	0x3d, r28	; 61
+
+0000001c <__do_copy_data>:
+  1c:	10 e0       	ldi	r17, 0x00	; 0
+  1e:	a0 e6       	ldi	r26, 0x60	; 96
+  20:	b0 e0       	ldi	r27, 0x00	; 0
+  22:	e6 e9       	ldi	r30, 0x96	; 150
+  24:	f2 e0       	ldi	r31, 0x02	; 2
+  26:	02 c0       	rjmp	.+4      	; 0x2c <__do_copy_data+0x10>
+  28:	05 90       	lpm	r0, Z+
+  2a:	0d 92       	st	X+, r0
+  2c:	a6 36       	cpi	r26, 0x66	; 102
+  2e:	b1 07       	cpc	r27, r17
+  30:	d9 f7       	brne	.-10     	; 0x28 <__do_copy_data+0xc>
+
+00000032 <__do_clear_bss>:
+  32:	20 e0       	ldi	r18, 0x00	; 0
+  34:	a6 e6       	ldi	r26, 0x66	; 102
+  36:	b0 e0       	ldi	r27, 0x00	; 0
+  38:	01 c0       	rjmp	.+2      	; 0x3c <.do_clear_bss_start>
+
+0000003a <.do_clear_bss_loop>:
+  3a:	1d 92       	st	X+, r1
+
+0000003c <.do_clear_bss_start>:
+  3c:	a7 36       	cpi	r26, 0x67	; 103
+  3e:	b2 07       	cpc	r27, r18
+  40:	e1 f7       	brne	.-8      	; 0x3a <.do_clear_bss_loop>
+  42:	86 d0       	rcall	.+268    	; 0x150 <main>
+  44:	26 c1       	rjmp	.+588    	; 0x292 <_exit>
+
+00000046 <__bad_interrupt>:
+  46:	dc cf       	rjmp	.-72     	; 0x0 <__vectors>
+
+00000048 <DS18B20_read>:
+#include "onewire.h"
+#include "ds18b20.h"
+
+int16_t
+DS18B20_read(uint8_t pin)
+{
+  48:	1f 93       	push	r17
+  4a:	cf 93       	push	r28
+  4c:	df 93       	push	r29
+  4e:	c8 2f       	mov	r28, r24
+	uint8_t msb, lsb;
+	uint16_t t;
+
+	onewire_reset(pin);
+  50:	d3 d0       	rcall	.+422    	; 0x1f8 <onewire_reset>
+	onewire_write(pin, ONEWIRE_SKIP_ROM);
+  52:	6c ec       	ldi	r22, 0xCC	; 204
+  54:	8c 2f       	mov	r24, r28
+  56:	f8 d0       	rcall	.+496    	; 0x248 <onewire_write>
+	onewire_write(pin, DS18B20_CONVERT_T);
+  58:	64 e4       	ldi	r22, 0x44	; 68
+  5a:	8c 2f       	mov	r24, r28
+  5c:	f5 d0       	rcall	.+490    	; 0x248 <onewire_write>
+
+	onewire_reset(pin);
+  5e:	8c 2f       	mov	r24, r28
+  60:	cb d0       	rcall	.+406    	; 0x1f8 <onewire_reset>
+	onewire_write(pin, ONEWIRE_SKIP_ROM);
+  62:	6c ec       	ldi	r22, 0xCC	; 204
+  64:	8c 2f       	mov	r24, r28
+  66:	f0 d0       	rcall	.+480    	; 0x248 <onewire_write>
+	onewire_write(pin, DS18B20_READ);
+  68:	6e eb       	ldi	r22, 0xBE	; 190
+  6a:	8c 2f       	mov	r24, r28
+  6c:	ed d0       	rcall	.+474    	; 0x248 <onewire_write>
+
+	lsb = onewire_read(pin);
+  6e:	8c 2f       	mov	r24, r28
+  70:	0d d1       	rcall	.+538    	; 0x28c <onewire_read>
+  72:	18 2f       	mov	r17, r24
+	msb = onewire_read(pin);
+  74:	8c 2f       	mov	r24, r28
+  76:	0a d1       	rcall	.+532    	; 0x28c <onewire_read>
+  78:	d8 2f       	mov	r29, r24
+	onewire_reset(pin);
+  7a:	8c 2f       	mov	r24, r28
+  7c:	bd d0       	rcall	.+378    	; 0x1f8 <onewire_reset>
+	
+	t = (lsb >> 4) | (msb&0x7 << 4);
+	
+	return t;
+  7e:	12 95       	swap	r17
+  80:	1f 70       	andi	r17, 0x0F	; 15
+  82:	d0 77       	andi	r29, 0x70	; 112
+  84:	81 2f       	mov	r24, r17
+  86:	8d 2b       	or	r24, r29
+}
+  88:	90 e0       	ldi	r25, 0x00	; 0
+  8a:	df 91       	pop	r29
+  8c:	cf 91       	pop	r28
+  8e:	1f 91       	pop	r17
+  90:	08 95       	ret
+
+00000092 <__vector_1>:
+#include "ImpulseControl.h"
+
+volatile uint8_t zerocross;
+
+ISR (EXT_INT){
+  92:	1f 92       	push	r1
+  94:	0f 92       	push	r0
+  96:	0f b6       	in	r0, 0x3f	; 63
+  98:	0f 92       	push	r0
+  9a:	11 24       	eor	r1, r1
+  9c:	8f 93       	push	r24
+	zerocross++;
+  9e:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <__data_end>
+  a2:	8f 5f       	subi	r24, 0xFF	; 255
+  a4:	80 93 66 00 	sts	0x0066, r24	; 0x800066 <__data_end>
+}
+  a8:	8f 91       	pop	r24
+  aa:	0f 90       	pop	r0
+  ac:	0f be       	out	0x3f, r0	; 63
+  ae:	0f 90       	pop	r0
+  b0:	1f 90       	pop	r1
+  b2:	18 95       	reti
+
+000000b4 <OutputInit>:
+	out_pin = output_pin;	
+	max_periods = maximum_periods;
+}*/
+
+void OutputInit (ImpulseControl_t vent){
+	OUT_DDR |= (1<< vent.out_pin);
+  b4:	27 b3       	in	r18, 0x17	; 23
+  b6:	81 e0       	ldi	r24, 0x01	; 1
+  b8:	90 e0       	ldi	r25, 0x00	; 0
+  ba:	02 c0       	rjmp	.+4      	; 0xc0 <OutputInit+0xc>
+  bc:	88 0f       	add	r24, r24
+  be:	99 1f       	adc	r25, r25
+  c0:	6a 95       	dec	r22
+  c2:	e2 f7       	brpl	.-8      	; 0xbc <OutputInit+0x8>
+  c4:	82 2b       	or	r24, r18
+  c6:	87 bb       	out	0x17, r24	; 23
+  c8:	08 95       	ret
+
+000000ca <ZerocrossInit>:
+}
+
+void ZerocrossInit (void) {
+	cli();
+  ca:	f8 94       	cli
+	EXTERNAL_INTERRUPT_PORT &= ~(1<<ZEROCROSS_PIN);
+  cc:	b9 98       	cbi	0x17, 1	; 23
+	INTERRUPT_INIT =(1<<ISC01) | (1<<ISC00);
+  ce:	83 e0       	ldi	r24, 0x03	; 3
+  d0:	85 bf       	out	0x35, r24	; 53
+	GENERAL_INTERRUPT = (1<<INT0);
+  d2:	80 e4       	ldi	r24, 0x40	; 64
+  d4:	8b bf       	out	0x3b, r24	; 59
+	INTERRUPT_FLAG = (1<<INTF0);
+  d6:	8a bf       	out	0x3a, r24	; 58
+	sei();
+  d8:	78 94       	sei
+  da:	08 95       	ret
+
+000000dc <On>:
+}
+
+
+void On (ImpulseControl_t vent){	
+	OUT_PORT |= (1 << vent.out_pin);
+  dc:	28 b3       	in	r18, 0x18	; 24
+  de:	81 e0       	ldi	r24, 0x01	; 1
+  e0:	90 e0       	ldi	r25, 0x00	; 0
+  e2:	02 c0       	rjmp	.+4      	; 0xe8 <On+0xc>
+  e4:	88 0f       	add	r24, r24
+  e6:	99 1f       	adc	r25, r25
+  e8:	6a 95       	dec	r22
+  ea:	e2 f7       	brpl	.-8      	; 0xe4 <On+0x8>
+  ec:	82 2b       	or	r24, r18
+  ee:	88 bb       	out	0x18, r24	; 24
+  f0:	08 95       	ret
+
+000000f2 <Off>:
+}
+
+void Off (ImpulseControl_t vent){	
+	OUT_PORT &= ~(1 << vent.out_pin);
+  f2:	28 b3       	in	r18, 0x18	; 24
+  f4:	81 e0       	ldi	r24, 0x01	; 1
+  f6:	90 e0       	ldi	r25, 0x00	; 0
+  f8:	02 c0       	rjmp	.+4      	; 0xfe <Off+0xc>
+  fa:	88 0f       	add	r24, r24
+  fc:	99 1f       	adc	r25, r25
+  fe:	6a 95       	dec	r22
+ 100:	e2 f7       	brpl	.-8      	; 0xfa <Off+0x8>
+ 102:	80 95       	com	r24
+ 104:	82 23       	and	r24, r18
+ 106:	88 bb       	out	0x18, r24	; 24
+ 108:	08 95       	ret
+
+0000010a <PhaseControl>:
+}
+
+void PhaseControl (ImpulseControl_t vent, uint8_t number_of_periods) {
+vent.num_of_periods = number_of_periods;	
+if (zerocross < vent.num_of_periods) {
+ 10a:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <__data_end>
+ 10e:	84 17       	cp	r24, r20
+ 110:	18 f4       	brcc	.+6      	; 0x118 <PhaseControl+0xe>
+	On(vent);
+ 112:	84 2f       	mov	r24, r20
+ 114:	e3 df       	rcall	.-58     	; 0xdc <On>
+ 116:	08 95       	ret
+	} else if (zerocross < vent.max_periods) {Off(vent);} else zerocross = 0; 
+ 118:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <__data_end>
+ 11c:	87 17       	cp	r24, r23
+ 11e:	18 f4       	brcc	.+6      	; 0x126 <PhaseControl+0x1c>
+ 120:	84 2f       	mov	r24, r20
+ 122:	e7 df       	rcall	.-50     	; 0xf2 <Off>
+ 124:	08 95       	ret
+ 126:	10 92 66 00 	sts	0x0066, r1	; 0x800066 <__data_end>
+ 12a:	08 95       	ret
+
+0000012c <init>:
+
+#define WAIT_TIME 35000U
+#define VALVE_PIN PB4
+
+void init() {
+	OutputInit(ventilation);
+ 12c:	60 91 62 00 	lds	r22, 0x0062	; 0x800062 <ventilation>
+ 130:	70 91 63 00 	lds	r23, 0x0063	; 0x800063 <ventilation+0x1>
+ 134:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <ventilation+0x2>
+ 138:	bd df       	rcall	.-134    	; 0xb4 <OutputInit>
+	ZerocrossInit();
+ 13a:	c7 df       	rcall	.-114    	; 0xca <ZerocrossInit>
+	DDRB &= ~(1 << VALVE_PIN); /* Input for valve detection */
+ 13c:	bc 98       	cbi	0x17, 4	; 23
+	PORTB &= ~(1 << VALVE_PIN);
+ 13e:	c4 98       	cbi	0x18, 4	; 24
+	On(ventilation);	/* Enable ventilation on 100% */
+ 140:	60 91 62 00 	lds	r22, 0x0062	; 0x800062 <ventilation>
+ 144:	70 91 63 00 	lds	r23, 0x0063	; 0x800063 <ventilation+0x1>
+ 148:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <ventilation+0x2>
+ 14c:	c7 df       	rcall	.-114    	; 0xdc <On>
+ 14e:	08 95       	ret
+
+00000150 <main>:
+};
+
+int16_t temp = 25;
+
+int main(void){
+	init();
+ 150:	ed df       	rcall	.-38     	; 0x12c <init>
+	while(1){
+		if (PINB&(1 << VALVE_PIN)) {
+ 152:	b4 9b       	sbis	0x16, 4	; 22
+ 154:	08 c0       	rjmp	.+16     	; 0x166 <main+0x16>
+				On(ventilation);	/* If valve is enabled, speed = 100% */
+ 156:	60 91 62 00 	lds	r22, 0x0062	; 0x800062 <ventilation>
+ 15a:	70 91 63 00 	lds	r23, 0x0063	; 0x800063 <ventilation+0x1>
+ 15e:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <ventilation+0x2>
+ 162:	bc df       	rcall	.-136    	; 0xdc <On>
+ 164:	f6 cf       	rjmp	.-20     	; 0x152 <main+0x2>
+			} else {
+			temp = DS18B20_read(DS18B20_PIN);
+ 166:	82 e0       	ldi	r24, 0x02	; 2
+ 168:	6f df       	rcall	.-290    	; 0x48 <DS18B20_read>
+ 16a:	90 93 61 00 	sts	0x0061, r25	; 0x800061 <__data_start+0x1>
+ 16e:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__data_start>
+			/* Choose speed */
+			if		(temp < 15) PhaseControl(ventilation, 2);
+ 172:	8f 30       	cpi	r24, 0x0F	; 15
+ 174:	91 05       	cpc	r25, r1
+ 176:	4c f4       	brge	.+18     	; 0x18a <main+0x3a>
+ 178:	60 91 62 00 	lds	r22, 0x0062	; 0x800062 <ventilation>
+ 17c:	70 91 63 00 	lds	r23, 0x0063	; 0x800063 <ventilation+0x1>
+ 180:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <ventilation+0x2>
+ 184:	42 e0       	ldi	r20, 0x02	; 2
+ 186:	c1 df       	rcall	.-126    	; 0x10a <PhaseControl>
+ 188:	e4 cf       	rjmp	.-56     	; 0x152 <main+0x2>
+			else if (temp < 20) PhaseControl(ventilation, 3);
+ 18a:	84 31       	cpi	r24, 0x14	; 20
+ 18c:	91 05       	cpc	r25, r1
+ 18e:	4c f4       	brge	.+18     	; 0x1a2 <main+0x52>
+ 190:	60 91 62 00 	lds	r22, 0x0062	; 0x800062 <ventilation>
+ 194:	70 91 63 00 	lds	r23, 0x0063	; 0x800063 <ventilation+0x1>
+ 198:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <ventilation+0x2>
+ 19c:	43 e0       	ldi	r20, 0x03	; 3
+ 19e:	b5 df       	rcall	.-150    	; 0x10a <PhaseControl>
+ 1a0:	d8 cf       	rjmp	.-80     	; 0x152 <main+0x2>
+			else if (temp < 25) PhaseControl(ventilation, 4);
+ 1a2:	89 31       	cpi	r24, 0x19	; 25
+ 1a4:	91 05       	cpc	r25, r1
+ 1a6:	4c f4       	brge	.+18     	; 0x1ba <main+0x6a>
+ 1a8:	60 91 62 00 	lds	r22, 0x0062	; 0x800062 <ventilation>
+ 1ac:	70 91 63 00 	lds	r23, 0x0063	; 0x800063 <ventilation+0x1>
+ 1b0:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <ventilation+0x2>
+ 1b4:	44 e0       	ldi	r20, 0x04	; 4
+ 1b6:	a9 df       	rcall	.-174    	; 0x10a <PhaseControl>
+ 1b8:	cc cf       	rjmp	.-104    	; 0x152 <main+0x2>
+			else if (temp < 30) PhaseControl(ventilation, 6);
+ 1ba:	8e 31       	cpi	r24, 0x1E	; 30
+ 1bc:	91 05       	cpc	r25, r1
+ 1be:	4c f4       	brge	.+18     	; 0x1d2 <main+0x82>
+ 1c0:	60 91 62 00 	lds	r22, 0x0062	; 0x800062 <ventilation>
+ 1c4:	70 91 63 00 	lds	r23, 0x0063	; 0x800063 <ventilation+0x1>
+ 1c8:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <ventilation+0x2>
+ 1cc:	46 e0       	ldi	r20, 0x06	; 6
+ 1ce:	9d df       	rcall	.-198    	; 0x10a <PhaseControl>
+ 1d0:	c0 cf       	rjmp	.-128    	; 0x152 <main+0x2>
+			else if (temp < 35) PhaseControl(ventilation, 8);
+ 1d2:	83 97       	sbiw	r24, 0x23	; 35
+ 1d4:	4c f4       	brge	.+18     	; 0x1e8 <main+0x98>
+ 1d6:	60 91 62 00 	lds	r22, 0x0062	; 0x800062 <ventilation>
+ 1da:	70 91 63 00 	lds	r23, 0x0063	; 0x800063 <ventilation+0x1>
+ 1de:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <ventilation+0x2>
+ 1e2:	48 e0       	ldi	r20, 0x08	; 8
+ 1e4:	92 df       	rcall	.-220    	; 0x10a <PhaseControl>
+ 1e6:	b5 cf       	rjmp	.-150    	; 0x152 <main+0x2>
+			else				On(ventilation);
+ 1e8:	60 91 62 00 	lds	r22, 0x0062	; 0x800062 <ventilation>
+ 1ec:	70 91 63 00 	lds	r23, 0x0063	; 0x800063 <ventilation+0x1>
+ 1f0:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <ventilation+0x2>
+ 1f4:	73 df       	rcall	.-282    	; 0xdc <On>
+ 1f6:	ad cf       	rjmp	.-166    	; 0x152 <main+0x2>
+
+000001f8 <onewire_reset>:
+extern uint8_t
+onewire_reset(uint8_t pin)
+{
+	uint8_t retval, retries;
+
+	ONEWIRE_PIN_LOW();
+ 1f8:	98 b3       	in	r25, 0x18	; 24
+ 1fa:	38 2f       	mov	r19, r24
+ 1fc:	30 95       	com	r19
+ 1fe:	93 23       	and	r25, r19
+ 200:	98 bb       	out	0x18, r25	; 24
+	ONEWIRE_PIN_INPUT();
+ 202:	97 b3       	in	r25, 0x17	; 23
+ 204:	93 23       	and	r25, r19
+ 206:	97 bb       	out	0x17, r25	; 23
+
+	retries = ONEWIRE_RESET_RETRIES_MAX;
+	while (!ONEWIRE_PIN_READ()) {
+ 208:	96 b3       	in	r25, 0x16	; 22
+ 20a:	98 23       	and	r25, r24
+ 20c:	21 f0       	breq	.+8      	; 0x216 <onewire_reset+0x1e>
+ 20e:	08 c0       	rjmp	.+16     	; 0x220 <onewire_reset+0x28>
+ 210:	21 50       	subi	r18, 0x01	; 1
+		if (--retries == 0) {
+ 212:	11 f4       	brne	.+4      	; 0x218 <onewire_reset+0x20>
+ 214:	17 c0       	rjmp	.+46     	; 0x244 <onewire_reset+0x4c>
+
+	ONEWIRE_PIN_LOW();
+	ONEWIRE_PIN_INPUT();
+
+	retries = ONEWIRE_RESET_RETRIES_MAX;
+	while (!ONEWIRE_PIN_READ()) {
+ 216:	2f e7       	ldi	r18, 0x7F	; 127
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 218:	00 00       	nop
+ 21a:	96 b3       	in	r25, 0x16	; 22
+ 21c:	98 23       	and	r25, r24
+ 21e:	c1 f3       	breq	.-16     	; 0x210 <onewire_reset+0x18>
+			return (2);
+		}
+		_delay_us(1);
+	}
+
+	ONEWIRE_PIN_OUTPUT();
+ 220:	97 b3       	in	r25, 0x17	; 23
+ 222:	98 2b       	or	r25, r24
+ 224:	97 bb       	out	0x17, r25	; 23
+ 226:	90 ea       	ldi	r25, 0xA0	; 160
+ 228:	9a 95       	dec	r25
+ 22a:	f1 f7       	brne	.-4      	; 0x228 <onewire_reset+0x30>
+	_delay_us(480);
+	ONEWIRE_PIN_INPUT();
+ 22c:	97 b3       	in	r25, 0x17	; 23
+ 22e:	39 23       	and	r19, r25
+ 230:	37 bb       	out	0x17, r19	; 23
+ 232:	96 e1       	ldi	r25, 0x16	; 22
+ 234:	9a 95       	dec	r25
+ 236:	f1 f7       	brne	.-4      	; 0x234 <onewire_reset+0x3c>
+	_delay_us(66);
+	retval = ONEWIRE_PIN_READ();
+ 238:	96 b3       	in	r25, 0x16	; 22
+ 23a:	89 23       	and	r24, r25
+ 23c:	9a e8       	ldi	r25, 0x8A	; 138
+ 23e:	9a 95       	dec	r25
+ 240:	f1 f7       	brne	.-4      	; 0x23e <onewire_reset+0x46>
+	_delay_us(414);
+
+	return (retval);
+ 242:	08 95       	ret
+	ONEWIRE_PIN_INPUT();
+
+	retries = ONEWIRE_RESET_RETRIES_MAX;
+	while (!ONEWIRE_PIN_READ()) {
+		if (--retries == 0) {
+			return (2);
+ 244:	82 e0       	ldi	r24, 0x02	; 2
+	_delay_us(66);
+	retval = ONEWIRE_PIN_READ();
+	_delay_us(414);
+
+	return (retval);
+}
+ 246:	08 95       	ret
+
+00000248 <onewire_write>:
+	return value;
+}
+
+uint8_t
+onewire_write(uint8_t pin, uint8_t value)
+{
+ 248:	38 e0       	ldi	r19, 0x08	; 8
+	sreg = SREG;
+	cli();
+  	ONEWIRE_PIN_OUTPUT();
+  	_delay_us(1);
+  	if (value) {
+    		ONEWIRE_PIN_INPUT();
+ 24a:	58 2f       	mov	r21, r24
+ 24c:	50 95       	com	r21
+static uint8_t
+onewire_bit(uint8_t pin, uint8_t value)
+{
+	uint8_t sreg;
+
+	sreg = SREG;
+ 24e:	4f b7       	in	r20, 0x3f	; 63
+	cli();
+ 250:	f8 94       	cli
+  	ONEWIRE_PIN_OUTPUT();
+ 252:	97 b3       	in	r25, 0x17	; 23
+ 254:	98 2b       	or	r25, r24
+ 256:	97 bb       	out	0x17, r25	; 23
+ 258:	00 00       	nop
+  	_delay_us(1);
+  	if (value) {
+ 25a:	60 ff       	sbrs	r22, 0
+ 25c:	03 c0       	rjmp	.+6      	; 0x264 <onewire_write+0x1c>
+    		ONEWIRE_PIN_INPUT();
+ 25e:	97 b3       	in	r25, 0x17	; 23
+ 260:	95 23       	and	r25, r21
+ 262:	97 bb       	out	0x17, r25	; 23
+ 264:	24 e0       	ldi	r18, 0x04	; 4
+ 266:	2a 95       	dec	r18
+ 268:	f1 f7       	brne	.-4      	; 0x266 <onewire_write+0x1e>
+ 26a:	00 c0       	rjmp	.+0      	; 0x26c <onewire_write+0x24>
+	}
+	_delay_us(14);
+	value = !(ONEWIRE_PIN_READ() == 0);
+ 26c:	96 b3       	in	r25, 0x16	; 22
+ 26e:	2f e0       	ldi	r18, 0x0F	; 15
+ 270:	2a 95       	dec	r18
+ 272:	f1 f7       	brne	.-4      	; 0x270 <onewire_write+0x28>
+  	_delay_us(45);
+  	ONEWIRE_PIN_INPUT();
+ 274:	27 b3       	in	r18, 0x17	; 23
+ 276:	25 23       	and	r18, r21
+ 278:	27 bb       	out	0x17, r18	; 23
+  	SREG = sreg;
+ 27a:	4f bf       	out	0x3f, r20	; 63
+{
+	uint8_t i, r;
+
+	for (i = 0; i < 8; ++i) {
+    		r = onewire_bit(pin, value & 0x01);
+		value >>= 1;
+ 27c:	66 95       	lsr	r22
+    		if (r) {
+ 27e:	98 23       	and	r25, r24
+ 280:	09 f0       	breq	.+2      	; 0x284 <onewire_write+0x3c>
+			value |= 0x80;
+ 282:	60 68       	ori	r22, 0x80	; 128
+ 284:	31 50       	subi	r19, 0x01	; 1
+uint8_t
+onewire_write(uint8_t pin, uint8_t value)
+{
+	uint8_t i, r;
+
+	for (i = 0; i < 8; ++i) {
+ 286:	19 f7       	brne	.-58     	; 0x24e <onewire_write+0x6>
+			value |= 0x80;
+		}
+	}
+
+  	return value;
+}
+ 288:	86 2f       	mov	r24, r22
+ 28a:	08 95       	ret
+
+0000028c <onewire_read>:
+
+uint8_t
+onewire_read(uint8_t pin)
+{
+
+	return onewire_write(pin, 0xff);
+ 28c:	6f ef       	ldi	r22, 0xFF	; 255
+ 28e:	dc df       	rcall	.-72     	; 0x248 <onewire_write>
+}
+ 290:	08 95       	ret
+
+00000292 <_exit>:
+ 292:	f8 94       	cli
+
+00000294 <__stop_program>:
+ 294:	ff cf       	rjmp	.-2      	; 0x294 <__stop_program>
