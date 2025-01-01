@@ -1,0 +1,6 @@
+
+AVRASM ver. 2.1.30  D:\Arduinosketch\ds1307_avr\Debug\List\ds1307_avr.asm Wed Dec 25 09:48:16 2024
+
+D:\Arduinosketch\ds1307_avr\Debug\List\ds1307_avr.asm(2214): error: Invalid redefinition of '__sda_bit'
+D:\Arduinosketch\ds1307_avr\Debug\List\ds1307_avr.asm(2215): error: Invalid redefinition of '__scl_bit'
+D:\Arduinosketch\ds1307_avr\Debug\List\ds1307_avr.asm(2216): error: Invalid redefinition of '__i2c_port'
