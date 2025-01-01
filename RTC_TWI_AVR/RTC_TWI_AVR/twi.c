@@ -1,6 +1,6 @@
 #include "twi.h"
 
-/* Инициализация скорости и делителя I2C */
+/* РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРєРѕСЂРѕСЃС‚Рё Рё РґРµР»РёС‚РµР»СЏ I2C */
 uint8_t twi_init(uint8_t prescaler, uint32_t cpu_frequency, uint32_t frequency)
 {
 	uint32_t twbr = (cpu_frequency/frequency-16)/2;
@@ -13,7 +13,7 @@ uint8_t twi_init(uint8_t prescaler, uint32_t cpu_frequency, uint32_t frequency)
 	return 1;
 }
 
-/* Команды I2C */
+/* РљРѕРјР°РЅРґС‹ I2C */
 uint8_t twi(uint8_t action)
 {
 	switch(action){
@@ -40,18 +40,18 @@ uint8_t twi(uint8_t action)
 		while (!(TWCR & (1<<TWINT)));
 	}
 	
-	uint8_t status = TWSR & 0xF8; // Статус выполнения (0xF8 = 11111000 - без двух настроечных и одного зарезервивованного бита)
+	uint8_t status = TWSR & 0xF8; // РЎС‚Р°С‚СѓСЃ РІС‹РїРѕР»РЅРµРЅРёСЏ (0xF8 = 11111000 - Р±РµР· РґРІСѓС… РЅР°СЃС‚СЂРѕРµС‡РЅС‹С… Рё РѕРґРЅРѕРіРѕ Р·Р°СЂРµР·РµСЂРІРёРІРѕРІР°РЅРЅРѕРіРѕ Р±РёС‚Р°)
 	return status;
 }
 
-/* Передать данные */
+/* РџРµСЂРµРґР°С‚СЊ РґР°РЅРЅС‹Рµ */
 uint8_t twi_transmit(uint8_t data)
 {
 	TWDR = data;
 	return twi(TWI_TRANSMIT);
 }
 
-/* Получить данные */
+/* РџРѕР»СѓС‡РёС‚СЊ РґР°РЅРЅС‹Рµ */
 uint8_t twi_receive(uint8_t * data, uint8_t with_ack)
 {
 	uint8_t status = twi(with_ack > 0 ? TWI_RECEIVE_ACK : TWI_RECEIVE_NACK);

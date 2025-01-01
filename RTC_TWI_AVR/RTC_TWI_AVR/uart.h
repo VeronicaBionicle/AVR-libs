@@ -1,14 +1,14 @@
 #ifndef UART_H_
 #define UART_H_
 
-#define F_CPU 16000000UL  // частота работы МК
+#define F_CPU 16000000UL  // С‡Р°СЃС‚РѕС‚Р° СЂР°Р±РѕС‚С‹ РњРљ
 
 #include <avr/interrupt.h>
 
-#define BAUDRATE 9600L  // скорость передачи по UART
+#define BAUDRATE 9600L  // СЃРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРґР°С‡Рё РїРѕ UART
 #define BAUDRATE_REG (F_CPU/(16*BAUDRATE)-1)
 
-/* Сокращения для отделения старшего и младшего байтов */
+/* РЎРѕРєСЂР°С‰РµРЅРёСЏ РґР»СЏ РѕС‚РґРµР»РµРЅРёСЏ СЃС‚Р°СЂС€РµРіРѕ Рё РјР»Р°РґС€РµРіРѕ Р±Р°Р№С‚РѕРІ */
 #define HI(x) ((x)>>8)
 #define LO(x) ((x)& 0xFF)
 
