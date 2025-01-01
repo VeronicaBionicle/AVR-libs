@@ -189,3 +189,23 @@ void RTC_get_time(uint8_t * hours, uint8_t * minutes, uint8_t * seconds)
 	*hours	  = from_BCD(*hours);
 }
 
+/* Запись в оперативную память часов */
+uint8_t RTC_write_RAM(uint8_t address, uint8_t data){
+	if (address < RTC_RAM_ADR || address > RTC_RAM_END)
+		return 0;	// ничего не записали
+				
+	RTC_set_value(address, data);
+	return 1;
+}
+
+uint8_t RTC_get_RAM(uint8_t address, uint8_t * data)
+{
+	if (address < RTC_RAM_ADR || address > RTC_RAM_END)
+		return 0;	// ничего не считали
+
+	// Устанавливаем указатель на нужный адрес и считываем данные
+	RTC_set_value(address, RTC_WRITE_POINTER);
+	RTC_get_value(data);
+	return 1;
+}
+

@@ -23,6 +23,23 @@ int main(void)
 	
 	RTC_init();
 	
+	// Запись во второй байт памяти числа 136
+	uint8_t ram_status = RTC_write_RAM(RTC_RAM_ADR+1, 136);
+	
+	if (ram_status)
+	{
+		// Чтение из RAM
+		uint8_t ram_data;
+		ram_status = RTC_get_RAM(RTC_RAM_ADR+1, &ram_data);
+		
+		if (ram_status)
+		{
+			sprintf(mes, "read from RAM: %u", ram_data);
+			send_buffer(mes, sizeof(mes) / sizeof(char));
+			send_byte('\r');
+		}
+	}
+	
 	RTC_set_out(1); // На выходе OUT=1
 	_delay_ms(2000);
 	
@@ -35,7 +52,7 @@ int main(void)
 	RTC_set_time(13, 45, 32);	 // установить время 13:45:32
 	
 	RTC_start_stop_watch(0);	// выключить часы
-	
+
 	int ticks = 0;
 	
 	/* Пишем в порт разными способами */
