@@ -1,4 +1,4 @@
-#define F_CPU 16000000UL  // частота работы МК ?
+#define F_CPU 16000000UL  // С‡Р°СЃС‚РѕС‚Р° СЂР°Р±РѕС‚С‹ РњРљ
 #define F_I2C 100000UL
 
 #include <util/delay.h>
@@ -15,7 +15,7 @@ const char * weekdays[7] =
 
 int main(void)
 {
-	// Предделитель частоты 1
+	// РџСЂРµРґРґРµР»РёС‚РµР»СЊ С‡Р°СЃС‚РѕС‚С‹ 1
 	CLKPR=(1<<CLKPCE);
 	CLKPR=0;
 	
@@ -23,12 +23,12 @@ int main(void)
 	
 	RTC_init();
 	
-	// Запись во второй байт памяти числа 136
+	// Р—Р°РїРёСЃСЊ РІРѕ РІС‚РѕСЂРѕР№ Р±Р°Р№С‚ РїР°РјСЏС‚Рё С‡РёСЃР»Р° 136
 	uint8_t ram_status = RTC_write_RAM(RTC_RAM_ADR+1, 136);
 	
 	if (ram_status)
 	{
-		// Чтение из RAM
+		// Р§С‚РµРЅРёРµ РёР· RAM
 		uint8_t ram_data;
 		ram_status = RTC_get_RAM(RTC_RAM_ADR+1, &ram_data);
 		
@@ -40,22 +40,22 @@ int main(void)
 		}
 	}
 	
-	RTC_set_out(1); // На выходе OUT=1
+	RTC_set_out(1); // РќР° РІС‹С…РѕРґРµ OUT=1
 	_delay_ms(2000);
 	
-	RTC_set_out(0); // На выходе OUT=0
+	RTC_set_out(0); // РќР° РІС‹С…РѕРґРµ OUT=0
 	_delay_ms(2000);
 	
-	RTC_set_sqwe(F_1HZ); // Включить сигнал частотой 1 Гц
+	RTC_set_sqwe(F_1HZ); // Р’РєР»СЋС‡РёС‚СЊ СЃРёРіРЅР°Р» С‡Р°СЃС‚РѕС‚РѕР№ 1 Р“С†
 	
-	RTC_set_date(28, 12, 24, 7); // установить дату 28.12.2024 Суббота
-	RTC_set_time(13, 45, 32);	 // установить время 13:45:32
+	RTC_set_date(28, 12, 24, 7); // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РґР°С‚Сѓ 28.12.2024 РЎСѓР±Р±РѕС‚Р°
+	RTC_set_time(13, 45, 32);	 // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЂРµРјСЏ 13:45:32
 	
-	RTC_start_stop_watch(0);	// выключить часы
+	RTC_start_stop_watch(0);	// РІС‹РєР»СЋС‡РёС‚СЊ С‡Р°СЃС‹
 
 	int ticks = 0;
 	
-	/* Пишем в порт разными способами */
+	/* РџРёС€РµРј РІ РїРѕСЂС‚ СЂР°Р·РЅС‹РјРё СЃРїРѕСЃРѕР±Р°РјРё */
 	while (1)
 	{
 		RTC_get_time(&hours, &minutes, &seconds);
@@ -68,7 +68,7 @@ int main(void)
 		send_buffer(mes, sizeof(mes) / sizeof(char));
 		send_byte('\r');
 		
-		// Через 5 секунд включить часы
+		// Р§РµСЂРµР· 5 СЃРµРєСѓРЅРґ РІРєР»СЋС‡РёС‚СЊ С‡Р°СЃС‹
 		if (ticks < 10)
 		{
 			++ticks;
