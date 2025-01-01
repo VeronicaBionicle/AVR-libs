@@ -1,4 +1,4 @@
-#define F_CPU 16000000UL  // частота работы МК
+#define F_CPU 16000000UL  // частота работы МК ?
 #define F_I2C 100000UL
 
 #include <util/delay.h>
