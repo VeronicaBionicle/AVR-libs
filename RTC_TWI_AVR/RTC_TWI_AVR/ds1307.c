@@ -13,7 +13,7 @@ uint8_t from_BCD(uint8_t n)
 /* Инициализация интерфейса I2C для часов */
 void RTC_init(void)
 {
-	twi_init(0, F_CPU, F_I2C);
+	twi_init(F_CPU, F_I2C);
 }
 
 /* Запись значения в часы */
@@ -129,7 +129,7 @@ void RTC_start_stop_watch(uint8_t on)
 	/* Перевернуть бит Clock Hold */
 	if (on)
 	{
-		seconds_register = seconds_register & ~(1<<CH);
+		seconds_register = seconds_register & ~(1<<CH); // установить бит равным 0 - запустить часы
 	} else {
 		seconds_register = seconds_register | (1<<CH); // установить бит равным 1 - остановить часы
 	}

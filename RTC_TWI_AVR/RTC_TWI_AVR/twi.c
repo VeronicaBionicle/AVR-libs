@@ -1,15 +1,39 @@
 #include "twi.h"
 
 /* Инициализация скорости и делителя I2C */
-uint8_t twi_init(uint8_t prescaler, uint32_t cpu_frequency, uint32_t frequency)
+uint8_t twi_init(uint32_t cpu_frequency, uint32_t frequency)
 {
-	uint32_t twbr = (cpu_frequency/frequency-16)/2;
-	if ((twbr > 0xFF) || (twbr == 0))
+	uint32_t twbr = (cpu_frequency/frequency - 16)/2;
+	// Делитель не требуется
+	if (twbr <= 0xFF)
+	{
+		TWSR = (0<<TWPS1)|(0<<TWPS0);
+		TWBR = twbr;
+	}
+	// Делитель 4
+	else if (twbr <= 0x3FC)
+	{
+		TWSR = (0<<TWPS1)|(1<<TWPS0);
+		TWBR = twbr>>2; // Делим на 4
+	}
+	// Делитель 16
+	else if (twbr <= 0xFF0)
+	{
+		TWSR = (1<<TWPS1)|(0<<TWPS0);
+		TWBR = twbr>>4; // Делим на 16
+	}
+	// Делитель 64
+	else if (twbr <= 0x3FC0)
+	{
+		TWSR = (1<<TWPS1)|(1<<TWPS0);
+		TWBR = twbr>>6; // Делим на 64
+	}
+	// Ничего не получилось, статус 0
+	else
 	{
 		return 0;
 	}
-	TWBR = twbr;
-	TWSR = prescaler;
+
 	return 1;
 }
 

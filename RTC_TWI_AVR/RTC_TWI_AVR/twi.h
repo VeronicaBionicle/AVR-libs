@@ -35,7 +35,7 @@ enum twi_status
 	BUS_ERROR				= 0x00	// ошибка шины из-за некорректных состояний СТАРТ или СТОП
 };
 
-uint8_t twi_init(uint8_t prescaler, uint32_t cpu_frequency, uint32_t frequency);
+uint8_t twi_init(uint32_t cpu_frequency, uint32_t frequency);
 uint8_t twi(uint8_t action);
 uint8_t twi_transmit(uint8_t data);
 uint8_t twi_receive(uint8_t * data, uint8_t with_ack);

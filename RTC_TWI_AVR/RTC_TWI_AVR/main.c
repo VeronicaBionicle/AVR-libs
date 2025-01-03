@@ -41,10 +41,10 @@ int main(void)
 	}
 	
 	RTC_set_out(1); // На выходе OUT=1
-	_delay_ms(2000);
+	_delay_ms(200);
 	
 	RTC_set_out(0); // На выходе OUT=0
-	_delay_ms(2000);
+	_delay_ms(200);
 	
 	RTC_set_sqwe(F_1HZ); // Включить сигнал частотой 1 Гц
 	
@@ -55,7 +55,7 @@ int main(void)
 
 	int ticks = 0;
 	
-	/* Пишем в порт разными способами */
+	/* Пишем в порт дату и время */
 	while (1)
 	{
 		RTC_get_time(&hours, &minutes, &seconds);
@@ -72,11 +72,22 @@ int main(void)
 		if (ticks < 10)
 		{
 			++ticks;
-		} else if (ticks == 10) {
+		} else if (ticks == 5) {
 			RTC_start_stop_watch(1);
 			++ticks;
+			
+			uint8_t ram_data;
+			ram_status = RTC_get_RAM(RTC_RAM_ADR+1, &ram_data);
+			
+			if (ram_status)
+			{
+				sprintf(mes, "read from RAM: %u", ram_data);
+				send_buffer(mes, sizeof(mes) / sizeof(char));
+				send_byte('\r');
+			}
+			
 		}
 		
-		_delay_ms(500);
+		_delay_ms(1000);
 	}
 }
