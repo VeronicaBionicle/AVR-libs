@@ -3,6 +3,7 @@
 
 #include <util/delay.h>
 #include <stdio.h>
+#include <string.h>
 #include "uart.h"
 #include "ds1307.h"
 
@@ -75,14 +76,12 @@ int main(void)
 		}
 		
 		RTC_get_time(&time);
-		sprintf(mes, "%02u:%02u:%02u %u %s", time.hours, time.minutes, time.seconds, time.time_format, time.am_pm == AM ? "AM" : "PM");
-		send_buffer(mes, 14);
-		send_byte('\r');
+		sprintf(mes, "%02u:%02u:%02u %u %s\r", time.hours, time.minutes, time.seconds, time.time_format, time.am_pm == AM ? "AM" : "PM");
+		send_buffer(mes, strlen(mes));
 		
 		RTC_get_date(&date);
-		sprintf(mes, "%02u.%02u.%u %s ", date.day, date.month, date.year, weekdays[date.day_week-1]);
-		send_buffer(mes, sizeof(mes) / sizeof(char));
-		send_byte('\r');
+		sprintf(mes, "%02u.%02u.%02u %s\r", date.day, date.month, date.year, weekdays[date.day_week-1]);
+		send_buffer(mes, strlen(mes));
 		
 		_delay_ms(1000);
 	}
