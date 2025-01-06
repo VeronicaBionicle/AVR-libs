@@ -6,6 +6,26 @@
 #define F_I2C 100000UL
 #define F_CPU 16000000UL  // частота работы МК
 
+// Структура хранения времени
+typedef struct {
+	uint8_t hours;
+	uint8_t minutes;
+	uint8_t seconds;
+	uint8_t time_format; // 24/12
+	uint8_t am_pm;		 // AM/PM
+} Time;
+// Первая половина дня / вторая половина дня
+#define AM 0
+#define PM 1
+
+// Структура хранения даты
+typedef struct {
+	uint8_t day;
+	uint8_t month;
+	uint8_t year;
+	uint8_t day_week;
+} Date;
+
 // Значение - только устанавливаем адрес, не передавая данные
 #define RTC_WRITE_POINTER   0xFF
 
@@ -37,6 +57,14 @@
 #define RS1	 1
 // Бит Clock Hold
 #define CH 7
+// Биты регистра часов
+#define TIME_FORMAT 6
+#define AM_PM 5
+
+// Маски для битов часов и секунд
+#define HOUR_24_MASK 0b111111
+#define HOUR_12_MASK 0b11111
+#define SECONDS_MASK 0b1111111
 
 // Установки частоты SQWE
 #define F_1HZ   (0<<RS1)|(0<<RS0)
@@ -44,21 +72,25 @@
 #define F_8HZ   (1<<RS1)|(0<<RS0)
 #define F_32KHZ (1<<RS1)|(1<<RS0)
 
+// Останов и запуск часов
+#define STOP_CLOCK 0
+#define START_CLOCK 1
+
 void RTC_init(void);
 
 void RTC_set_value(uint8_t address, uint8_t data);
 void RTC_get_value(uint8_t * data);
 
-void RTC_set_date(uint8_t day, uint8_t month, uint8_t year, uint8_t day_week);
-void RTC_set_time(uint8_t hours, uint8_t minutes, uint8_t seconds);
-
-void RTC_get_date(uint8_t * year, uint8_t * month, uint8_t * day, uint8_t * day_week);
-void RTC_get_time(uint8_t * hours, uint8_t * minutes, uint8_t * seconds);
-
 void RTC_set_out(uint8_t out);
 void RTC_set_sqwe(uint8_t frequency);
 
 void RTC_start_stop_watch(uint8_t on);
+
+void RTC_set_date(Date date);
+void RTC_set_time(Time time);
+
+void RTC_get_date(Date * date);
+void RTC_get_time(Time * time);
 
 uint8_t RTC_write_RAM(uint8_t address, uint8_t data);
 uint8_t RTC_get_RAM(uint8_t address, uint8_t * data);

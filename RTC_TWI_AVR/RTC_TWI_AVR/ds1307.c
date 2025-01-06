@@ -55,55 +55,6 @@ void RTC_get_value(uint8_t * data)
 	twi(TWI_STOP);
 }
 
-/* Установить дату */
-void RTC_set_date(uint8_t day, uint8_t month, uint8_t year, uint8_t day_week)
-{
-	/* Перевести в BCD */
-	year = to_BCD(year);
-	month = to_BCD(month);
-	day = to_BCD(day);
-
-	/* Сформировать состояние СТАРТ */
-	twi(TWI_START);
-
-	/* Выдать SLA-W - ведомый в режиме приемника */
-	twi_transmit((DS1307_ADR<<1)|0);
-	
-	/* Передать адрес регистра, с которого начинаем запись */
-	twi_transmit(RTC_DAY_WEEK_ADR);
-	twi_transmit(day_week);
-	twi_transmit(day);
-	twi_transmit(month);
-	twi_transmit(year);
-	
-	/* Сформировать состояние СТОП */
-	twi(TWI_STOP);
-}
-
-/* Установить время */
-void RTC_set_time(uint8_t hours, uint8_t minutes, uint8_t seconds)
-{
-	/* Перевести в BCD */
-	seconds = to_BCD(seconds);
-	minutes = to_BCD(minutes);
-	hours = to_BCD(hours);
-	
-	/* Сформировать состояние СТАРТ */
-	twi(TWI_START);
-
-	/* Выдать SLA-W - ведомый в режиме приемника */
-	twi_transmit((DS1307_ADR<<1)|0);
-	
-	/* Передать адрес регистра, с которого начинаем запись */
-	twi_transmit(RTC_SEC_ADR);
-	twi_transmit(seconds);
-	twi_transmit(minutes);
-	twi_transmit(hours);
-	
-	/* Сформировать состояние СТОП */
-	twi(TWI_STOP);
-}
-
 /* Настроить выход OUT */
 void RTC_set_out(uint8_t out)
 {
@@ -127,7 +78,7 @@ void RTC_start_stop_watch(uint8_t on)
 	RTC_get_value(&seconds_register);
 	
 	/* Перевернуть бит Clock Hold */
-	if (on)
+	if (on == START_CLOCK)
 	{
 		seconds_register = seconds_register & ~(1<<CH); // установить бит равным 0 - запустить часы
 	} else {
@@ -137,8 +88,63 @@ void RTC_start_stop_watch(uint8_t on)
 	RTC_set_value(RTC_SEC_ADR, seconds_register);
 }
 
+/* Установить дату */
+void RTC_set_date(Date date)
+{
+	/* Перевести в BCD */
+	date.year = to_BCD(date.year);
+	date.month = to_BCD(date.month);
+	date.day = to_BCD(date.day);
+
+	/* Сформировать состояние СТАРТ */
+	twi(TWI_START);
+
+	/* Выдать SLA-W - ведомый в режиме приемника */
+	twi_transmit((DS1307_ADR<<1)|0);
+	
+	/* Передать адрес регистра, с которого начинаем запись */
+	twi_transmit(RTC_DAY_WEEK_ADR);
+	twi_transmit(date.day_week);
+	twi_transmit(date.day);
+	twi_transmit(date.month);
+	twi_transmit(date.year);
+	
+	/* Сформировать состояние СТОП */
+	twi(TWI_STOP);
+}
+
+/* Установить время */
+void RTC_set_time(Time time)
+{
+	/* Перевести в BCD */
+	time.seconds = to_BCD(time.seconds);
+	time.minutes = to_BCD(time.minutes);
+	if (time.time_format == 12)
+	{
+		time.hours = (time.hours%12 == 0 ? 12U : time.hours%12); // на всякий случай подрежем
+		time.hours = to_BCD(time.hours) | (1<<TIME_FORMAT) | (time.am_pm << AM_PM); // Добавим биты для 12-часового формата
+	} else {
+		time.hours = to_BCD(time.hours); // тут настроечные биты оставляем нулевыми
+	}
+	
+	/* Сформировать состояние СТАРТ */
+	twi(TWI_START);
+
+	/* Выдать SLA-W - ведомый в режиме приемника */
+	twi_transmit((DS1307_ADR<<1)|0);
+	
+	/* Передать адрес регистра, с которого начинаем запись */
+	twi_transmit(RTC_SEC_ADR);
+	twi_transmit(time.seconds);
+	twi_transmit(time.minutes);
+	twi_transmit(time.hours);
+	
+	/* Сформировать состояние СТОП */
+	twi(TWI_STOP);
+}
+
 /* Получить дату */
-void RTC_get_date(uint8_t * year, uint8_t * month, uint8_t * day, uint8_t * day_week)
+void RTC_get_date(Date * date)
 {
 	RTC_set_value(RTC_DAY_WEEK_ADR, RTC_WRITE_POINTER);
 	
@@ -149,22 +155,22 @@ void RTC_get_date(uint8_t * year, uint8_t * month, uint8_t * day, uint8_t * day_
 	twi_transmit((DS1307_ADR<<1)|1);
 	
 	/*считываем данные с подтверждением, кроме последнего байта */
-	twi_receive(day_week, 1);
-	twi_receive(day, 1);
-	twi_receive(month, 1);
-	twi_receive(year, 0);
+	twi_receive(&date->day_week, 1);
+	twi_receive(&date->day, 1);
+	twi_receive(&date->month, 1);
+	twi_receive(&date->year, 0);	// завершающий прием без подтверждения
 	
 	/*Сформировать состояние СТОП*/
 	twi(TWI_STOP);
 	
 	/* Преобразовать из BCD в десятичное число */
-	*day	  = from_BCD(*day);
-	*month	  = from_BCD(*month);
-	*year	  = from_BCD(*year);
+	date->day	  = from_BCD(date->day);
+	date->month	  = from_BCD(date->month);
+	date->year	  = from_BCD(date->year);
 }
 
 /* Получить время */
-void RTC_get_time(uint8_t * hours, uint8_t * minutes, uint8_t * seconds)
+void RTC_get_time(Time * time)
 {
 	/* Сбрасываем на область памяти */
 	RTC_set_value(RTC_SEC_ADR, RTC_WRITE_POINTER);
@@ -176,21 +182,31 @@ void RTC_get_time(uint8_t * hours, uint8_t * minutes, uint8_t * seconds)
 	twi_transmit((DS1307_ADR<<1)|1);
 	
 	/*считываем данные с подтверждением, кроме последнего байта */
-	twi_receive(seconds, 1);
-	twi_receive(minutes, 1);
-	twi_receive(hours, 0);
+	twi_receive(&time->seconds, 1);
+	twi_receive(&time->minutes, 1);
+	twi_receive(&time->hours, 0); // завершающий прием без подтверждения
 	
 	/*Сформировать состояние СТОП*/
 	twi(TWI_STOP);
 	
 	/* Преобразовать из BCD в десятичное число */
-	*seconds  = from_BCD(*seconds & 0x7F);
-	*minutes  = from_BCD(*minutes);
-	*hours	  = from_BCD(*hours);
+	time->seconds  = from_BCD(time->seconds & SECONDS_MASK);
+	time->minutes  = from_BCD(time->minutes);
+	time->time_format = (time->hours & (1<<TIME_FORMAT) ? 12 : 24);
+	if (time->time_format == 24)
+	{
+		time->am_pm = (from_BCD(time->hours) > 12U ? PM: AM);
+	} else {
+		time->am_pm = (time->hours & (1<<AM_PM) ? PM : AM); // В режиме 12 часов бит 5 дает 1 для PM и 0 для AM
+		time->hours &= HOUR_12_MASK;						// уберем лишние биты
+	}
+	
+	time->hours	  = from_BCD(time->hours);
 }
 
 /* Запись в оперативную память часов */
-uint8_t RTC_write_RAM(uint8_t address, uint8_t data){
+uint8_t RTC_write_RAM(uint8_t address, uint8_t data)
+{
 	if (address < RTC_RAM_ADR || address > RTC_RAM_END)
 		return 0;	// ничего не записали
 				

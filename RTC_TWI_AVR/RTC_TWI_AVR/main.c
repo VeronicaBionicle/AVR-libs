@@ -8,10 +8,8 @@
 
 char mes[20];
 
-uint8_t hours, minutes, seconds, day_week, day, month, year;
-
 const char * weekdays[7] =
-{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+	{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 int main(void)
 {
@@ -48,45 +46,43 @@ int main(void)
 	
 	RTC_set_sqwe(F_1HZ); // Включить сигнал частотой 1 Гц
 	
-	RTC_set_date(28, 12, 24, 7); // установить дату 28.12.2024 Суббота
-	RTC_set_time(13, 45, 32);	 // установить время 13:45:32
+	Date date = {28, 12, 24, 7}; // установить дату 28.12.2024 Суббота
+	RTC_set_date(date);
 	
-	RTC_start_stop_watch(0);	// выключить часы
+	Time time = { 13, 45, 37, 24, PM }; // установить время 13:45:37 в формате 24 часа PM
+	RTC_set_time(time);	 
+	
+	RTC_start_stop_watch(STOP_CLOCK);	// выключить часы
 
 	int ticks = 0;
 	
 	/* Пишем в порт дату и время */
 	while (1)
 	{
-		RTC_get_time(&hours, &minutes, &seconds);
-		sprintf(mes, "%02u:%02u:%02u", hours, minutes, seconds);
-		send_buffer(mes, 8);
-		send_byte('\r');
-		
-		RTC_get_date(&year, &month, &day, &day_week);
-		sprintf(mes, "%02u.%02u.%u %s ", day, month, year, weekdays[day_week-1]);
-		send_buffer(mes, sizeof(mes) / sizeof(char));
-		send_byte('\r');
-		
-		// Через 5 секунд включить часы
-		if (ticks < 10)
+		// Через 2 секунды включить часы
+		if (ticks < 2)
 		{
 			++ticks;
-		} else if (ticks == 5) {
-			RTC_start_stop_watch(1);
+			} else if (ticks == 2) {
+			RTC_start_stop_watch(START_CLOCK);
 			++ticks;
 			
-			uint8_t ram_data;
-			ram_status = RTC_get_RAM(RTC_RAM_ADR+1, &ram_data);
+			Time new_time = { 11, 59, 58, 12, AM }; // установить время 11:59:58 в формате 12 часов AM
+			RTC_set_time(new_time);
 			
-			if (ram_status)
-			{
-				sprintf(mes, "read from RAM: %u", ram_data);
-				send_buffer(mes, sizeof(mes) / sizeof(char));
-				send_byte('\r');
-			}
-			
+			Date new_date = { 6, 1, 25, 2 }; // установить дату 06.01.2025 Понедельник
+			RTC_set_date(new_date);
 		}
+		
+		RTC_get_time(&time);
+		sprintf(mes, "%02u:%02u:%02u %u %s", time.hours, time.minutes, time.seconds, time.time_format, time.am_pm == AM ? "AM" : "PM");
+		send_buffer(mes, 14);
+		send_byte('\r');
+		
+		RTC_get_date(&date);
+		sprintf(mes, "%02u.%02u.%u %s ", date.day, date.month, date.year, weekdays[date.day_week-1]);
+		send_buffer(mes, sizeof(mes) / sizeof(char));
+		send_byte('\r');
 		
 		_delay_ms(1000);
 	}
