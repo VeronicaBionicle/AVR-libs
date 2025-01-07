@@ -146,15 +146,16 @@ void RTC_set_time(Time time)
 /* Получить дату */
 void RTC_get_date(Date * date)
 {
+	/* Установить указатель на регистр дня недели */
 	RTC_set_value(RTC_DAY_WEEK_ADR, RTC_WRITE_POINTER);
 	
-	/*Сформировать состояние РЕСТАРТ*/
+	/* Сформировать состояние РЕСТАРТ */
 	twi(TWI_RESTART);
 	
-	/*Выдать на шину пакет SLA-R*/
+	/* Выдать пакет SLA-R - ведомый в режиме передатчика */
 	twi_transmit((DS1307_ADR<<1)|1);
 	
-	/*считываем данные с подтверждением, кроме последнего байта */
+	/* Считать данные с подтверждением, кроме последнего байта */
 	twi_receive(&date->day_week, 1);
 	twi_receive(&date->day, 1);
 	twi_receive(&date->month, 1);
@@ -175,18 +176,18 @@ void RTC_get_time(Time * time)
 	/* Сбрасываем на область памяти */
 	RTC_set_value(RTC_SEC_ADR, RTC_WRITE_POINTER);
 	
-	/*Сформировать состояние РЕСТАРТ*/
+	/* Сформировать состояние РЕСТАРТ */
 	twi(TWI_RESTART);
 	
-	/*Выдать на шину пакет SLA-R*/
+	/* Выдать пакет SLA-R - ведомый в режиме передатчика */
 	twi_transmit((DS1307_ADR<<1)|1);
 	
-	/*считываем данные с подтверждением, кроме последнего байта */
+	/* Считать данные с подтверждением, кроме последнего байта */
 	twi_receive(&time->seconds, 1);
 	twi_receive(&time->minutes, 1);
 	twi_receive(&time->hours, 0); // завершающий прием без подтверждения
 	
-	/*Сформировать состояние СТОП*/
+	/* Сформировать состояние СТОП */
 	twi(TWI_STOP);
 	
 	/* Преобразовать из BCD в десятичное число */
@@ -214,6 +215,7 @@ uint8_t RTC_write_RAM(uint8_t address, uint8_t data)
 	return 1;
 }
 
+/* Чтение из оперативной памяти часов */
 uint8_t RTC_get_RAM(uint8_t address, uint8_t * data)
 {
 	if (address < RTC_RAM_ADR || address > RTC_RAM_END)
